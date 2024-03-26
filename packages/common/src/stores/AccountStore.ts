@@ -19,7 +19,7 @@ type AccountStore = {
 };
 
 export const useAccountStore = createStore<AccountStore>('AccountStore', (set, get) => ({
-  loading: true,
+  loading: false,
   user: null,
   subscription: null,
   transactions: null,
