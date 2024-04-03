@@ -39,6 +39,7 @@ const config: KnipConfig = {
         'babel-plugin-transform-typescript-metadata', // Used to build with decorators for ioc resolution
         'core-js', // Conditionally imported at build time
         'eslint-plugin-codeceptjs', // Used by apps/web/test-e2e/.eslintrc.cjs
+        'i18next-parser',
         'luxon', // Used in tests
         'playwright', // Used in test configs
         'sharp', // Requirement for @vite-pwa/assets-generator
