@@ -15,5 +15,6 @@
   "tip_two": "Hacer términos de búsqueda más generales",
   "tip_three": "Prueba con diferentes términos de búsqueda",
   "title_one": "{{count}} resultado para \"{{query}}\"",
+  "title_many": "{{count}} resultados para \"{{query}}\"",
   "title_other": "{{count}} resultados para \"{{query}}\""
 }

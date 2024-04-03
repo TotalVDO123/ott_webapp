@@ -148,7 +148,7 @@
     "password_helper_text": "Use a minimum of 8 characters (case sensitive) with at least one number",
     "password_strength": {
       "fair": "Fair",
-      "invalid": "Invalid",
+      "invalid": "",
       "strong": "Strong",
       "very_strong": "Very strong",
       "weak": "Weak"
