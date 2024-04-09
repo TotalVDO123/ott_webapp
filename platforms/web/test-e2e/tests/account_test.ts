@@ -52,7 +52,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
     I.see('Password');
     I.see('Edit password');
 
-    I.see('Profile info');
+    I.see('Account info');
     I.see('First name');
     I.seeInField('input[name="firstName"][readonly]', firstName);
     I.see('Last name');
@@ -253,7 +253,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
 
   Scenario(`I can update my consents - ${providerName}`, async ({ I }) => {
     I.amOnPage(constants.accountsUrl);
-    I.waitForText('Profile info', longTimeout);
+    I.waitForText('Account info', longTimeout);
     I.scrollTo('//*[text() = "Legal & Marketing"]', undefined, -100);
 
     I.dontSeeCheckboxIsChecked(consentCheckbox);

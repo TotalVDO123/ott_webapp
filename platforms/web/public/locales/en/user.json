@@ -1,6 +1,6 @@
 {
   "account": {
-    "about_you": "Profile info",
+    "about_you": "Account info",
     "add_password": "Add password",
     "add_password_error": "Failed to proceed to the Add Password screen. Please try again.",
     "add_password_modal_text": "We sent instructions to {{email}} on how to add a password. If you don’t receive the email within a few minutes, check your spam folder or",
