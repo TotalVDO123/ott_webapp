@@ -7,19 +7,16 @@ import { LoginContext } from '#utils/password_utils';
 const videoLength = 596;
 const videoTitle = constants.bigBuckBunnyTitle;
 
+Feature('watch_history - logged in').retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
 runTestSuite(testConfigs.jwpAuth, testConfigs.jwpAuthNoWatchlist, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, testConfigs.cleengAuthvodNoWatchlist, 'Cleeng');
 
 function runTestSuite(config: typeof testConfigs.svod, configNoWatchlist: typeof testConfigs.jwpAuthNoWatchlist, providerName: string) {
   let loginContext: LoginContext;
 
-  Feature(`watch_history - logged in - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(({ I }) => {
-    I.useConfig(config);
-  });
-
   Scenario(`I can get my watch history when logged in - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await registerOrLogin(I);
 
     // New user has no continue watching history shelf
@@ -39,6 +36,7 @@ function runTestSuite(config: typeof testConfigs.svod, configNoWatchlist: typeof
   });
 
   Scenario(`I can get my watch history stored to my account after login - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     I.dontSee(constants.continueWatchingShelfTitle);
 
     await I.openVideoCard(videoTitle);
@@ -61,6 +59,7 @@ function runTestSuite(config: typeof testConfigs.svod, configNoWatchlist: typeof
   });
 
   Scenario(`I can see my watch history on the Home screen when logged in - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     I.dontSee(constants.continueWatchingShelfTitle);
 
     await registerOrLogin(I);

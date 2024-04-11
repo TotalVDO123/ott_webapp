@@ -14,15 +14,16 @@ const consentCheckbox = 'Yes, I want to receive Blender updates by email';
 const firstName = 'John Q.';
 const lastName = 'Tester';
 
+Feature(`account`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
 runTestSuite(testConfigs.jwpSvod, 'JW Player', 'direct', false);
 runTestSuite(testConfigs.svod, 'Cleeng', 'resetLink', true);
 
 function runTestSuite(config: typeof testConfigs.svod, providerName: string, resetPasswordType: string, canEditEmail: boolean) {
   let loginContext: LoginContext;
 
-  Feature(`account - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(async ({ I }) => {
+  async function beforeScenario(I: CodeceptJS.I) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     I.useConfig(config);
 
     loginContext = await I.registerOrLogin(loginContext, () => {
@@ -34,9 +35,11 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
 
       I.clickCloseButton();
     });
-  });
+  }
 
   Scenario(`I can see my account data - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     I.seeInCurrentUrl(constants.baseUrl);
     await I.openMainMenu();
 
@@ -73,6 +76,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   Scenario(`I can cancel Edit account - ${providerName}`, async ({ I }) => {
     if (!canEditEmail) return;
 
+    await beforeScenario(I);
+
     editAndCancel(I, editAccount, [
       { name: emailField, startingValue: loginContext.email, newValue: 'user@email.nl' },
       { name: passwordField, startingValue: '', newValue: 'pass123!?' },
@@ -81,6 +86,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
 
   Scenario(`I get a duplicate email warning - ${providerName}`, async ({ I }) => {
     if (!canEditEmail) return;
+
+    await beforeScenario(I);
 
     editAndCancel(I, editAccount, [
       {
@@ -100,6 +107,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   Scenario(`I get a wrong password warning - ${providerName}`, async ({ I }) => {
     if (!canEditEmail) return;
 
+    await beforeScenario(I);
+
     editAndCancel(I, editAccount, [
       {
         name: emailField,
@@ -118,6 +127,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   Scenario(`I can toggle to view/hide my password - ${providerName}`, async ({ I }) => {
     if (!canEditEmail) return;
 
+    await beforeScenario(I);
+
     I.amOnPage(constants.accountsUrl);
     I.click(editAccount);
     await passwordUtils.testPasswordToggling(I, 'confirmationPassword');
@@ -125,6 +136,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
 
   Scenario(`I can reset my password (reset link) - ${providerName}`, async ({ I }) => {
     if (resetPasswordType !== 'resetlink') return;
+
+    await beforeScenario(I);
 
     I.amOnPage(constants.accountsUrl);
 
@@ -154,6 +167,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   });
 
   Scenario(`I can update firstName - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     editAndSave(I, editDetails, [
       {
         name: firstNameField,
@@ -177,6 +192,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   });
 
   Scenario(`I can update lastName - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     editAndSave(I, editDetails, [
       {
         name: lastNameField,
@@ -200,6 +217,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   });
 
   Scenario(`I can update details - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     editAndSave(I, editDetails, [
       {
         name: firstNameField,
@@ -235,6 +254,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   });
 
   Scenario(`I see name limit errors - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     editAndCancel(I, editDetails, [
       {
         name: firstNameField,
@@ -252,6 +273,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   });
 
   Scenario(`I can update my consents - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
+
     I.amOnPage(constants.accountsUrl);
     I.waitForText('Account info', longTimeout);
     I.scrollTo('//*[text() = "Legal & Marketing"]', undefined, -100);
@@ -288,6 +311,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   Scenario(`I can change email - ${providerName}`, async ({ I }) => {
     if (!canEditEmail) return;
 
+    await beforeScenario(I);
+
     const newEmail = passwordUtils.createRandomEmail();
 
     editAndSave(I, editAccount, [
@@ -305,7 +330,15 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
     ]);
   });
 
-  function editAndSave(I: CodeceptJS.I, editButton: string, fields: { name: string; newValue: string; expectedError?: string }[]) {
+  function editAndSave(
+    I: CodeceptJS.I,
+    editButton: string,
+    fields: {
+      name: string;
+      newValue: string;
+      expectedError?: string;
+    }[],
+  ) {
     I.amOnPage(constants.accountsUrl);
     I.waitForElement(`//*[text() = "${editButton}"]`, normalTimeout);
     I.scrollTo(`//*[text() = "${editButton}"]`);
@@ -354,7 +387,16 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
     I.click('Cancel');
   }
 
-  function editAndCancel(I: CodeceptJS.I, editButton: string, fields: { name: string; startingValue: string; newValue: string; expectedError?: string }[]) {
+  function editAndCancel(
+    I: CodeceptJS.I,
+    editButton: string,
+    fields: {
+      name: string;
+      startingValue: string;
+      newValue: string;
+      expectedError?: string;
+    }[],
+  ) {
     I.amOnPage(constants.accountsUrl);
     I.click(editButton);
 

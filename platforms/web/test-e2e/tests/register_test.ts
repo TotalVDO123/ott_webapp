@@ -3,13 +3,14 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 import constants, { longTimeout, normalTimeout } from '#utils/constants';
 import passwordUtils from '#utils/password_utils';
 
+Feature(`register`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
 runTestSuite(testConfigs.jwpAuth, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 
 function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
-  Feature(`register - ${providerName}'`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(async ({ I }) => {
+  async function beforeScenario(I: CodeceptJS.I) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     I.useConfig(config);
 
     if (await I.isMobile()) {
@@ -18,9 +19,10 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
 
     I.click('Sign up');
     I.waitForElement(constants.registrationFormSelector, normalTimeout);
-  });
+  }
 
   Scenario(`I can open the register modal - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     await I.seeQueryParams({ u: 'create-account' });
 
     I.see('Email');
@@ -42,6 +44,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can close the modal - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.waitForElement(constants.registrationFormSelector, normalTimeout);
 
     I.clickCloseButton();
@@ -55,7 +58,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.see('Sign up');
   });
 
-  Scenario(`I can switch to the Sign In modal - ${providerName}`, ({ I }) => {
+  Scenario(`I can switch to the Sign In modal - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.click('Sign in', constants.registrationFormSelector);
     I.seeElement(constants.loginFormSelector);
     I.see('Forgot password');
@@ -67,6 +71,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`The Sign up modal will invalidate when directly pressing submit - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.click('Continue');
     I.seeElementInDOM('div[class*=formFeedback]'); // This element can be visually hidden through CSS
     I.seeAttributesOnElements('input[name="email"]', { 'aria-invalid': 'true' });
@@ -74,6 +79,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I get warned when filling in incorrect credentials - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.fillField('Email', 'test');
     I.pressKey('Tab');
     I.see('Please re-enter your email details');
@@ -95,6 +101,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I get strength feedback when typing in a password - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     const textOptions = ['Weak', 'Fair', 'Strong', 'Very strong'];
 
     function checkFeedback(password, expectedColor, expectedText) {
@@ -114,10 +121,12 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can toggle to view password - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     await passwordUtils.testPasswordToggling(I);
   });
 
   Scenario(`I can't submit without checking required consents - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.fillField('Email', 'test@123.org');
     I.fillField('Password', 'pAssword123!');
 
@@ -131,6 +140,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I get warned for duplicate users - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.fillField('Email', constants.username);
     I.fillField('Password', 'Password123!');
     await I.fillCustomRegistrationFields();
@@ -140,6 +150,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can register - ${providerName}`, async ({ I }) => {
+    await beforeScenario(I);
     I.fillField('Email', passwordUtils.createRandomEmail());
     I.fillField('Password', passwordUtils.createRandomPassword());
 

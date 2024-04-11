@@ -5,6 +5,8 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 import constants, { longTimeout, normalTimeout } from '#utils/constants';
 import passwordUtils, { LoginContext } from '#utils/password_utils';
 
+Feature(`video_detail`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 runTestSuite(testConfigs.jwpAuth, 'JW Player');
 
@@ -14,13 +16,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     password: passwordUtils.createRandomPassword(),
   };
 
-  Feature(`video_detail - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(({ I }) => {
-    I.useConfig(config);
-  });
-
   Scenario(`Video detail screen loads - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard('Agent 327');
     I.see('Agent 327');
     I.see('2021');
@@ -36,6 +33,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can expand the description (@mobile-only) - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard('Agent 327');
 
     function checkHeight(height) {
@@ -63,9 +61,13 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     checkHeight('60px');
   });
 
-  Scenario(`I can watch a video - ${providerName}`, async ({ I }) => await playBigBuckBunny(I));
+  Scenario(`I can watch a video - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
+    await playBigBuckBunny(I);
+  });
 
   Scenario(`I can return to the video detail screen - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await playBigBuckBunny(I);
 
     I.click('div[aria-label="Back"]');
@@ -84,6 +86,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can play a trailer - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard(constants.elephantsDreamTitle);
 
     I.click('Trailer');
@@ -96,6 +99,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can play a trailer without signing in - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard(constants.elephantsDreamTitle);
 
     I.see(constants.signUpToWatch);
@@ -110,6 +114,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can play a video after signing up - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard(constants.elephantsDreamTitle);
 
     I.see(constants.signUpToWatch);
@@ -132,6 +137,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can play a video after signing in - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openVideoCard(constants.elephantsDreamTitle);
 
     I.see(constants.signUpToWatch);
@@ -156,6 +162,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can share the media - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.enableClipboard();
 
     await I.openVideoCard(constants.elephantsDreamTitle);

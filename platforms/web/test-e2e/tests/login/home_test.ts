@@ -3,19 +3,16 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 import constants, { longTimeout } from '#utils/constants';
 import { LoginContext } from '#utils/password_utils';
 
+Feature(`login - home`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
 runTestSuite(testConfigs.jwpAuth, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 
 function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   let loginContext: LoginContext;
 
-  Feature(`login - home - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(({ I }) => {
-    I.useConfig(config);
-  });
-
   Scenario(`Sign-in buttons show for accounts config - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openSignInMenu();
 
     I.see('Sign in');
@@ -23,6 +20,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`Sign-in buttons don't show for config without accounts - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openSignInMenu();
 
     I.see('Sign in');
@@ -37,6 +35,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can open the log in modal - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     await I.openSignInModal();
     I.waitForElement(constants.loginFormSelector, longTimeout);
 
@@ -51,6 +50,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can login - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     loginContext = await I.registerOrLogin(loginContext);
 
     await I.openMainMenu();
@@ -64,6 +64,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can log out - ${providerName}`, async ({ I }) => {
+    I.useConfig(config);
     loginContext = await I.registerOrLogin(loginContext);
 
     await I.openMainMenu();

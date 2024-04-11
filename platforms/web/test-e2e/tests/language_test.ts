@@ -65,7 +65,7 @@ Scenario('Spanish language is selected when the locale is `es-ES`', async ({ I }
   await assertActiveLanguage(I, 'es');
 });
 
-Scenario('Changing the language is persisted in the localStorage`', async ({ I }) => {
+Scenario('Changing the language is persisted in the localStorage', async ({ I }) => {
   I.restartBrowser({ locale: 'en-US' });
   I.useConfig(testConfigs.basicNoAuth);
 
@@ -80,7 +80,7 @@ Scenario('Changing the language is persisted in the localStorage`', async ({ I }
   assert.strictEqual(persistedLanguage, 'es');
 });
 
-Scenario('The language is restored from localStorage`', async ({ I }) => {
+Scenario('The language is restored from localStorage', async ({ I }) => {
   I.restartBrowser({
     storageState: {
       origins: [

@@ -2,7 +2,7 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 
 import { LoginContext } from '#utils/password_utils';
 import constants, { longTimeout } from '#utils/constants';
-import { goToCheckout, finishSubscription, cancelPlan, renewPlan, overrideIP, addYear, formatDate, checkSubscription } from '#utils/payments';
+import { addYear, cancelPlan, checkSubscription, finishSubscription, formatDate, goToCheckout, overrideIP, renewPlan } from '#utils/payments';
 import { ProviderProps } from '#test/types';
 
 const jwProps: ProviderProps = {
@@ -30,6 +30,13 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
+Feature('subscription').retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
+Before(async ({ I }) => {
+  // This gets used in checkoutService.getOffer to make sure the offers are geolocated for NL
+  overrideIP(I);
+});
+
 runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
@@ -40,16 +47,9 @@ function runTestSuite(props: ProviderProps, providerName: string) {
 
   const cardInfo = Array.of(['Card number', '•••• •••• •••• 1111'], ['Expiry date', '03/2030'], ['Security code', '******']);
 
-  Feature(`subscription - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(async ({ I }) => {
-    // This gets used in checkoutService.getOffer to make sure the offers are geolocated for NL
-    overrideIP(I);
-
-    I.useConfig(props.config);
-  });
-
   Scenario(`I can open the PayPal site - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);
@@ -63,6 +63,8 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can finish my subscription with credit card - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);
@@ -90,6 +92,8 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can cancel my subscription - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
@@ -99,6 +103,8 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can renew my subscription - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       renewPlan(I, addYear(today), props.yearlyOffer.price);
@@ -106,6 +112,8 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can view my invoices - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       I.amOnPage(constants.paymentsUrl);

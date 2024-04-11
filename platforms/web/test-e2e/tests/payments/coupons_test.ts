@@ -2,7 +2,7 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 
 import { LoginContext } from '#utils/password_utils';
 import constants from '#utils/constants';
-import { addYear, cancelPlan, checkSubscription, finishSubscription, formatPrice, goToCheckout, overrideIP, renewPlan } from '#utils/payments';
+import { goToCheckout, formatPrice, finishSubscription, addYear, cancelPlan, renewPlan, overrideIP, checkSubscription } from '#utils/payments';
 import { ProviderProps } from '#test/types';
 
 const jwProps: ProviderProps = {
@@ -31,26 +31,24 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
+Feature('payments-coupon').retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+
+Before(async ({ I }) => {
+  // This gets used in checkoutService.getOffer to make sure the offers are geolocated for NL
+  overrideIP(I);
+});
+
 runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
 function runTestSuite(props: ProviderProps, providerName: string) {
   let couponLoginContext: LoginContext;
-
   const today = new Date();
 
-  // This is written as a second test suite so that the login context is a different user.
-  // Otherwise, there's no way to re-enter payment info and add a coupon code
-  Feature(`payments-coupon - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
-
-  Before(async ({ I }) => {
-    // This gets used in checkoutService.getOffer to make sure the offers are geolocated for NL
-    overrideIP(I);
+  Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
     I.useConfig(props.config);
     couponLoginContext = await I.registerOrLogin(couponLoginContext);
-  });
 
-  Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
     await goToCheckout(I);
 
     I.click('Redeem coupon');
@@ -87,15 +85,22 @@ function runTestSuite(props: ProviderProps, providerName: string) {
         '',
       );
     }
+
     await finishSubscription(I);
     await checkSubscription(I, addYear(today), today, props.yearlyOffer.price, props.hasInlineOfferSwitch);
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
-    cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
+    I.useConfig(props.config);
+    couponLoginContext = await I.registerOrLogin(couponLoginContext);
+
+    await cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
   });
 
   Scenario(`I can renew a free subscription - ${providerName}`, async ({ I }) => {
+    I.useConfig(props.config);
+    couponLoginContext = await I.registerOrLogin(couponLoginContext);
+
     if (props.canRenewSubscription) {
       renewPlan(I, addYear(today), props.yearlyOffer.price);
     } else {
