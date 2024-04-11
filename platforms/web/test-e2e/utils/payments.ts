@@ -29,13 +29,15 @@ export function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
 }
 
-export async function finishAndCheckSubscription(I: CodeceptJS.I, billingDate: Date, today: Date, yearlyPrice: string, hasInlineOfferSwitch: boolean) {
+export async function finishSubscription(I: CodeceptJS.I) {
   I.click('Continue');
   I.waitForText(`Welcome to JW OTT Web App (SVOD)`, longTimeout);
   I.waitForText(`Thank you for subscribing to JW OTT Web App (SVOD). Please enjoy all our content.`);
 
   I.click('Start watching');
+}
 
+export async function checkSubscription(I: CodeceptJS.I, billingDate: Date, today: Date, yearlyPrice: string, hasInlineOfferSwitch: boolean) {
   const transactionText = 'Annual subscription';
 
   // It takes a few seconds for transactions to load, so try and refresh a few times
@@ -67,31 +69,38 @@ export async function finishAndCheckSubscription(I: CodeceptJS.I, billingDate: D
   I.waitForText(formatDate(today));
 }
 
-export function cancelPlan(I: CodeceptJS.I, expirationDate: Date, canRenewSubscription: boolean, providerName?: string) {
+export async function cancelPlan(I: CodeceptJS.I, expirationDate: Date, canRenewSubscription: boolean, providerName?: string) {
   I.amOnPage(constants.paymentsUrl);
   I.waitForLoaderDone();
 
-  if (providerName?.includes('JW')) {
-    I.waitForElement('[data-testid="change-subscription-button"]', 10);
-    I.click('[data-testid="change-subscription-button"]');
+  // sometimes the response takes too long, and we retry this test while the subscription is canceled
+  const isAlreadyCancelled = await tryTo(() => {
+    I.see('This plan will expire on ' + formatDate(expirationDate));
+  });
+
+  if (!isAlreadyCancelled) {
+    if (providerName?.includes('JW')) {
+      I.waitForElement('[data-testid="change-subscription-button"]', 10);
+      I.click('[data-testid="change-subscription-button"]');
+    }
+
+    I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
+    I.click('[data-testid="cancel-subscription-button"]');
+    I.see('We are sorry to see you go.');
+    I.see('You will be unsubscribed from your current plan by clicking the unsubscribe button below.');
+    I.see('Unsubscribe');
+    // Make sure the cancel button works
+    I.click('No, thanks');
+
+    I.dontSee('This plan will expire');
+
+    I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
+    I.click('[data-testid="cancel-subscription-button"]');
+    I.click('Unsubscribe');
+    I.waitForText('Miss you already.', longTimeout);
+    I.see('You have been successfully unsubscribed. Your current plan will expire on ' + formatDate(expirationDate));
+    I.click('Return to profile');
   }
-
-  I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
-  I.click('[data-testid="cancel-subscription-button"]');
-  I.see('We are sorry to see you go.');
-  I.see('You will be unsubscribed from your current plan by clicking the unsubscribe button below.');
-  I.see('Unsubscribe');
-  // Make sure the cancel button works
-  I.click('No, thanks');
-
-  I.dontSee('This plan will expire');
-
-  I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
-  I.click('[data-testid="cancel-subscription-button"]');
-  I.click('Unsubscribe');
-  I.waitForText('Miss you already.', longTimeout);
-  I.see('You have been successfully unsubscribed. Your current plan will expire on ' + formatDate(expirationDate));
-  I.click('Return to profile');
 
   if (canRenewSubscription) {
     I.waitForText('Renew subscription');

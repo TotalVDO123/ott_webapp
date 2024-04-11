@@ -2,7 +2,7 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 
 import { LoginContext } from '#utils/password_utils';
 import constants from '#utils/constants';
-import { goToCheckout, formatPrice, finishAndCheckSubscription, addYear, cancelPlan, renewPlan, overrideIP } from '#utils/payments';
+import { addYear, cancelPlan, checkSubscription, finishSubscription, formatPrice, goToCheckout, overrideIP, renewPlan } from '#utils/payments';
 import { ProviderProps } from '#test/types';
 
 const jwProps: ProviderProps = {
@@ -87,8 +87,8 @@ function runTestSuite(props: ProviderProps, providerName: string) {
         '',
       );
     }
-
-    await finishAndCheckSubscription(I, addYear(today), today, props.yearlyOffer.price, props.hasInlineOfferSwitch);
+    await finishSubscription(I);
+    await checkSubscription(I, addYear(today), today, props.yearlyOffer.price, props.hasInlineOfferSwitch);
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
