@@ -6,12 +6,31 @@ exports[`<RegistrationForm> > renders and matches snapshot 1`] = `
     data-testid="registration-form"
     novalidate=""
   >
+    <div />
+    <div
+      class="_socialButtonsListContainer_313d0d"
+    >
+      <a
+        href="https://staging-v2.inplayer.com/"
+      >
+        Social Button
+      </a>
+      <a
+        href="https://www.facebook.com/"
+      >
+        Social Button
+      </a>
+      <a
+        href="https://accounts.google.com/"
+      >
+        Social Button
+      </a>
+    </div>
     <h2
       class="_title_a472a0"
     >
       registration.sign_up
     </h2>
-    <div />
     <div
       class="_textField_e16c1b"
     >
