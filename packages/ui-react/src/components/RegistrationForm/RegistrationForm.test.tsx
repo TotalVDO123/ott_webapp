@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { renderWithRouter } from '../../../test/utils';
+import { renderWithRouter, waitForWithFakeTimers } from '../../../test/utils';
 
 import RegistrationForm from './RegistrationForm';
 
@@ -11,7 +11,7 @@ const socialLoginURLs = {
 };
 
 describe('<RegistrationForm>', () => {
-  test('renders and matches snapshot', () => {
+  test('renders and matches snapshot', async () => {
     const { container } = renderWithRouter(
       <RegistrationForm
         publisherConsents={null}
@@ -28,6 +28,8 @@ describe('<RegistrationForm>', () => {
         socialLoginURLs={socialLoginURLs}
       />,
     );
+
+    await waitForWithFakeTimers();
 
     expect(container).toMatchSnapshot();
   });
