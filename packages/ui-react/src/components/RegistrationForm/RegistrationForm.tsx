@@ -5,7 +5,6 @@ import DOMPurify from 'dompurify';
 import type { FormErrors } from '@jwp/ott-common/types/form';
 import type { CustomFormField, RegistrationFormData } from '@jwp/ott-common/types/account';
 import { testId } from '@jwp/ott-common/src/utils/common';
-import type { SocialLoginURLs } from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
 import useToggle from '@jwp/ott-hooks-react/src/useToggle';
 import Visibility from '@jwp/ott-theme/assets/icons/visibility.svg?react';
 import VisibilityOff from '@jwp/ott-theme/assets/icons/visibility_off.svg?react';
@@ -21,7 +20,6 @@ import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
 import Link from '../Link/Link';
 import Icon from '../Icon/Icon';
 import { modalURLFromLocation } from '../../utils/location';
-import SocialButtonsList from '../SocialButtonsList/SocialButtonsList';
 
 import styles from './RegistrationForm.module.scss';
 
@@ -38,7 +36,6 @@ type Props = {
   submitting: boolean;
   validationError?: boolean;
   publisherConsents: CustomFormField[] | null;
-  socialLoginURLs: SocialLoginURLs | null;
 };
 
 const RegistrationForm: React.FC<Props> = ({
@@ -54,7 +51,6 @@ const RegistrationForm: React.FC<Props> = ({
   consentValues,
   onConsentChange,
   consentErrors,
-  socialLoginURLs,
 }: Props) => {
   const [viewPassword, toggleViewPassword] = useToggle();
 
@@ -84,6 +80,7 @@ const RegistrationForm: React.FC<Props> = ({
 
   return (
     <form onSubmit={onSubmit} data-testid={testId('registration-form')} noValidate>
+      <h2 className={styles.title}>{t('registration.sign_up')}</h2>
       <div ref={ref}>
         {errors.form ? (
           <FormFeedback variant="error" visible={!validationError}>
@@ -91,8 +88,6 @@ const RegistrationForm: React.FC<Props> = ({
           </FormFeedback>
         ) : null}
       </div>
-      <SocialButtonsList socialLoginURLs={socialLoginURLs} />
-      <h2 className={styles.title}>{t('registration.sign_up')}</h2>
       <TextField
         value={values.email}
         onChange={onChange}

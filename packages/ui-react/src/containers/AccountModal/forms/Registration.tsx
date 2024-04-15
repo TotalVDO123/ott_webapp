@@ -6,7 +6,6 @@ import type { RegistrationFormData } from '@jwp/ott-common/types/account';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { checkConsentsFromValues, extractConsentValues, formatConsentsFromValues } from '@jwp/ott-common/src/utils/collection';
-import useSocialLoginUrls from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
@@ -55,8 +54,6 @@ const Registration = () => {
     setConsentValues(extractConsentValues(publisherConsents));
   }, [accountController, publisherConsents]);
 
-  const socialLoginURLs = useSocialLoginUrls(window.location.href.split('?')[0]);
-
   const { handleSubmit, handleChange, handleBlur, values, errors, validationSchemaError, submitting } = useForm<RegistrationFormData>({
     initialValues: { email: '', password: '' },
     validationSchema: object().shape({
@@ -98,7 +95,6 @@ const Registration = () => {
       consentValues={consentValues}
       publisherConsents={publisherConsents}
       loading={loading || publisherConsentsLoading}
-      socialLoginURLs={socialLoginURLs}
     />
   );
 };
