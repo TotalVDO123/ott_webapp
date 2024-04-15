@@ -53,7 +53,7 @@ export default function AppRoutes() {
   useNotifications();
 
   if (userData.user && !userData.loading && window.location.href.includes('#token')) {
-    return <Navigate to="/" />; // component instead of hook to prevent extra re-renders
+    return <Navigate to={`/${location.search}`} />; // component instead of hook to prevent extra re-renders
   }
 
   if (userData.user && selectingProfileAvatar !== null) {

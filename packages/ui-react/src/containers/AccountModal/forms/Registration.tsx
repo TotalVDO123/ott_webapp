@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEventHandler } from 'react';
+import React, { useEffect, useState, type ChangeEventHandler, useMemo } from 'react';
 import { object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
@@ -55,7 +55,9 @@ const Registration = () => {
     setConsentValues(extractConsentValues(publisherConsents));
   }, [accountController, publisherConsents]);
 
-  const socialLoginURLs = useSocialLoginUrls(window.location.href.split('?')[0]);
+  const socialLoginReturnURL = useMemo(() => `${window.location.href.split('/?')[0]}${modalURLFromLocation(location, 'personal-details')}`, [location]);
+
+  const socialLoginURLs = useSocialLoginUrls(socialLoginReturnURL);
 
   const { handleSubmit, handleChange, handleBlur, values, errors, validationSchemaError, submitting } = useForm<RegistrationFormData>({
     initialValues: { email: '', password: '' },
