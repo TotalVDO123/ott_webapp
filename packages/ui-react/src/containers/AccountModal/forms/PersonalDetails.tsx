@@ -45,9 +45,11 @@ const PersonalDetails = () => {
       if (typeof item.answer === 'object') return Object.values(item.answer).every((value) => !value || value.trim() === '');
     };
 
-    const hasSomeFilled = data.settings.some((item) => item.enabled && !isEmpty(item));
+    const enabledFields = data.settings.filter((item) => item.enabled);
 
-    const hasNoneRequired = !data.settings.some((item) => item.enabled && item.required && isEmpty(item));
+    const hasSomeFilled = enabledFields.some((item) => !isEmpty(item));
+
+    const hasNoneRequired = !enabledFields.some((item) => item.required && isEmpty(item));
 
     return hasSomeFilled && hasNoneRequired;
   }, [data]);
