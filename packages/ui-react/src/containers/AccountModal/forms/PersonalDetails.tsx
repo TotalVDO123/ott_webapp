@@ -41,8 +41,8 @@ const PersonalDetails = () => {
 
     const isEmpty = (item: CleengCaptureField | CleengCaptureQuestionField) => {
       if (item.answer === null) return true;
-      if (typeof item.answer === 'string') return item.answer.trim() === '';
-      if (typeof item.answer === 'object') return Object.values(item.answer).every((value) => !value || value.trim() === '');
+      if (typeof item.answer === 'string') return !item.answer.trim();
+      if (typeof item.answer === 'object') return Object.values(item.answer).every((value) => !value || !value.trim());
     };
 
     const enabledFields = data.settings.filter((item) => item.enabled);
