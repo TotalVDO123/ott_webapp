@@ -49,9 +49,9 @@ const PersonalDetails = () => {
 
     const hasSomeFilled = enabledFields.some((item) => !isEmpty(item));
 
-    const hasNoneRequired = !enabledFields.some((item) => item.required && isEmpty(item));
+    const hasNoneRequiredEmpty = !enabledFields.some((item) => item.required && isEmpty(item));
 
-    return hasSomeFilled && hasNoneRequired;
+    return hasSomeFilled && hasNoneRequiredEmpty;
   }, [data]);
 
   const questions = useMemo(
