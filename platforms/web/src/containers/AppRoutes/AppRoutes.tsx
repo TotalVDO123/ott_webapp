@@ -32,7 +32,6 @@ import {
   PATH_USER_PROFILES_EDIT_PROFILE,
   PATH_SEARCH,
   PATH_USER,
-  PATH_HOME,
 } from '@jwp/ott-common/src/paths';
 
 import useNotifications from '#src/hooks/useNotifications';
@@ -54,7 +53,8 @@ export default function AppRoutes() {
   useNotifications();
 
   if (userData.user && !userData.loading && window.location.href.includes('#token')) {
-    return <Navigate to={`${PATH_HOME}${location.search}`} />; // component instead of hook to prevent extra re-renders
+    // leave the location intact and only remove the token from the hash
+    return <Navigate to={{ ...location, hash: '' }} replace />; // component instead of hook to prevent extra re-renders
   }
 
   if (userData.user && selectingProfileAvatar !== null) {
