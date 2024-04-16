@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { mixed, object, string } from 'yup';
 import { useQuery } from 'react-query';
-import type { CaptureCustomAnswer, CleengCaptureQuestionField, PersonalDetailsFormData } from '@jwp/ott-common/types/account';
+import type { CaptureCustomAnswer, CleengCaptureField, CleengCaptureQuestionField, PersonalDetailsFormData } from '@jwp/ott-common/types/account';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
@@ -33,6 +33,25 @@ const PersonalDetails = () => {
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>({});
 
   const fields = useMemo(() => Object.fromEntries(data?.settings.map((item) => [item.key, item]) || []), [data]);
+
+  // if we use the register form and use social media we're redirected to this modal, but it could be the case that we've
+  // already previously registered and filled out the same form, in which case we need to skip this modal entirely
+  const isPreviouslyRegistered = useMemo(() => {
+    if (!data) return false;
+
+    const isEmpty = (item: CleengCaptureField | CleengCaptureQuestionField) => {
+      if (item.answer === null) return true;
+      if (typeof item.answer === 'string') return item.answer.trim() === '';
+      if (typeof item.answer === 'object') return Object.values(item.answer).every((value) => !value || value.trim() === '');
+    };
+
+    const hasSomeFilled = data.settings.some((item) => !isEmpty(item));
+
+    const hasNoneRequired = !data.settings.some((item) => isEmpty(item) && item.required);
+
+    return hasSomeFilled && hasNoneRequired;
+  }, [data]);
+
   const questions = useMemo(
     () => (data?.settings.filter((item) => !!(item as CleengCaptureQuestionField).question) as CleengCaptureQuestionField[]) || [],
     [data],
@@ -44,13 +63,25 @@ const PersonalDetails = () => {
     navigate(modalURLFromLocation(location, hasOffers ? 'choose-offer' : 'welcome'), { replace: true });
   }, [navigate, location, accessModel, hasMediaOffers]);
 
-  useEffect(() => {
-    if (data && (!data.isCaptureEnabled || !data.shouldCaptureBeDisplayed)) nextStep();
+  const closeModal = useCallback(() => {
+    navigate(modalURLFromLocation(location, null), { replace: true });
+  }, [location, navigate]);
 
-    if (data && questions) {
+  useEffect(() => {
+    if (!data) return;
+
+    if (isPreviouslyRegistered) {
+      closeModal();
+    }
+
+    if (!data.isCaptureEnabled || !data.shouldCaptureBeDisplayed) {
+      nextStep();
+    }
+
+    if (questions) {
       setQuestionValues(Object.fromEntries(questions.map((question) => [question.key, ''])));
     }
-  }, [data, nextStep, questions]);
+  }, [data, nextStep, questions, isPreviouslyRegistered, closeModal]);
 
   const initialValues: PersonalDetailsFormData = {
     firstName: '',
