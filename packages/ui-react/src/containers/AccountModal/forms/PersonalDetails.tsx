@@ -9,7 +9,7 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
-import useForm, { type UseFormOnSubmitHandler } from '@jwp/ott-hooks-react/src/useForm';
+import { type UseFormOnSubmitHandler } from '@jwp/ott-hooks-react/src/useForm';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 
 import PersonalDetailsForm from '../../../components/PersonalDetailsForm/PersonalDetailsForm';
@@ -77,10 +77,7 @@ const PersonalDetails = () => {
     setQuestionValues((current) => ({ ...current, [event.target.name]: value }));
   };
 
-  const PersonalDetailSubmitHandler: UseFormOnSubmitHandler<PersonalDetailsFormData> = async (
-    formData,
-    { setErrors, setSubmitting, setValidationSchemaError, validate },
-  ) => {
+  const submitHandler: UseFormOnSubmitHandler<PersonalDetailsFormData> = async (formData, { setErrors, setSubmitting, setValidationSchemaError, validate }) => {
     const requiredMessage = t('personal_details.this_field_is_required');
     const schema = object().shape({
       firstName: yupConditional(!!fields.firstNameLastName?.required, requiredMessage),
@@ -144,12 +141,6 @@ const PersonalDetails = () => {
     setSubmitting(false);
   };
 
-  const { setValue, handleSubmit, handleChange, values, errors, validationSchemaError, submitting } = useForm<PersonalDetailsFormData>({
-    initialValues,
-    onSubmit: PersonalDetailSubmitHandler,
-    isReadyForInit: !isLoading,
-  });
-
   if (isLoading) {
     return (
       <div style={{ height: 400 }}>
@@ -160,18 +151,13 @@ const PersonalDetails = () => {
 
   return (
     <PersonalDetailsForm
+      initialValues={initialValues}
       fields={fields}
       questions={questions}
       onQuestionChange={questionChangeHandler}
       questionValues={questionValues}
       questionErrors={questionErrors}
-      onSubmit={handleSubmit}
-      onChange={handleChange}
-      setValue={setValue}
-      values={values}
-      errors={errors}
-      validationError={validationSchemaError}
-      submitting={submitting}
+      onSubmit={submitHandler}
     />
   );
 };
