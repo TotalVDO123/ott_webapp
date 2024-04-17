@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { type AnySchema, ValidationError, type SchemaOf } from 'yup';
 import type { FormErrors, GenericFormValues, UseFormBlurHandler, UseFormChangeHandler, UseFormSubmitHandler } from '@jwp/ott-common/types/form';
 import { FormValidationError } from '@jwp/ott-common/src/errors/FormValidationError';
@@ -36,7 +36,6 @@ export default function useForm<T extends GenericFormValues>({
   onSubmit,
   onSubmitSuccess,
   onSubmitError,
-  isReadyForInit = true,
 }: {
   initialValues: T;
   validationSchema?: SchemaOf<T>;
@@ -44,7 +43,6 @@ export default function useForm<T extends GenericFormValues>({
   onSubmit: UseFormOnSubmitHandler<T>;
   onSubmitSuccess?: (values: T) => void;
   onSubmitError?: ({ error, resetValue }: { error: unknown; resetValue: (key: keyof T) => void }) => void;
-  isReadyForInit?: boolean;
 }): UseFormReturnValue<T> {
   const { t } = useTranslation('error');
   const [touched, setTouched] = useState<Record<keyof T, boolean>>(
@@ -62,14 +60,6 @@ export default function useForm<T extends GenericFormValues>({
     setSubmitting(false);
     setTouched(Object.fromEntries((Object.keys(initialValues) as Array<keyof T>).map((key) => [key, false])) as Record<keyof T, boolean>);
   }, [initialValues]);
-
-  useLayoutEffect(() => {
-    if (isReadyForInit) {
-      reset();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReadyForInit]);
 
   const validateField = (name: string, formValues: T) => {
     if (!validationSchema) return;
