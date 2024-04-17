@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { mixed, object, string } from 'yup';
 import { useQuery } from 'react-query';
-import type { CaptureCustomAnswer, CleengCaptureField, CleengCaptureQuestionField, PersonalDetailsFormData } from '@jwp/ott-common/types/account';
+import type { CaptureCustomAnswer, CleengCaptureQuestionField, PersonalDetailsFormData } from '@jwp/ott-common/types/account';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
@@ -34,26 +34,6 @@ const PersonalDetails = () => {
 
   const fields = useMemo(() => Object.fromEntries(data?.settings.map((item) => [item.key, item]) || []), [data]);
 
-  // if we use the register form and use social media we're redirected to this modal, but it could be the case that we've
-  // already previously registered and filled out the same form, in which case we need to skip this modal entirely
-  const isPreviouslyRegistered = useMemo(() => {
-    if (!data) return false;
-
-    const isEmpty = (item: CleengCaptureField | CleengCaptureQuestionField) => {
-      if (item.answer === null) return true;
-      if (typeof item.answer === 'string') return !item.answer.trim();
-      if (typeof item.answer === 'object') return Object.values(item.answer).every((value) => !value || !value.trim());
-    };
-
-    const enabledFields = data.settings.filter((item) => item.enabled);
-
-    const hasSomeFilled = enabledFields.some((item) => !isEmpty(item));
-
-    const hasNoneRequiredEmpty = !enabledFields.some((item) => item.required && isEmpty(item));
-
-    return hasSomeFilled && hasNoneRequiredEmpty;
-  }, [data]);
-
   const questions = useMemo(
     () => (data?.settings.filter((item) => !!(item as CleengCaptureQuestionField).question) as CleengCaptureQuestionField[]) || [],
     [data],
@@ -65,16 +45,8 @@ const PersonalDetails = () => {
     navigate(modalURLFromLocation(location, hasOffers ? 'choose-offer' : 'welcome'), { replace: true });
   }, [navigate, location, accessModel, hasMediaOffers]);
 
-  const closeModal = useCallback(() => {
-    navigate(modalURLFromLocation(location, null), { replace: true });
-  }, [location, navigate]);
-
   useEffect(() => {
     if (!data) return;
-
-    if (isPreviouslyRegistered) {
-      closeModal();
-    }
 
     if (!data.isCaptureEnabled || !data.shouldCaptureBeDisplayed) {
       nextStep();
@@ -83,11 +55,11 @@ const PersonalDetails = () => {
     if (questions) {
       setQuestionValues(Object.fromEntries(questions.map((question) => [question.key, ''])));
     }
-  }, [data, nextStep, questions, isPreviouslyRegistered, closeModal]);
+  }, [data, nextStep, questions]);
 
   const initialValues: PersonalDetailsFormData = {
-    firstName: '',
-    lastName: '',
+    firstName: (fields.firstNameLastName?.answer as Record<string, string | null>)?.firstName ?? '',
+    lastName: (fields.firstNameLastName?.answer as Record<string, string | null>)?.lastName ?? '',
     birthDate: '',
     companyName: '',
     phoneNumber: '',
@@ -175,6 +147,7 @@ const PersonalDetails = () => {
   const { setValue, handleSubmit, handleChange, values, errors, validationSchemaError, submitting } = useForm<PersonalDetailsFormData>({
     initialValues,
     onSubmit: PersonalDetailSubmitHandler,
+    isReadyForInit: !isLoading,
   });
 
   if (isLoading) {
