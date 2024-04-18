@@ -57,19 +57,30 @@ const PersonalDetails = () => {
     }
   }, [data, nextStep, questions]);
 
-  const initialValues: PersonalDetailsFormData = {
-    firstName: (fields.firstNameLastName?.answer as Record<string, string | null>)?.firstName ?? '',
-    lastName: (fields.firstNameLastName?.answer as Record<string, string | null>)?.lastName ?? '',
-    birthDate: '',
-    companyName: '',
-    phoneNumber: '',
-    address: '',
-    address2: '',
-    city: '',
-    state: '',
-    postCode: '',
-    country: '',
-  };
+  const initialValues: PersonalDetailsFormData = useMemo(() => {
+    let firstName = '';
+    let lastName = '';
+
+    if (fields.firstNameLastName?.enabled) {
+      const firstNameLastName = fields.firstNameLastName?.answer as Record<string, string | null>;
+      firstName = firstNameLastName?.firstName || '';
+      lastName = firstNameLastName?.lastName || '';
+    }
+
+    return {
+      firstName,
+      lastName,
+      birthDate: '',
+      companyName: '',
+      phoneNumber: '',
+      address: '',
+      address2: '',
+      city: '',
+      state: '',
+      postCode: '',
+      country: '',
+    };
+  }, [fields]);
 
   const questionChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.type === 'checkbox' && !event.target.checked ? '' : event.target.value;
