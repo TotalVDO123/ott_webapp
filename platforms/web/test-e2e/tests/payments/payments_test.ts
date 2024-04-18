@@ -13,7 +13,6 @@ const jwProps: ProviderProps = {
   creditCard: constants.creditCard.inplayer,
   applicableTax: 0,
   canRenewSubscription: false,
-  canOpenReceipts: false,
   fieldWrapper: '',
   hasInlineOfferSwitch: true,
 };
@@ -26,7 +25,6 @@ const cleengProps: ProviderProps = {
   creditCard: constants.creditCard.cleeng,
   applicableTax: 21,
   canRenewSubscription: true,
-  canOpenReceipts: false, // Cleeng returns an error on Sandbox making this test flaky
   fieldWrapper: 'iframe',
   hasInlineOfferSwitch: false,
 };
@@ -114,16 +112,6 @@ function runTestSuite(props: ProviderProps, providerName: string) {
       I.dontSee('No transactions');
 
       I.scrollPageToBottom();
-
-      if (props.canOpenReceipts) {
-        // Open the invoice which is opened in a new tab
-        I.click('Show receipt');
-        I.switchToNextTab();
-
-        // Assert invoice functionality by validating the presence of the purchase button
-        I.seeElement('.purchase-button');
-        I.closeCurrentTab();
-      }
     }
   });
 }
