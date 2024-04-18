@@ -58,14 +58,14 @@ const PersonalDetails = () => {
   }, [data, nextStep, questions]);
 
   const initialValues: PersonalDetailsFormData = useMemo(() => {
-    let firstName = '';
-    let lastName = '';
+    const [firstName, lastName] = (() => {
+      if (fields.firstNameLastName?.enabled) {
+        const firstNameLastName = fields.firstNameLastName?.answer as Record<string, string | null>;
+        return [firstNameLastName?.firstName || '', firstNameLastName?.lastName || ''];
+      }
 
-    if (fields.firstNameLastName?.enabled) {
-      const firstNameLastName = fields.firstNameLastName?.answer as Record<string, string | null>;
-      firstName = firstNameLastName?.firstName || '';
-      lastName = firstNameLastName?.lastName || '';
-    }
+      return ['', ''];
+    })();
 
     return {
       firstName,
