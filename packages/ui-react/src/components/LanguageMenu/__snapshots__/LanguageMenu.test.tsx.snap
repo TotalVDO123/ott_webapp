@@ -2,15 +2,14 @@
 
 exports[`<LanguageMenu> > renders and matches snapshot 1`] = `
 <div>
-  <div
+  <button
     aria-controls="language-panel"
     aria-expanded="false"
     aria-haspopup="menu"
     aria-label="language_menu"
     class="_iconButton_0fef65"
     data-testid="language-menu-button"
-    role="button"
-    tabindex="0"
+    type="button"
   >
     <svg
       aria-hidden="true"
@@ -23,6 +22,6 @@ exports[`<LanguageMenu> > renders and matches snapshot 1`] = `
         fill="currentColor"
       />
     </svg>
-  </div>
+  </button>
 </div>
 `;

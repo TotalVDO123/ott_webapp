@@ -2,11 +2,10 @@
 
 exports[`<IconButton> > renders and matches snapshot 1`] = `
 <div>
-  <div
+  <button
     aria-label="Icon button"
     class="_iconButton_0fef65"
-    role="button"
-    tabindex="0"
+    type="button"
   >
     <svg
       viewBox="0 0 24 24"
@@ -20,6 +19,6 @@ exports[`<IconButton> > renders and matches snapshot 1`] = `
         fill="none"
       />
     </svg>
-  </div>
+  </button>
 </div>
 `;

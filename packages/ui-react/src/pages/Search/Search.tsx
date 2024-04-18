@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,19 @@ const Search = () => {
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
 
-  const getURL = (playlistItem: PlaylistItem) => mediaURL({ media: playlistItem, playlistId: features?.searchPlaylist });
+  const getURL = (playlistItem: PlaylistItem) =>
+    mediaURL({
+      media: playlistItem,
+      playlistId: features?.searchPlaylist,
+    });
+
+  const title = useMemo(() => {
+    if (isFetching) return t('heading');
+    if (!query) return t('start_typing');
+    if (!playlist?.playlist.length) return t('no_results_heading', { query });
+
+    return t('title', { count: playlist.playlist.length, query });
+  }, [isFetching, playlist?.playlist.length, query, t]);
 
   // Update the search bar query to match the route param on mount
   useEffect(() => {
@@ -66,19 +78,26 @@ const Search = () => {
   }
 
   if (!query) {
-    return <ErrorPage title={t('start_typing')} />;
+    return <ErrorPage title={title} />;
   }
 
   if (!playlist?.playlist.length) {
     return (
-      <ErrorPage title={t('no_results_heading', { query })}>
-        <h2 className={styles.subHeading}>{t('suggestions')}</h2>
-        <ul>
-          <li>{t('tip_one')}</li>
-          <li>{t('tip_two')}</li>
-          <li>{t('tip_three')}</li>
-        </ul>
-      </ErrorPage>
+      <>
+        <Helmet>
+          <title>
+            {title} - {siteName}
+          </title>
+        </Helmet>
+        <ErrorPage title={title}>
+          <h2 className={styles.subHeading}>{t('suggestions')}</h2>
+          <ul>
+            <li>{t('tip_one')}</li>
+            <li>{t('tip_two')}</li>
+            <li>{t('tip_three')}</li>
+          </ul>
+        </ErrorPage>
+      </>
     );
   }
 
@@ -86,11 +105,13 @@ const Search = () => {
     <div className={styles.search}>
       <Helmet>
         <title>
-          {t('title', { count: playlist.playlist.length, query })} - {siteName}
+          {title} - {siteName}
         </title>
       </Helmet>
       <header className={styles.header}>
-        <h2 id={headingId}>{t('heading')}</h2>
+        <h2 id={headingId} aria-live={isFetching ? undefined : 'polite'}>
+          {title}
+        </h2>
       </header>
       <CardGrid
         aria-labelledby={headingId}
