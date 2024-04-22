@@ -1,3 +1,25 @@
+## [6.1.1](https://github.com/jwplayer/ott-web-app/compare/v6.1.0...v6.1.1) (2024-04-22)
+
+
+### Bug Fixes
+
+* **a11y:** close menu focus with voice over ([bf7aa66](https://github.com/jwplayer/ott-web-app/commit/bf7aa66ee798ef79d39d18343503f8e7339116df))
+* **a11y:** header navigation list ([1d22ab0](https://github.com/jwplayer/ott-web-app/commit/1d22ab05d4f5004fff8740827dc37b3d8460debf))
+* **a11y:** icon button to use button element ([f28269b](https://github.com/jwplayer/ott-web-app/commit/f28269b4faa30c75bdae8f09752893dbc6fc3c96))
+* **a11y:** lose focus after activating share button ([fe6686a](https://github.com/jwplayer/ott-web-app/commit/fe6686ae8006d6f1f3ca6571e29c5d742da22a16))
+* **a11y:** read title while searching ([7bb64bb](https://github.com/jwplayer/ott-web-app/commit/7bb64bba4a6fca7bd6da3c8a994e42d535f4a44f))
+* **a11y:** sitename in logo alt ([051e46f](https://github.com/jwplayer/ott-web-app/commit/051e46f54a55aec5a6cde3b296859472bb362e6a))
+* change wording ([#488](https://github.com/jwplayer/ott-web-app/issues/488)) ([1011dd2](https://github.com/jwplayer/ott-web-app/commit/1011dd28252afe0c001b1a27c5b1c3589a5c1cea))
+* **e2e:** search results based on typeahead changes ([0039922](https://github.com/jwplayer/ott-web-app/commit/0039922870b9b1538c72c9a72548e9084545524d))
+* Leave the path intact and only remove token from hash after login with social media ([#499](https://github.com/jwplayer/ott-web-app/issues/499)) ([7438bc7](https://github.com/jwplayer/ott-web-app/commit/7438bc70b3aa99664a308b91adbbc81e9dde51b2))
+* **payment:** catch cleeng invalid coupon for offer ([930d52b](https://github.com/jwplayer/ott-web-app/commit/930d52b015434f968f9a0bef477ddcadcb0013c9))
+* **payment:** cleeng paypal invalid url error ([ad23df0](https://github.com/jwplayer/ott-web-app/commit/ad23df0d09be5c57fde50f206cc3e2d9ffeb7305))
+* **project:** improve form validation on account page ([acefc42](https://github.com/jwplayer/ott-web-app/commit/acefc428e74d1a5838fa3210b97e256d6db1fef0))
+* **project:** old password form error after validation ([b049743](https://github.com/jwplayer/ott-web-app/commit/b0497434e7597c3e644397344c765c5f064059c7))
+* **project:** retain password input during sign up ([2a5e2fe](https://github.com/jwplayer/ott-web-app/commit/2a5e2fe5a395f019e430993d14d3fd9e2de5340d))
+* **project:** scroll to top on static pages ([2d17c7d](https://github.com/jwplayer/ott-web-app/commit/2d17c7d22cc584b9c78c6ed2ee59894374aa6931))
+* **videodetail:** unnecessary scrollbar in videolist ([95cf4b9](https://github.com/jwplayer/ott-web-app/commit/95cf4b9f4720de561cfa7d7a809ba42908fc283c))
+
 ## [6.1.0](https://github.com/jwplayer/ott-web-app/compare/v6.0.0...v6.1.0) (2024-04-05)
 
 
