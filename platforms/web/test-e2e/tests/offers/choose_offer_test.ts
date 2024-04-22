@@ -34,7 +34,7 @@ runTestSuite(cleengProps, 'Cleeng');
 function runTestSuite(props: ProviderProps, providerName: string) {
   let paidLoginContext: LoginContext;
 
-  Feature(`subscription - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+  Feature(`choose offer - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
 
   Before(async ({ I }) => {
     // This gets used in checkoutService.getOffer to make sure the offers are geolocated for NL
@@ -43,7 +43,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
     I.useConfig(props.config);
   });
 
-  Scenario(`I can see my payments data - ${providerName}`, async ({ I }) => {
+  Scenario(`I can see a payments page with no history - ${providerName}`, async ({ I }) => {
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await I.openMainMenu();
