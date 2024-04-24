@@ -16,6 +16,8 @@ import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakp
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
+import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
+import env from '@jwp/ott-common/src/env';
 
 import VideoLayout from '../../components/VideoLayout/VideoLayout';
 import InlinePlayer from '../../containers/InlinePlayer/InlinePlayer';
@@ -56,12 +58,6 @@ const LegacySeries = () => {
   const selectedItem = episode || seriesPlaylist;
   const selectedItemImage = (selectedItem?.image as string) || '';
 
-  // Config
-  const { config, accessModel } = useConfigStore(({ config, accessModel }) => ({ config, accessModel }), shallow);
-  const { features, siteName, custom } = config;
-  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList);
-  const inlineLayout = Boolean(custom?.inlinePlayer);
-
   // Filters
   const filters = useMemo(() => getFiltersFromSeries(seriesPlaylist), [seriesPlaylist]);
   const [seasonFilter, setSeasonFilter] = useState<string | undefined>(undefined);
@@ -71,15 +67,26 @@ const LegacySeries = () => {
   const episodesInSeason = getEpisodesInSeason(episode, seriesPlaylist);
   const nextItem = useMemo(() => getNextItem(episode, seriesPlaylist), [episode, seriesPlaylist]);
 
-  // Watch history
-  const watchHistoryDictionary = useWatchHistoryStore((state) => state.getDictionaryWithEpisodes());
-
   // User, entitlement
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
   const { isEntitled, mediaOffers } = useEntitlement(episode || firstEpisode);
   const hasMediaOffers = !!mediaOffers.length;
-  const isLoggedIn = !!user;
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
   const hasSubscription = !!subscription;
+
+  // Config
+  const { config, accessModel } = useConfigStore(({ config, accessModel }) => ({ config, accessModel }), shallow);
+  const { features, siteName, custom } = config;
+
+  // oauth mode checker
+  const isOAuthMode = isTruthyCustomParamValue(custom?.isOAuthMode);
+
+  // FEAT:: show favorites list only after login in oauth mode
+  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList) && isOAuthMode && isLoggedIn;
+  const inlineLayout = Boolean(custom?.inlinePlayer);
+
+  // Watch history
+  const watchHistoryDictionary = useWatchHistoryStore((state) => state.getDictionaryWithEpisodes());
 
   // Handlers
   const goBack = () => episode && navigate(legacySeriesURL({ episodeId: episode.mediaid, seriesId, play: false, playlistId: feedId }));

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type FC, useCallback, useRef } from 'react';
+import React, { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import { IS_DEMO_MODE, IS_DEVELOPMENT_BUILD, IS_PREVIEW_MODE, IS_PROD_MODE } from '@jwp/ott-common/src/utils/common';
 import ErrorPage from '@jwp/ott-ui-react/src/components/ErrorPage/ErrorPage';
 import AccountModal from '@jwp/ott-ui-react/src/containers/AccountModal/AccountModal';
@@ -15,6 +15,7 @@ import AppRoutes from '../AppRoutes/AppRoutes';
 
 import registerCustomScreens from '#src/screenMapping';
 import { useTrackConfigKeyChange } from '#src/hooks/useTrackConfigKeyChange';
+import OAuthRoot from '#src/containers/OAuthRoot/OAuthRoot';
 
 const IS_DEMO_OR_PREVIEW = IS_DEMO_MODE || IS_PREVIEW_MODE;
 
@@ -99,7 +100,11 @@ const Root: FC = () => {
 
   return (
     <>
-      {isReady && <AppRoutes />}
+      {isReady && (
+        <OAuthRoot>
+          <AppRoutes />
+        </OAuthRoot>
+      )}
       {isReady && <AccountModal />}
       {/*This is moved to a separate, parallel component to reduce rerenders */}
       <RootLoader onReady={onReadyCallback} />

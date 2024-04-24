@@ -10,6 +10,20 @@ export type Env = {
 
   APP_BODY_FONT?: string;
   APP_BODY_ALT_FONT?: string;
+
+  // Following are OAuth related
+  APP_OAUTH_CLIENT_ID?: string;
+  APP_OAUTH_CLIENT_SECRET?: string;
+  APP_OAUTH_STORAGE?: 'session' | 'local';
+  APP_OAUTH_REDIRECT_URL?: string;
+  APP_OAUTH_AUTO_LOGIN?: boolean;
+  APP_OAUTH_AUTH_URL?: string;
+  APP_OAUTH_TOKEN_URL?: string;
+  APP_OAUTH_RESOURCE_URL?: string;
+  APP_OAUTH_CONTENT_TOKEN_URL?: string;
+  APP_OAUTH_SIGN_UP_URL?: string;
+  APP_OAUTH_DASHBOARD_URL?: string;
+  APP_OAUTH_UNLOCK_ONLY_PREMIUM?: boolean;
 };
 
 const env: Env = {
@@ -32,6 +46,19 @@ export const configureEnv = (options: Partial<Env>) => {
 
   env.APP_BODY_FONT = options.APP_BODY_FONT || env.APP_BODY_FONT;
   env.APP_BODY_ALT_FONT = options.APP_BODY_ALT_FONT || env.APP_BODY_ALT_FONT;
+
+  env.APP_OAUTH_CLIENT_ID ||= options.APP_OAUTH_CLIENT_ID;
+  env.APP_OAUTH_CLIENT_SECRET ||= options.APP_OAUTH_CLIENT_SECRET;
+  env.APP_OAUTH_STORAGE ||= options.APP_OAUTH_STORAGE;
+  env.APP_OAUTH_REDIRECT_URL ||= options.APP_OAUTH_REDIRECT_URL;
+  env.APP_OAUTH_AUTO_LOGIN ||= options.APP_OAUTH_AUTO_LOGIN;
+  env.APP_OAUTH_AUTH_URL ||= options.APP_OAUTH_AUTH_URL;
+  env.APP_OAUTH_TOKEN_URL ||= options.APP_OAUTH_TOKEN_URL;
+  env.APP_OAUTH_RESOURCE_URL ||= options.APP_OAUTH_RESOURCE_URL;
+  env.APP_OAUTH_CONTENT_TOKEN_URL ||= options.APP_OAUTH_CONTENT_TOKEN_URL;
+  env.APP_OAUTH_SIGN_UP_URL ||= options.APP_OAUTH_SIGN_UP_URL;
+  env.APP_OAUTH_DASHBOARD_URL ||= options.APP_OAUTH_DASHBOARD_URL;
+  env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ||= options.APP_OAUTH_UNLOCK_ONLY_PREMIUM;
 };
 
 export default env;

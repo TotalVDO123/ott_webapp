@@ -12,6 +12,7 @@ import useFirstRender from '@jwp/ott-hooks-react/src/useFirstRender';
 import useSearchQueryUpdater from '@jwp/ott-ui-react/src/hooks/useSearchQueryUpdater';
 import { useSearch } from '@jwp/ott-hooks-react/src/useSearch';
 import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
+import env from '@jwp/ott-common/src/env';
 
 import CardGrid from '../../components/CardGrid/CardGrid';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
@@ -33,6 +34,7 @@ const Search = () => {
 
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
 
   const getURL = (playlistItem: PlaylistItem) =>
     mediaURL({
@@ -119,7 +121,7 @@ const Search = () => {
         playlist={playlist}
         isLoading={firstRender}
         accessModel={accessModel}
-        isLoggedIn={!!user}
+        isLoggedIn={isLoggedIn}
         hasSubscription={!!subscription}
       />
     </div>

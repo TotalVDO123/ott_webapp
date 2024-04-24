@@ -8,6 +8,7 @@ import SearchIcon from '@jwp/ott-theme/assets/icons/search.svg?react';
 import CloseIcon from '@jwp/ott-theme/assets/icons/close.svg?react';
 import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react';
 import type { Profile } from '@jwp/ott-common/types/profiles';
+import env from '@jwp/ott-common/src/env';
 
 import SearchBar, { type Props as SearchBarProps } from '../SearchBar/SearchBar';
 import Logo from '../Logo/Logo';
@@ -20,6 +21,7 @@ import Panel from '../Panel/Panel';
 import Icon from '../Icon/Icon';
 import ProfileCircle from '../ProfileCircle/ProfileCircle';
 import Popover from '../Popover/Popover';
+import OAuthBackToAccountButton from '../OAuthBackToAccountButton/OAuthBackToAccountButton';
 
 import styles from './Header.module.scss';
 
@@ -66,6 +68,8 @@ type Props = {
     selectProfile: ({ avatarUrl, id }: { avatarUrl: string; id: string }) => void;
     isSelectingProfile: boolean;
   };
+
+  isOAuthMode?: boolean;
 };
 
 const Header: React.FC<Props> = ({
@@ -97,6 +101,7 @@ const Header: React.FC<Props> = ({
   siteName,
   profilesData: { currentProfile, profiles, profilesEnabled, selectProfile, isSelectingProfile } = {},
   navItems = [],
+  isOAuthMode,
 }) => {
   const { t } = useTranslation('menu');
   const [logoLoaded, setLogoLoaded] = useState(false);
@@ -106,7 +111,8 @@ const Header: React.FC<Props> = ({
   });
 
   // only show the language dropdown when there are other languages to choose from
-  const showLanguageSwitcher = supportedLanguages.length > 1;
+  // FEAT:: no language switcher in oauth mode
+  const showLanguageSwitcher = !isOAuthMode && supportedLanguages.length > 1;
 
   const renderSearch = () => {
     if (!searchEnabled) return null;
@@ -135,49 +141,53 @@ const Header: React.FC<Props> = ({
 
   const renderUserActions = () => {
     if (!canLogin || breakpoint <= Breakpoint.sm) return null;
-
+    // FEAT:: back to main account cta if oauth mode
     return isLoggedIn ? (
-      <React.Fragment>
-        <IconButton
-          className={classNames(styles.iconButton, styles.actionButton)}
-          aria-label={t('open_user_menu')}
-          aria-controls="menu_panel"
-          aria-expanded={userMenuOpen}
-          aria-haspopup="menu"
-          onClick={openUserPanel}
-          onBlur={closeUserPanel}
-        >
-          {profilesEnabled && currentProfile ? (
-            <ProfileCircle src={currentProfile.avatar_url} alt={currentProfile.name || t('profile_icon')} />
-          ) : (
-            <Icon icon={AccountCircle} />
-          )}
-        </IconButton>
-        <Popover isOpen={userMenuOpen} onClose={closeUserPanel}>
-          <Panel id="menu_panel">
-            <div onFocus={openUserPanel} onBlur={closeUserPanel}>
-              {profilesEnabled && (
-                <ProfilesMenu
+      isOAuthMode ? (
+        <OAuthBackToAccountButton targetUrl={env.APP_OAUTH_DASHBOARD_URL as string} />
+      ) : (
+        <React.Fragment>
+          <IconButton
+            className={classNames(styles.iconButton, styles.actionButton)}
+            aria-label={t('open_user_menu')}
+            aria-controls="menu_panel"
+            aria-expanded={userMenuOpen}
+            aria-haspopup="menu"
+            onClick={openUserPanel}
+            onBlur={closeUserPanel}
+          >
+            {profilesEnabled && currentProfile ? (
+              <ProfileCircle src={currentProfile.avatar_url} alt={currentProfile.name || t('profile_icon')} />
+            ) : (
+              <Icon icon={AccountCircle} />
+            )}
+          </IconButton>
+          <Popover isOpen={userMenuOpen} onClose={closeUserPanel}>
+            <Panel id="menu_panel">
+              <div onFocus={openUserPanel} onBlur={closeUserPanel}>
+                {profilesEnabled && (
+                  <ProfilesMenu
+                    onButtonClick={closeUserPanel}
+                    profiles={profiles ?? []}
+                    currentProfile={currentProfile}
+                    selectingProfile={!!isSelectingProfile}
+                    selectProfile={selectProfile}
+                    small
+                  />
+                )}
+                <UserMenu
+                  focusable={userMenuOpen}
                   onButtonClick={closeUserPanel}
-                  profiles={profiles ?? []}
+                  showPaymentsItem={showPaymentsMenuItem}
                   currentProfile={currentProfile}
-                  selectingProfile={!!isSelectingProfile}
-                  selectProfile={selectProfile}
+                  favoritesEnabled={favoritesEnabled}
                   small
                 />
-              )}
-              <UserMenu
-                focusable={userMenuOpen}
-                onButtonClick={closeUserPanel}
-                showPaymentsItem={showPaymentsMenuItem}
-                currentProfile={currentProfile}
-                favoritesEnabled={favoritesEnabled}
-                small
-              />
-            </div>
-          </Panel>
-        </Popover>
-      </React.Fragment>
+              </div>
+            </Panel>
+          </Popover>
+        </React.Fragment>
+      )
     ) : (
       <div className={styles.buttonContainer}>
         <Button onClick={onLoginButtonClick} label={t('sign_in')} aria-haspopup="dialog" />

@@ -14,7 +14,9 @@
   "live": "EN VIVO",
   "player_error": {
     "geo_blocked_description": "Pedimos disculpas, pero este contenido no está disponible actualmente en tu región.",
-    "geo_blocked_title": "Contenido no disponible"
+    "geo_blocked_title": "Contenido no disponible",
+    "user_blocked_description": "Pedimos disculpas, pero este contenido no está disponible actualmente para usted. ",
+    "user_blocked_title": "Contenido no disponible"
   },
   "season": "temporada",
   "season_number_filter_template": "Temporada {{seasonNumber}}",

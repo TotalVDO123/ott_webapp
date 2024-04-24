@@ -23,6 +23,24 @@ configureEnv({
   APP_FOOTER_TEXT: import.meta.env.APP_FOOTER_TEXT,
   APP_BODY_FONT: import.meta.env.APP_BODY_FONT,
   APP_BODY_ALT_FONT: import.meta.env.APP_BODY_ALT_FONT,
+
+  // Following are the OAuth related
+  APP_OAUTH_CLIENT_ID: import.meta.env.APP_OAUTH_CLIENT_ID,
+  APP_OAUTH_CLIENT_SECRET: import.meta.env.APP_OAUTH_CLIENT_SECRET,
+  APP_OAUTH_STORAGE: ['local', 'session'].includes(import.meta.env.APP_OAUTH_STORAGE as string)
+    ? (import.meta.env.APP_OAUTH_STORAGE as 'local' | 'session')
+    : 'session',
+  APP_OAUTH_REDIRECT_URL: import.meta.env.APP_OAUTH_REDIRECT_URL,
+  APP_OAUTH_AUTO_LOGIN: ['true', 'false'].includes(import.meta.env.APP_OAUTH_AUTO_LOGIN as string) ? import.meta.env.APP_OAUTH_AUTO_LOGIN === 'true' : false,
+  APP_OAUTH_AUTH_URL: import.meta.env.APP_OAUTH_AUTH_URL,
+  APP_OAUTH_TOKEN_URL: import.meta.env.APP_OAUTH_TOKEN_URL,
+  APP_OAUTH_RESOURCE_URL: import.meta.env.APP_OAUTH_RESOURCE_URL,
+  APP_OAUTH_CONTENT_TOKEN_URL: import.meta.env.APP_OAUTH_CONTENT_TOKEN_URL,
+  APP_OAUTH_SIGN_UP_URL: import.meta.env.APP_OAUTH_SIGN_UP_URL,
+  APP_OAUTH_DASHBOARD_URL: import.meta.env.APP_OAUTH_DASHBOARD_URL,
+  APP_OAUTH_UNLOCK_ONLY_PREMIUM: ['true', 'false'].includes(import.meta.env.APP_OAUTH_UNLOCK_ONLY_PREMIUM as string)
+    ? import.meta.env.APP_OAUTH_UNLOCK_ONLY_PREMIUM === 'true'
+    : false,
 });
 
 attachAccessibilityListener();

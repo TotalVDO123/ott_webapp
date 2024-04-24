@@ -18,13 +18,15 @@ import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
 import { PATH_HOME, PATH_USER_PROFILES } from '@jwp/ott-common/src/paths';
 import { playlistURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import env from '@jwp/ott-common/src/env';
+import { useOAuth } from '@jwp/ott-hooks-react/src/useOAuth';
 
 import Header from '../../components/Header/Header';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import MenuButton from '../../components/MenuButton/MenuButton';
-import UserMenu from '../../components/UserMenu/UserMenu';
 import Button from '../../components/Button/Button';
 import Footer from '../../components/Footer/Footer';
+import UserMenu from '../../components/UserMenu/UserMenu';
+import OAuthBackToAccountButton from '../../components/OAuthBackToAccountButton/OAuthBackToAccountButton';
 
 import styles from './Layout.module.scss';
 
@@ -50,6 +52,9 @@ const Layout = () => {
   const { searchPlaylist } = features || {};
   const hasAppContentSearch = isTruthyCustomParamValue(custom?.appContentSearch);
   const searchEnabled = !!searchPlaylist || hasAppContentSearch;
+
+  const isOAuthMode = isTruthyCustomParamValue(custom?.isOAuthMode);
+  const { login: oAuthLogin } = useOAuth();
 
   const currentLanguage = useMemo(() => supportedLanguages.find(({ code }) => code === i18n.language), [i18n.language, supportedLanguages]);
 
@@ -115,10 +120,20 @@ const Layout = () => {
   };
 
   const loginButtonClickHandler = () => {
+    // if user is in oauth mode, redirect to the login page
+    if (isOAuthMode) {
+      oAuthLogin();
+      return;
+    }
     navigate(modalURLFromLocation(location, 'login'));
   };
 
   const signUpButtonClickHandler = () => {
+    // if user is in oauth mode, redirect to the pricing page
+    if (isOAuthMode) {
+      window.location.replace(env.APP_OAUTH_SIGN_UP_URL as string);
+      return;
+    }
     navigate(modalURLFromLocation(location, 'create-account'));
   };
 
@@ -135,6 +150,14 @@ const Layout = () => {
   const renderUserActions = (sideBarOpen: boolean) => {
     if (!canLogin) return null;
 
+    // FEAT:: back to main account cta if oauth mode
+    if (isLoggedIn && isOAuthMode) {
+      return (
+        <section aria-labelledby={userMenuTitleId} className={styles.buttonContainer}>
+          <OAuthBackToAccountButton targetUrl={env.APP_OAUTH_DASHBOARD_URL as string} />
+        </section>
+      );
+    }
     return isLoggedIn ? (
       <section aria-labelledby={userMenuTitleId}>
         <UserMenu focusable={sideBarOpen} favoritesEnabled={favoritesEnabled} titleId={userMenuTitleId} showPaymentsItem />
@@ -147,7 +170,13 @@ const Layout = () => {
     );
   };
 
-  const navItems = [{ label: t('home'), to: '/' }, ...menu.map((item) => ({ label: item.label, to: playlistURL(item.contentId) }))];
+  const navItems = [
+    { label: t('home'), to: '/' },
+    ...menu.map((item) => ({
+      label: item.label,
+      to: playlistURL(item.contentId),
+    })),
+  ];
 
   const containerProps = { inert: sideBarOpen ? '' : undefined }; // inert is not yet officially supported in react
 
@@ -200,6 +229,7 @@ const Layout = () => {
             isSelectingProfile: selectProfile.isLoading,
           }}
           navItems={navItems}
+          isOAuthMode={isOAuthMode}
         />
         <main id="content" className={styles.main} tabIndex={-1}>
           <Outlet />

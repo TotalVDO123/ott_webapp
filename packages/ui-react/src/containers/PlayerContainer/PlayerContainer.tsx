@@ -44,7 +44,7 @@ const PlayerContainer: React.FC<Props> = ({
 }: Props) => {
   // data
   const { data: adsData, isLoading: isAdsLoading } = useAds({ mediaId: item?.mediaid });
-  const { data: playableItem, isLoading, isGeoBlocked } = useProtectedMedia(item);
+  const { data: playableItem, isLoading, isGeoBlocked, isUserBlocked } = useProtectedMedia(item);
   // state
   const [playerInstance, setPlayerInstance] = useState<JWPlayer>();
 
@@ -66,6 +66,10 @@ const PlayerContainer: React.FC<Props> = ({
   }, [liveFromBeginning, playerInstance]);
 
   const handlePlaylistItemCallback = usePlaylistItemCallback(liveStartDateTime, liveEndDateTime);
+
+  if (isUserBlocked && !playableItem) {
+    return <PlayerError error={PlayerErrorState.USER_BLOCKED} />;
+  }
 
   if (!playableItem || isLoading || isAdsLoading) {
     return <LoadingOverlay inline />;

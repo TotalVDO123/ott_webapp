@@ -12,6 +12,7 @@ import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/col
 import { testId } from '@jwp/ott-common/src/utils/common';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
+import env from '@jwp/ott-common/src/env';
 
 import Shelf from '../../components/Shelf/Shelf';
 import InfiniteScrollLoader from '../../components/InfiniteScrollLoader/InfiniteScrollLoader';
@@ -35,6 +36,7 @@ const ShelfList = ({ rows }: Props) => {
 
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
 
   // Todo: move to more common package?
 
@@ -84,7 +86,7 @@ const ShelfList = ({ rows }: Props) => {
                 title={title || playlist?.title}
                 featured={featured}
                 accessModel={accessModel}
-                isLoggedIn={!!user}
+                isLoggedIn={isLoggedIn}
                 hasSubscription={!!subscription}
                 posterAspect={posterAspect}
                 visibleTilesDelta={visibleTilesDelta}

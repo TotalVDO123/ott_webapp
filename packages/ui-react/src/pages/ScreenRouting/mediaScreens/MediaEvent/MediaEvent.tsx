@@ -17,6 +17,8 @@ import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
+import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
+import env from '@jwp/ott-common/src/env';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import VideoLayout from '../../../../components/VideoLayout/VideoLayout';
@@ -45,11 +47,23 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const play = useQueryParam('play') === '1';
   const playlistId = useQueryParam('r');
 
+  // User, entitlement
+  const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
+  const { isEntitled, mediaOffers } = useEntitlement(media);
+  const hasMediaOffers = !!mediaOffers.length;
+
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
+  const hasSubscription = !!subscription;
+
   // Config
   const { config, accessModel } = useConfigStore(({ config, accessModel }) => ({ config, accessModel }), shallow);
   const { siteName, features, custom } = config;
 
-  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList);
+  // oauth mode checker
+  const isOAuthMode = isTruthyCustomParamValue(custom?.isOAuthMode);
+
+  // FEAT:: show favorites list only after login in oauth mode
+  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList) && isOAuthMode && isLoggedIn;
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Media
@@ -58,11 +72,6 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
 
   // Event
   const liveEvent = useLiveEvent(media);
-
-  // User, entitlement
-  const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
-  const { isEntitled, mediaOffers } = useEntitlement(media);
-  const hasMediaOffers = !!mediaOffers.length;
 
   // Handlers
   const goBack = () => media && navigate(mediaURL({ media, playlistId, play: false }));
@@ -120,9 +129,6 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
       disabled={!trailerItem}
     />
   );
-
-  const isLoggedIn = !!user;
-  const hasSubscription = !!subscription;
 
   return (
     <React.Fragment>

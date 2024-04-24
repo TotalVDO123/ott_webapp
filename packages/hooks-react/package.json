@@ -16,6 +16,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.3.1",
+    "react-oauth2-code-pkce": "^1.18.0",
     "react-query": "^3.39.0",
     "reflect-metadata": "^0.1.13",
     "yup": "^0.32.9"

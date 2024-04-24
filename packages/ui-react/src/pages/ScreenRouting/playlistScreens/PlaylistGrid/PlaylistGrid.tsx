@@ -6,6 +6,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { filterPlaylist, getFiltersFromConfig } from '@jwp/ott-common/src/utils/collection';
 import { mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
+import env from '@jwp/ott-common/src/env';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import CardGrid from '../../../../components/CardGrid/CardGrid';
@@ -24,6 +25,7 @@ const PlaylistGrid: ScreenComponent<Playlist> = ({ data, isLoading }) => {
 
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
 
   useEffect(() => {
     // reset filter when the playlist id changes
@@ -50,7 +52,7 @@ const PlaylistGrid: ScreenComponent<Playlist> = ({ data, isLoading }) => {
           getUrl={getUrl}
           playlist={filteredPlaylist}
           accessModel={accessModel}
-          isLoggedIn={!!user}
+          isLoggedIn={isLoggedIn}
           hasSubscription={!!subscription}
           isLoading={isLoading}
           headingLevel={2}

@@ -164,6 +164,7 @@ export type Customer = {
   metadata: Record<string, unknown>;
   lastName?: string;
   fullName?: string;
+  isPremium?: boolean;
   [key: string]: unknown;
 };
 

@@ -22,6 +22,8 @@ import { useSeriesLookup } from '@jwp/ott-hooks-react/src/series/useSeriesLookup
 import { useNextEpisode } from '@jwp/ott-hooks-react/src/series/useNextEpisode';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
+import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
+import env from '@jwp/ott-common/src/env';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import ErrorPage from '../../../../components/ErrorPage/ErrorPage';
@@ -58,12 +60,6 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
 
   // Whether we show series or episode information
   const selectedItem = (episode || seriesMedia) as PlaylistItem;
-
-  // Config
-  const { config, accessModel } = useConfigStore(({ config, accessModel }) => ({ config, accessModel }), shallow);
-  const { features, siteName, custom } = config;
-  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList);
-  const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Filters
   const filters = useMemo(() => getFiltersFromSeries(series), [series]);
@@ -110,8 +106,19 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   const { isEntitled, mediaOffers } = useEntitlement(episode || firstEpisode);
   const hasMediaOffers = !!mediaOffers.length;
 
-  const isLoggedIn = !!user;
+  const isLoggedIn = !!user && (env.APP_OAUTH_UNLOCK_ONLY_PREMIUM ? !!user.isPremium : true);
   const hasSubscription = !!subscription;
+
+  // Config
+  const { config, accessModel } = useConfigStore(({ config, accessModel }) => ({ config, accessModel }), shallow);
+  const { features, siteName, custom } = config;
+
+  // oauth mode checker
+  const isOAuthMode = isTruthyCustomParamValue(custom?.isOAuthMode);
+
+  // FEAT:: show favorites list only after login in oauth mode
+  const isFavoritesEnabled: boolean = Boolean(features?.favoritesList) && isOAuthMode && isLoggedIn;
+  const inlineLayout = Boolean(custom?.inlinePlayer);
 
   const location = useLocation();
   const getURL = (toEpisode: PlaylistItem) => {
