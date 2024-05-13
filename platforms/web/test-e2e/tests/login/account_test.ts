@@ -36,7 +36,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.dontSee('Email');
     I.dontSee('Password');
     I.dontSeeElement(constants.loginFormSelector);
-  });
+  }).tag('@desktop-only');
 
   Scenario(`I can toggle to view password - ${providerName}`, async ({ I }) => {
     await passwordUtils.testPasswordToggling(I);
