@@ -31,7 +31,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
   });
 
   Scenario(`I can close the modal by clicking outside - ${providerName}`, async ({ I }) => {
-    I.forceClick('div[data-testid="backdrop"]');
+    I.forceClick('dialog[open]');
 
     I.dontSee('Email');
     I.dontSee('Password');
