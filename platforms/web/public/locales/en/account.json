@@ -89,7 +89,6 @@
     "sign_in": "Sign in",
     "sign_in_success": "Sign in successful",
     "sign_up": "Sign up",
-    "simultaneous_logins": "The maximum number of active sessions for this account has been reached. Signing in here will sign you out from another session or device.",
     "twitter": "Sign in with Twitter",
     "unexpected_error": "An unexpected error occurred.",
     "view_password": "View password",

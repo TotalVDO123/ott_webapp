@@ -31,7 +31,7 @@ import Login from './forms/Login';
 import styles from './AccountModal.module.scss';
 
 // @todo: connect with route typings
-const PUBLIC_VIEWS = ['login', 'create-account', 'forgot-password', 'reset-password', 'send-confirmation', 'edit-password', 'simultaneous-logins'];
+const PUBLIC_VIEWS = ['login', 'create-account', 'forgot-password', 'reset-password', 'send-confirmation', 'edit-password'];
 
 export type AccountModals = {
   login: 'login';
@@ -108,7 +108,7 @@ const AccountModal = () => {
 
     switch (view) {
       case 'login':
-        return <Login messageKey={message} />;
+        return <Login />;
       case 'create-account':
         return <Registration />;
       case 'personal-details':
