@@ -1,9 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import { testId } from '@jwp/ott-common/src/utils/common';
-import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 
-import CollapsibleText from '../CollapsibleText/CollapsibleText';
+import TruncatedText from '../TruncatedText/TruncatedText';
 import Image from '../Image/Image';
 
 import styles from './VideoDetails.module.scss';
@@ -33,8 +32,6 @@ const VideoDetails: React.VFC<Props> = ({
   trailerButton,
   children,
 }) => {
-  const breakpoint: Breakpoint = useBreakpoint();
-  const isMobile = breakpoint === Breakpoint.xs;
   const alt = ''; // intentionally empty for a11y, because adjacent text alternative
 
   return (
@@ -49,7 +46,7 @@ const VideoDetails: React.VFC<Props> = ({
               <div className={styles.primaryMetadata}>{primaryMetadata}</div>
               {secondaryMetadata && <div className={styles.secondaryMetadata}>{secondaryMetadata}</div>}
             </div>
-            <CollapsibleText text={description} className={styles.description} maxHeight={isMobile ? 60 : 'none'} />
+            <TruncatedText text={description} maximumLines={8} className={styles.description} />
 
             <div className={styles.buttonBar}>
               {startWatchingButton}
