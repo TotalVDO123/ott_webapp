@@ -27,7 +27,7 @@ const VideoDetailsInline: React.FC<Props> = ({ title, description, primaryMetada
         {favoriteButton}
         {shareButton}
       </div>
-      <TruncatedText text={description} maximumLines={12} className={styles.description} />
+      <TruncatedText text={description} maximumLines={20} className={styles.description} />
     </div>
   );
 };

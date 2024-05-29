@@ -46,7 +46,7 @@ const VideoDetails: React.VFC<Props> = ({
               <div className={styles.primaryMetadata}>{primaryMetadata}</div>
               {secondaryMetadata && <div className={styles.secondaryMetadata}>{secondaryMetadata}</div>}
             </div>
-            <TruncatedText text={description} maximumLines={8} className={styles.description} />
+            <TruncatedText text={description} maximumLines={120} className={styles.description} />
 
             <div className={styles.buttonBar}>
               {startWatchingButton}
