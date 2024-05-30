@@ -4,6 +4,7 @@ import ChevronRight from '@jwp/ott-theme/assets/icons/chevron_right.svg?react';
 
 import IconButton from '../IconButton/IconButton';
 import Icon from '../Icon/Icon';
+import useBreakpoint from '../../hooks/useBreakpoint';
 
 import styles from './CollapsibleText.module.scss';
 
@@ -14,6 +15,7 @@ type Props = {
 
 const CollapsibleText: React.FC<Props> = ({ text, className }: Props) => {
   const divRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLDivElement>;
+  const breakpoint = useBreakpoint();
   const [doesFlowOver, setDoesFlowOver] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -24,7 +26,7 @@ const CollapsibleText: React.FC<Props> = ({ text, className }: Props) => {
 
   useEffect(() => {
     divRef.current && setDoesFlowOver(divRef.current.scrollHeight > divRef.current.offsetHeight + clippablePixels || maxHeight < divRef.current.offsetHeight);
-  }, [maxHeight, text]);
+  }, [maxHeight, text, breakpoint]);
 
   return (
     <div className={classNames(styles.collapsibleText)}>
