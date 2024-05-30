@@ -1,8 +1,10 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import TruncatedText from '../TruncatedText/TruncatedText';
+import useBreakpoint, { Breakpoint } from '../../hooks/useBreakpoint';
+import CollapsibleText from '../CollapsibleText/CollapsibleText';
 import Image from '../Image/Image';
+import TruncatedText from '../TruncatedText/TruncatedText';
 
 import styles from './Hero.module.scss';
 
@@ -13,6 +15,8 @@ type Props = {
 };
 
 const Hero = ({ title, description, image }: Props) => {
+  const breakpoint: Breakpoint = useBreakpoint();
+  const isMobile = breakpoint === Breakpoint.xs;
   const alt = ''; // intentionally empty for a11y, because adjacent text alternative
 
   return (
@@ -21,7 +25,11 @@ const Hero = ({ title, description, image }: Props) => {
       <div className={styles.posterFade} />
       <div className={styles.info}>
         <h1 className={styles.title}>{title}</h1>
-        <TruncatedText text={description} maximumLines={8} className={styles.description} />
+        {isMobile ? (
+          <CollapsibleText text={description} className={styles.description} />
+        ) : (
+          <TruncatedText text={description} maximumLines={8} className={styles.description} />
+        )}
       </div>
     </div>
   );

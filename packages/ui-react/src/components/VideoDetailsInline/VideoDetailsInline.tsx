@@ -1,6 +1,8 @@
 import React from 'react';
 import { testId } from '@jwp/ott-common/src/utils/common';
+import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 
+import CollapsibleText from '../CollapsibleText/CollapsibleText';
 import TruncatedText from '../TruncatedText/TruncatedText';
 
 import styles from './VideoDetailsInline.module.scss';
@@ -16,6 +18,9 @@ type Props = {
 };
 
 const VideoDetailsInline: React.FC<Props> = ({ title, description, primaryMetadata, shareButton, favoriteButton, trailerButton }) => {
+  const breakpoint: Breakpoint = useBreakpoint();
+  const isMobile = breakpoint === Breakpoint.xs;
+
   const TitleComponent = typeof title === 'string' ? 'h1' : 'div';
 
   return (
@@ -27,7 +32,11 @@ const VideoDetailsInline: React.FC<Props> = ({ title, description, primaryMetada
         {favoriteButton}
         {shareButton}
       </div>
-      <TruncatedText text={description} maximumLines={20} className={styles.description} />
+      {isMobile ? (
+        <CollapsibleText text={description} className={styles.description} />
+      ) : (
+        <TruncatedText text={description} maximumLines={12} className={styles.description} />
+      )}
     </div>
   );
 };
