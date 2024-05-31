@@ -6,8 +6,8 @@ import type { SerializedWatchHistoryItem, WatchHistoryItem } from '../../types/w
 import type { Customer } from '../../types/account';
 import { getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
-import { logDev } from '../utils/common';
 import { MAX_WATCHLIST_ITEMS_COUNT } from '../constants';
+import { logError } from '../logger';
 
 import ApiService from './ApiService';
 import StorageService from './StorageService';
@@ -107,7 +107,7 @@ export default class WatchHistoryService {
         })
         .filter((item): item is WatchHistoryItem => Boolean(item));
     } catch (error: unknown) {
-      logDev('Failed to get watch history items', error);
+      logError('WatchHistoryService', 'Failed to get watch history items', { error });
     }
 
     return [];

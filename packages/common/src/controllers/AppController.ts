@@ -10,6 +10,7 @@ import type { Config } from '../../types/config';
 import type { CalculateIntegrationType } from '../../types/calculate-integration-type';
 import { DETERMINE_INTEGRATION_TYPE } from '../modules/types';
 import { useConfigStore } from '../stores/ConfigStore';
+import { logDebug } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
 import FavoritesController from './FavoritesController';
@@ -63,6 +64,8 @@ export default class AppController {
   };
 
   initializeApp = async (url: string, refreshEntitlements?: () => Promise<void>) => {
+    logDebug('AppController', 'Initializing app', { url });
+
     const settings = await this.settingsService.initialize();
     const configSource = await this.settingsService.getConfigSource(settings, url);
     const config = await this.loadAndValidateConfig(configSource);

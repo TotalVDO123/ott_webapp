@@ -1,7 +1,5 @@
 import { Container, injectable, type interfaces, inject } from 'inversify';
 
-import { logDev } from '../utils/common';
-
 export const container = new Container({ defaultScope: 'Singleton', skipBaseClassChecks: true });
 
 export { injectable, inject };
@@ -15,6 +13,10 @@ export function getModule<T>(constructorFunction: interfaces.ServiceIdentifier<T
   if (required && !module) throw new Error(`Service / Controller '${String(constructorFunction)}' not found`);
 
   return module;
+}
+
+export function getAllModules<T>(constructorFunction: interfaces.ServiceIdentifier<T>): T[] {
+  return container.getAll(constructorFunction);
 }
 
 export function getNamedModule<T>(constructorFunction: interfaces.ServiceIdentifier<T>, name: string | null, required: false): T | undefined;
@@ -40,7 +42,8 @@ export function getNamedModule<T>(constructorFunction: interfaces.ServiceIdentif
       return;
     }
 
-    logDev('Error caught while initializing service', err);
+    // log service can't be used here
+    console.error('Error caught while initializing service', err);
   }
 }
 

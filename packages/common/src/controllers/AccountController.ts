@@ -2,7 +2,6 @@ import i18next from 'i18next';
 import { inject, injectable } from 'inversify';
 
 import { DEFAULT_FEATURES } from '../constants';
-import { logDev } from '../utils/common';
 import type { IntegrationType } from '../../types/config';
 import CheckoutService from '../services/integrations/CheckoutService';
 import AccountService, { type AccountServiceFeatures } from '../services/integrations/AccountService';
@@ -24,6 +23,7 @@ import { useAccountStore } from '../stores/AccountStore';
 import { useConfigStore } from '../stores/ConfigStore';
 import { useProfileStore } from '../stores/ProfileStore';
 import { FormValidationError } from '../errors/FormValidationError';
+import { logError } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
 import ProfileController from './ProfileController';
@@ -68,7 +68,7 @@ export default class AccountController {
         await this.getAccount();
       }
     } catch (error: unknown) {
-      logDev('Failed to get user', error);
+      logError('AccountController', 'Failed to get user', { error });
 
       // clear the session when the token was invalid
       // don't clear the session when the error is unknown (network hiccup or something similar)
@@ -386,7 +386,12 @@ export default class AccountController {
     return !!responseData?.accessGranted;
   };
 
-  reloadSubscriptions = async ({ delay, retry }: { delay?: number; retry?: number } = { delay: 0, retry: 0 }): Promise<unknown> => {
+  reloadSubscriptions = async (
+    { delay, retry }: { delay?: number; retry?: number } = {
+      delay: 0,
+      retry: 0,
+    },
+  ): Promise<unknown> => {
     useAccountStore.setState({ loading: true });
 
     const { getAccountInfo } = useAccountStore.getState();
@@ -436,7 +441,7 @@ export default class AccountController {
         pendingOffer = offerResponse.responseData;
       }
     } catch (error: unknown) {
-      logDev('Failed to fetch the pending offer', error);
+      logError('AccountController', 'Failed to fetch the pending offer', { error });
     }
 
     // let the app know to refresh the entitlements
