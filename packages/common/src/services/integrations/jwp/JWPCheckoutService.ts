@@ -46,13 +46,38 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  private formatOffer = (offer: AccessFee): Offer => {
+  /**
+   * Format a (Cleeng like) offer id for the given access fee (pricing option). For JWP, we need the asset id and
+   * access fee id in some cases.
+   */
+  private formatOfferId(offer: AccessFee) {
     const ppvOffers = ['ppv', 'ppv_custom'];
-    const offerId = ppvOffers.includes(offer.access_type.name) ? `C${offer.id}` : `S${offer.id}`;
 
+    return ppvOffers.includes(offer.access_type.name) ? `C${offer.item_id}_${offer.id}` : `S${offer.item_id}_${offer.id}`;
+  }
+
+  /**
+   * Parse the given offer id and extract the asset id.
+   * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
+   */
+  private parseOfferId(offerId: string | number) {
+    if (typeof offerId === 'string') {
+      // offer id format `S<assetId>_<pricingOptionId>`
+      if (offerId.startsWith('C') || offerId.startsWith('S')) {
+        return parseInt(offerId.slice(1).split('_')[0]);
+      }
+
+      // offer id format `<assetId>`
+      return parseInt(offerId);
+    }
+
+    return offerId;
+  }
+
+  private formatOffer = (offer: AccessFee): Offer => {
     return {
       id: offer.id,
-      offerId,
+      offerId: this.formatOfferId(offer),
       offerCurrency: offer.currency,
       customerPriceInclTax: offer.amount,
       customerCurrency: offer.currency,
@@ -97,9 +122,9 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async (payload) => {
     const offers = await Promise.all(
-      payload.offerIds.map(async (assetId) => {
+      payload.offerIds.map(async (offerId) => {
         try {
-          const { data } = await InPlayer.Asset.getAssetAccessFees(parseInt(`${assetId}`));
+          const { data } = await InPlayer.Asset.getAssetAccessFees(this.parseOfferId(offerId));
 
           return data?.map((offer) => this.formatOffer(offer));
         } catch {
@@ -217,7 +242,7 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getEntitlements: GetEntitlements = async ({ offerId }) => {
     try {
-      const response = await InPlayer.Asset.checkAccessForAsset(parseInt(offerId));
+      const response = await InPlayer.Asset.checkAccessForAsset(this.parseOfferId(offerId));
       return this.formatEntitlements(response.data.expires_at, true);
     } catch {
       return this.formatEntitlements();
