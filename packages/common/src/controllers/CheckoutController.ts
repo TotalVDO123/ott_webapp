@@ -27,6 +27,7 @@ import { useCheckoutStore } from '../stores/CheckoutStore';
 import { useAccountStore } from '../stores/AccountStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { determineSwitchDirection } from '../utils/subscription';
+import { logDev } from '../utils/common';
 
 @injectable()
 export default class CheckoutController {
@@ -52,10 +53,14 @@ export default class CheckoutController {
       useCheckoutStore.setState({ subscriptionOffers });
     }
 
-    if (!useCheckoutStore.getState().switchSubscriptionOffers.length) {
-      const subscriptionSwitches = await this.getSubscriptionSwitches();
-      const switchSubscriptionOffers = subscriptionSwitches ? await this.getOffers({ offerIds: subscriptionSwitches }) : [];
-      useCheckoutStore.setState({ switchSubscriptionOffers });
+    try {
+      if (!useCheckoutStore.getState().switchSubscriptionOffers.length) {
+        const subscriptionSwitches = await this.getSubscriptionSwitches();
+        const switchSubscriptionOffers = subscriptionSwitches ? await this.getOffers({ offerIds: subscriptionSwitches }) : [];
+        useCheckoutStore.setState({ switchSubscriptionOffers });
+      }
+    } catch (error) {
+      logDev('Failed to get subscription switches', error);
     }
   };
 
