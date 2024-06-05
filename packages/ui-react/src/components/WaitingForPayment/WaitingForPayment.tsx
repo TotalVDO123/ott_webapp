@@ -30,7 +30,7 @@ const WaitingForPayment = () => {
 
         // close the modal for PPV/TVOD offers
         if (offerId.startsWith('C') || offerId.startsWith('P')) {
-          // should we show a dedicated modal for TVOD access?
+          // @TODO should we show a dedicated modal for TVOD access?
           navigate(modalURLFromLocation(location, null));
         } else {
           navigate(modalURLFromLocation(location, 'welcome'));

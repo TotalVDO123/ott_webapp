@@ -22,11 +22,7 @@ const useCheckAccess = () => {
   const offers = checkoutController.getSubscriptionOfferIds();
 
   const intervalCheckAccess = useCallback(
-    ({ interval = 3000, iterations = 5, offerId, callback }: IntervalCheckAccessPayload) => {
-      if (!offerId) {
-        offerId = offers?.[0] || '';
-      }
-
+    ({ interval = 3000, iterations = 5, offerId = offers?.[0], callback }: IntervalCheckAccessPayload) => {
       if (!offerId) {
         callback?.({ hasAccess: false, offerId: '' });
         return;
