@@ -27,7 +27,6 @@ import { useCheckoutStore } from '../stores/CheckoutStore';
 import { useAccountStore } from '../stores/AccountStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { determineSwitchDirection } from '../utils/subscription';
-import { logDev } from '../utils/common';
 
 @injectable()
 export default class CheckoutController {
@@ -53,14 +52,10 @@ export default class CheckoutController {
       useCheckoutStore.setState({ subscriptionOffers });
     }
 
-    try {
-      if (!useCheckoutStore.getState().switchSubscriptionOffers.length) {
-        const subscriptionSwitches = await this.getSubscriptionSwitches();
-        const switchSubscriptionOffers = subscriptionSwitches ? await this.getOffers({ offerIds: subscriptionSwitches }) : [];
-        useCheckoutStore.setState({ switchSubscriptionOffers });
-      }
-    } catch (error) {
-      logDev('Failed to get subscription switches', error);
+    if (!useCheckoutStore.getState().switchSubscriptionOffers.length) {
+      const subscriptionSwitches = await this.getSubscriptionSwitches();
+      const switchSubscriptionOffers = subscriptionSwitches ? await this.getOffers({ offerIds: subscriptionSwitches }) : [];
+      useCheckoutStore.setState({ switchSubscriptionOffers });
     }
   };
 
@@ -247,13 +242,11 @@ export default class CheckoutController {
     const { getAccountInfo } = useAccountStore.getState();
 
     const { customerId } = getAccountInfo();
-
-    assertModuleMethod(this.checkoutService.getSubscriptionSwitches, 'getSubscriptionSwitches is not available in checkout service');
-    assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
-
     const { subscription } = useAccountStore.getState();
 
-    if (!subscription) return null;
+    if (!subscription || !this.checkoutService.getSubscriptionSwitches) return null;
+
+    assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
 
     const response = await this.checkoutService.getSubscriptionSwitches({
       customerId: customerId,
