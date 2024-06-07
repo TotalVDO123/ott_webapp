@@ -242,13 +242,11 @@ export default class CheckoutController {
     const { getAccountInfo } = useAccountStore.getState();
 
     const { customerId } = getAccountInfo();
-
-    assertModuleMethod(this.checkoutService.getSubscriptionSwitches, 'getSubscriptionSwitches is not available in checkout service');
-    assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
-
     const { subscription } = useAccountStore.getState();
 
-    if (!subscription) return null;
+    if (!subscription || !this.checkoutService.getSubscriptionSwitches) return null;
+
+    assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
 
     const response = await this.checkoutService.getSubscriptionSwitches({
       customerId: customerId,
