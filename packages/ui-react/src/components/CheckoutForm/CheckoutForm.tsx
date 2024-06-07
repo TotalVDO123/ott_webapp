@@ -3,12 +3,9 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import type { Offer, OfferType, Order, PaymentMethod } from '@jwp/ott-common/types/checkout';
 import { formatPrice } from '@jwp/ott-common/src/utils/formatting';
-import Close from '@jwp/ott-theme/assets/icons/close.svg?react';
 import PayPal from '@jwp/ott-theme/assets/icons/paypal.svg?react';
 import CreditCard from '@jwp/ott-theme/assets/icons/creditcard.svg?react';
 
-import Button from '../Button/Button';
-import IconButton from '../IconButton/IconButton';
 import FormFeedback from '../FormFeedback/FormFeedback';
 import DialogBackButton from '../DialogBackButton/DialogBackButton';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
@@ -47,15 +44,6 @@ const CheckoutForm: React.FC<Props> = ({
   onBackButtonClick,
   onPaymentMethodChange,
   error,
-  couponFormOpen,
-  couponInputValue,
-  couponFormError,
-  couponFormApplied,
-  couponFormSubmitting,
-  onCouponInputChange,
-  onCloseCouponFormClick,
-  onCouponFormSubmit,
-  onRedeemCouponButtonClick,
   children,
   submitting,
 }) => {
@@ -102,30 +90,6 @@ const CheckoutForm: React.FC<Props> = ({
           <span>{formatPrice(offer.customerPriceInclTax, order.currency, offer.customerCountry)}</span>
           {offerType === 'svod' && <small>/{getOfferPeriod()}</small>}
         </div>
-      </div>
-      <div className={styles.couponForm}>
-        {couponFormOpen ? (
-          <form onSubmit={onCouponFormSubmit} noValidate>
-            <div className={styles.redeemCoupon}>
-              <IconButton aria-label="Close coupon form" onClick={onCloseCouponFormClick}>
-                <Icon icon={Close} />
-              </IconButton>
-              <input
-                className={styles.couponInput}
-                name="couponCode"
-                type="text"
-                placeholder="Coupon code"
-                value={couponInputValue}
-                onChange={onCouponInputChange}
-              />
-              <Button variant="outlined" label="Apply" type="submit" disabled={couponFormSubmitting} />
-            </div>
-            {couponFormError ? <FormFeedback variant="error">{couponFormError}</FormFeedback> : null}
-            {couponFormApplied ? <FormFeedback variant="success">{t('checkout.coupon_applied')}</FormFeedback> : null}
-          </form>
-        ) : (
-          <Button variant="outlined" label={t('checkout.redeem_coupon')} onClick={onRedeemCouponButtonClick} />
-        )}
       </div>
       <div>
         <table className={styles.orderTotals}>
