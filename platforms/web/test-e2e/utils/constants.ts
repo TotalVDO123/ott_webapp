@@ -81,7 +81,7 @@ export default {
         paymentFee: formatPrice(0, 'EUR', 'NL'),
       },
       inplayer: {
-        label: `label[for="S38279"]`,
+        label: `label[for="S118699_38279"]`,
         price: formatPrice(6.99, 'EUR'),
         paymentFee: formatPrice(0, 'EUR'),
       },
@@ -93,7 +93,7 @@ export default {
         paymentFee: formatPrice(0, 'EUR', 'NL'),
       },
       inplayer: {
-        label: `label[for="S38280"]`,
+        label: `label[for="S118699_38280"]`,
         price: formatPrice(50, 'EUR'),
         paymentFee: formatPrice(0, 'EUR'),
       },
