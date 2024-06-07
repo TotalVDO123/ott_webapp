@@ -32,18 +32,6 @@ exports[`<CheckoutForm> > renders and matches snapshot 1`] = `
         </small>
       </div>
     </div>
-    <div
-      class="_couponForm_abc9bc"
-    >
-      <button
-        class="_button_f8f296 _default_f8f296 _outlined_f8f296"
-        type="button"
-      >
-        <span>
-          checkout.redeem_coupon
-        </span>
-      </button>
-    </div>
     <div>
       <table
         class="_orderTotals_abc9bc"
