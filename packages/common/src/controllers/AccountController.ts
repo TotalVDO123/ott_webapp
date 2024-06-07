@@ -419,7 +419,7 @@ export default class AccountController {
     let pendingOffer: Offer | null = null;
 
     if (!activeSubscription && !!retry && retry > 0) {
-      const retryDelay = 1500; // Any initial delay has already occured, so we can set this to a fixed value
+      const retryDelay = 1500; // Any initial delay has already occurred, so we can set this to a fixed value
 
       return await this.reloadSubscriptions({ delay: retryDelay, retry: retry - 1 });
     }
