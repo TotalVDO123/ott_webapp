@@ -7,7 +7,6 @@ import Icon from '../Icon/Icon';
 import ProfileCircle from '../ProfileCircle/ProfileCircle';
 import Popover from '../Popover/Popover';
 import Panel from '../Panel/Panel';
-import ProfilesMenu from '../ProfilesMenu/ProfilesMenu';
 import Button from '../Button/Button';
 import UserMenuNav from '../UserMenuNav/UserMenuNav';
 import HeaderActionButton from '../Header/HeaderActionButton';
@@ -29,20 +28,7 @@ type Props = {
   onSelectProfile: (params: { id: string; avatarUrl: string }) => void;
 };
 
-const UserMenu = ({
-  isLoggedIn,
-  favoritesEnabled,
-  open,
-  onClose,
-  onOpen,
-  onLoginButtonClick,
-  onSignUpButtonClick,
-  profilesEnabled,
-  profile,
-  profiles,
-  profileLoading,
-  onSelectProfile,
-}: Props) => {
+const UserMenu = ({ isLoggedIn, favoritesEnabled, open, onClose, onOpen, onLoginButtonClick, onSignUpButtonClick, profilesEnabled, profile }: Props) => {
   const { t } = useTranslation('menu');
 
   if (!isLoggedIn) {
@@ -69,16 +55,6 @@ const UserMenu = ({
       <Popover className={styles.popover} isOpen={open} onClose={onClose}>
         <Panel id="menu_panel">
           <div onFocus={onOpen} onBlur={onClose}>
-            {profilesEnabled && (
-              <ProfilesMenu
-                onButtonClick={onClose}
-                profiles={profiles ?? []}
-                currentProfile={profile}
-                selectingProfile={profileLoading}
-                selectProfile={onSelectProfile}
-                small
-              />
-            )}
             <UserMenuNav focusable={open} onButtonClick={onClose} showPaymentItems={true} currentProfile={profile} favoritesEnabled={favoritesEnabled} small />
           </div>
         </Panel>
