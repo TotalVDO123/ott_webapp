@@ -1,14 +1,14 @@
-import React, { type FC, type SVGProps } from 'react';
+import React, { useState, type FC, type SVGProps, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import type { FormErrors } from '@jwp/ott-common/types/form';
 import type { Offer, ChooseOfferFormData } from '@jwp/ott-common/types/checkout';
-import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { getOfferPrice, isSVODOffer } from '@jwp/ott-common/src/utils/offers';
 import { testId } from '@jwp/ott-common/src/utils/common';
 import CheckCircle from '@jwp/ott-theme/assets/icons/check_circle.svg?react';
 
 import Button from '../Button/Button';
+import ButtonGroup from '../Button/ButtonGroup';
 import FormFeedback from '../FormFeedback/FormFeedback';
 import DialogBackButton from '../DialogBackButton/DialogBackButton';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
@@ -85,7 +85,7 @@ const OfferBox: React.FC<OfferBoxProps> = ({ offer, selected, onChange }: OfferB
     const isMonthly = offer.period === 'month';
 
     return renderOption({
-      title: isMonthly ? t('choose_offer.monthly') : t('choose_offer.yearly'),
+      title: offer.offerTitle,
       secondBenefit: t('choose_offer.benefits.cancel_anytime'),
       periodString: isMonthly ? t('periods.month') : t('periods.year'),
     });
@@ -100,6 +100,8 @@ const OfferBox: React.FC<OfferBoxProps> = ({ offer, selected, onChange }: OfferB
   });
 };
 
+type OfferPeriod = 'month' | 'year';
+
 type Props = {
   values: ChooseOfferFormData;
   errors: FormErrors<ChooseOfferFormData>;
@@ -112,16 +114,28 @@ type Props = {
 };
 
 const ChooseOfferForm: React.FC<Props> = ({ values, errors, submitting, offers, showOfferTypeSwitch, onChange, onSubmit, onBackButtonClickHandler }: Props) => {
-  const siteName = useConfigStore((s) => s.config.siteName);
   const { t } = useTranslation('account');
   const { selectedOfferType, selectedOfferId } = values;
+
+  const groupedOffers = useMemo(
+    () => offers.reduce((acc, offer) => ({ ...acc, [offer.period]: [...(acc[offer.period as OfferPeriod] || []), offer] }), {} as Record<OfferPeriod, Offer[]>),
+    [offers],
+  );
+
+  const [offerFilter, setOfferFilter] = useState<OfferPeriod>(() => Object.keys(groupedOffers)[0] as OfferPeriod);
 
   return (
     <form onSubmit={onSubmit} data-testid={testId('choose-offer-form')} noValidate>
       {onBackButtonClickHandler ? <DialogBackButton onClick={onBackButtonClickHandler} /> : null}
       <h1 className={styles.title}>{t('choose_offer.title')}</h1>
-      <p className={styles.subtitle}>{t('choose_offer.watch_this_on_platform', { siteName })}</p>
       {errors.form ? <FormFeedback variant="error">{errors.form}</FormFeedback> : null}
+      <div className={styles.tabs}>
+        <ButtonGroup>
+          {Object.keys(groupedOffers).map((period) => (
+            <Button key={period} label={t(`periods.${period}`)} onClick={() => setOfferFilter(period as OfferPeriod)} active={offerFilter === period} />
+          ))}
+        </ButtonGroup>
+      </div>
       {showOfferTypeSwitch && (
         <div className={styles.offerGroupSwitch}>
           <input
@@ -154,7 +168,9 @@ const ChooseOfferForm: React.FC<Props> = ({ values, errors, submitting, offers, 
         {!offers.length ? (
           <p>{t('choose_offer.no_pricing_available')}</p>
         ) : (
-          offers.map((offer) => <OfferBox key={offer.offerId} offer={offer} selected={selectedOfferId === offer.offerId} onChange={onChange} />)
+          groupedOffers[offerFilter].map((offer) => (
+            <OfferBox key={offer.offerId} offer={offer} selected={selectedOfferId === offer.offerId} onChange={onChange} />
+          ))
         )}
       </div>
       {submitting && <LoadingOverlay transparentBackground inline />}

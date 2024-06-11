@@ -1,6 +1,7 @@
-import InPlayer, { type AccessFee, type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
-import { injectable } from 'inversify';
+import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
+import { inject, injectable } from 'inversify';
 
+import { type JwPlanPricesResponse, type PlanPrice } from '../../../../../../packages/common/types/jw';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
   CardPaymentData,
@@ -19,13 +20,29 @@ import type {
   PaymentWithPayPal,
   UpdateOrder,
 } from '../../../../types/checkout';
+import type { Config } from '../../../../types/config';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
+import AccountService from '../AccountService';
+import { INTEGRATION_TYPE } from '../../../modules/types';
+import { getNamedModule } from '../../../modules/container';
+
+import JWPBaseService from './base/JWPBaseService';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
+  private readonly jwpService: JWPBaseService;
+  private readonly accountService: AccountService;
   private readonly cardPaymentProvider = 'stripe';
+
+  constructor(jwpService: JWPBaseService, @inject(INTEGRATION_TYPE) integrationType: string) {
+    super();
+    this.jwpService = jwpService;
+    this.accountService = getNamedModule(AccountService, integrationType);
+  }
+
+  initialize = async (config: Config) => this.jwpService.setup(this.accountService.sandbox, config.siteId);
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -46,22 +63,21 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  private formatOffer = (offer: AccessFee): Offer => {
-    const ppvOffers = ['ppv', 'ppv_custom'];
-    const offerId = ppvOffers.includes(offer.access_type.name) ? `C${offer.id}` : `S${offer.id}`;
+  private formatOffer = (offer: PlanPrice): Offer => {
+    const offerId = offer.access.type === 'subscription' ? `S${offer.id}` : `C${offer.id}`;
 
     return {
       id: offer.id,
       offerId,
-      offerCurrency: offer.currency,
-      customerPriceInclTax: offer.amount,
-      customerCurrency: offer.currency,
-      offerTitle: offer.description,
+      offerCurrency: offer.metadata.currency,
+      customerPriceInclTax: offer.metadata.amount,
+      customerCurrency: offer.metadata.currency,
+      offerTitle: offer.metadata.name,
       active: true,
-      period: offer.access_type.period === 'month' && offer.access_type.quantity === 12 ? 'year' : offer.access_type.period,
-      freePeriods: offer.trial_period ? 1 : 0,
-      planSwitchEnabled: offer.item.plan_switch_enabled ?? false,
-    } as Offer;
+      period: offer.access.period,
+      freePeriods: offer.metadata.trial?.quantity ?? 0,
+      planSwitchEnabled: false,
+    } as unknown as Offer;
   };
 
   private formatOrder = (payload: CreateOrderArgs): Order => {
@@ -97,11 +113,15 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async (payload) => {
     const offers = await Promise.all(
-      payload.offerIds.map(async (assetId) => {
+      payload.offerIds.map(async (planId) => {
         try {
-          const { data } = await InPlayer.Asset.getAssetAccessFees(parseInt(`${assetId}`));
+          const data = await this.jwpService.get<JwPlanPricesResponse>(`/plans/${planId}/prices`);
 
-          return data?.map((offer) => this.formatOffer(offer));
+          if (data.prices) {
+            return data.prices.map((offer) => this.formatOffer(offer));
+          }
+
+          return [];
         } catch {
           throw new Error('Failed to get offers');
         }

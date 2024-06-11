@@ -20,8 +20,11 @@ import type {
   UpdateOrder,
   UpdatePaymentWithPayPal,
 } from '../../../types/checkout';
+import type { Config } from '../../../types/config';
 
 export default abstract class CheckoutService {
+  abstract initialize: (config: Config) => Promise<void>;
+
   abstract getOffers: GetOffers;
 
   abstract createOrder: CreateOrder;

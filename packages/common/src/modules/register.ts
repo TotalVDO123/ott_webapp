@@ -45,6 +45,7 @@ import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscription
 import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
+import JWPBaseService from '../services/integrations/jwp/base/JWPBaseService';
 
 // Common services
 container.bind(ConfigService).toSelf();
@@ -83,6 +84,7 @@ container.bind(SubscriptionService).to(CleengSubscriptionService).whenTargetName
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isJwpIntegrationType);
 container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
+container.bind(JWPBaseService).toSelf();
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(SubscriptionService).to(JWPSubscriptionService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(ProfileService).to(JWPProfileService).whenTargetNamed(INTEGRATION.JWP);

@@ -135,18 +135,14 @@ export default class JWPAccountService extends AccountService {
     // set environment
     this.sandbox = !!jwpConfig.useSandbox;
 
-    const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
+    const env: string = this.sandbox ? InPlayerEnv.Daily : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
     // calculate access model
-    if (jwpConfig.clientId) {
-      this.clientId = jwpConfig.clientId;
-    }
+    this.clientId = jwpConfig.clientId;
 
-    if (jwpConfig.assetId) {
-      this.accessModel = ACCESS_MODEL.SVOD;
-      this.assetId = jwpConfig.assetId;
-      this.svodOfferIds = jwpConfig.assetId ? [String(jwpConfig.assetId)] : [];
+    if (jwpConfig.planId) {
+      this.svodOfferIds = jwpConfig.planId ? jwpConfig.planId.split(',') : [];
     }
 
     // restore session from URL params

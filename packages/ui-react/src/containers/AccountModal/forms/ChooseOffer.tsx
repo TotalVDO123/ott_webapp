@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { mixed, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import type { ChooseOfferFormData, OfferType } from '@jwp/ott-common/types/checkout';
+import type { ChooseOfferFormData, Offer, OfferType } from '@jwp/ott-common/types/checkout';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
@@ -57,6 +57,8 @@ const ChooseOffer = () => {
 
   const visibleOffers = values.selectedOfferType === 'tvod' ? mediaOffers : isSwitch ? switchSubscriptionOffers : subscriptionOffers;
 
+  const offersRef = useRef<Offer[]>([]);
+
   useEffect(() => {
     if (isLoading || !visibleOffers.length) return;
 
@@ -71,8 +73,13 @@ const ChooseOffer = () => {
     setValue('selectedOfferType', defaultOfferType);
   }, [isLoading, defaultOfferType, setValue]);
 
+  useLayoutEffect(() => {
+    offersRef.current = defaultOfferType === 'tvod' ? mediaOffers : isSwitch ? switchSubscriptionOffers : subscriptionOffers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultOfferType]);
+
   // loading state
-  if (isLoading) {
+  if (isLoading || offersRef.current !== visibleOffers) {
     return (
       <div style={{ height: 300 }}>
         <LoadingOverlay inline />
