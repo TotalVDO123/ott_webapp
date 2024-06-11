@@ -1,4 +1,4 @@
-export type JwListResponse<N extends string = string, T extends Record<string, any> = Record<string, any>> = {
+export type JwListResponse<N extends string = string, T extends Record<string, unknown> = Record<string, unknown>> = {
   page: number;
   total: number;
   page_length: number;
