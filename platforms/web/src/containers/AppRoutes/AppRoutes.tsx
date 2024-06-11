@@ -11,21 +11,7 @@ import LegacySeries from '@jwp/ott-ui-react/src/pages/LegacySeries/LegacySeries'
 import MediaScreenRouter from '@jwp/ott-ui-react/src/pages/ScreenRouting/MediaScreenRouter';
 import PlaylistScreenRouter from '@jwp/ott-ui-react/src/pages/ScreenRouting/PlaylistScreenRouter';
 import Layout from '@jwp/ott-ui-react/src/containers/Layout/Layout';
-import Profiles from '@jwp/ott-ui-react/src/containers/Profiles/Profiles';
-import CreateProfile from '@jwp/ott-ui-react/src/containers/Profiles/CreateProfile';
-import EditProfile from '@jwp/ott-ui-react/src/containers/Profiles/EditProfile';
-import {
-  PATH_ABOUT,
-  PATH_LEGACY_SERIES,
-  PATH_MEDIA,
-  PATH_PLAYLIST,
-  PATH_SEARCH,
-  PATH_USER,
-  PATH_USER_PROFILES,
-  PATH_USER_PROFILES_CREATE,
-  PATH_USER_PROFILES_EDIT,
-  PATH_USER_PROFILES_EDIT_PROFILE,
-} from '@jwp/ott-common/src/paths';
+import { PATH_ABOUT, PATH_LEGACY_SERIES, PATH_MEDIA, PATH_PLAYLIST, PATH_SEARCH, PATH_USER } from '@jwp/ott-common/src/paths';
 
 import RoutesContainer from '#src/containers/RoutesContainer/RoutesContainer';
 
@@ -35,10 +21,6 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<RoutesContainer />}>
-        <Route path={PATH_USER_PROFILES} element={<Profiles />} />
-        <Route path={PATH_USER_PROFILES_CREATE} element={<CreateProfile />} />
-        <Route path={PATH_USER_PROFILES_EDIT} element={<Profiles editMode />} />
-        <Route path={PATH_USER_PROFILES_EDIT_PROFILE} element={<EditProfile />} />
         <Route element={<Layout />} errorElement={<RootErrorPage />}>
           <Route index element={<Home />} />
           <Route path={PATH_PLAYLIST} element={<PlaylistScreenRouter />} />
