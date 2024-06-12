@@ -31,6 +31,7 @@ import AccountService from '../services/integrations/AccountService';
 import CheckoutService from '../services/integrations/CheckoutService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
 import ProfileService from '../services/integrations/ProfileService';
+
 // Cleeng integration
 import CleengService from '../services/integrations/cleeng/CleengService';
 import CleengAccountService from '../services/integrations/cleeng/CleengAccountService';
@@ -41,8 +42,8 @@ import CleengSubscriptionService from '../services/integrations/cleeng/CleengSub
 import JWPAccountService from '../services/integrations/jwp/JWPAccountService';
 import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService';
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
-import { getIntegrationType } from './functions/getIntegrationType';
 import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
+import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
 
 // Common services
@@ -63,6 +64,7 @@ container.bind(EpgController).toSelf();
 container.bind(AccountController).toSelf();
 container.bind(CheckoutController).toSelf();
 container.bind(ProfileController).toSelf();
+
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
 container.bind(EpgService).to(ViewNexaEpgService).whenTargetNamed(EPG_TYPE.viewNexa);
