@@ -46,7 +46,8 @@ $focus-box-shadow: 0 0 1px 5px var(--highlight-color, variables.$white),
     button,
     input {
       &:focus {
-        @include accessibleOutline;
+        outline: 2px solid var(--highlight-color, #fff);
+        box-shadow: 0 0 2px 3px var(--highlight-contrast-color, #000);
       }
     }
   }

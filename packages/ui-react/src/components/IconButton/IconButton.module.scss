@@ -1,4 +1,3 @@
-@use '@jwp/ott-ui-react/src/styles/accessibility';
 @use '@jwp/ott-ui-react/src/styles/variables';
 @use '@jwp/ott-ui-react/src/styles/theme';
 
@@ -21,7 +20,6 @@
   }
 
   &:focus {
-    @include accessibility.accessibleOutline;
     opacity: 1;
   }
 

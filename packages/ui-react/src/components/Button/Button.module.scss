@@ -1,6 +1,5 @@
 @use '@jwp/ott-ui-react/src/styles/variables';
 @use '@jwp/ott-ui-react/src/styles/theme';
-@use '@jwp/ott-ui-react/src/styles/accessibility';
 @use '@jwp/ott-ui-react/src/styles/mixins/responsive';
 
 $small-button-height: 28px;
@@ -58,8 +57,7 @@ $large-button-height: 40px;
     background-color: theme.$btn-default-bg;
 
     &:focus {
-      @include accessibility.accessibleOutline;
-      outline-offset: 1px;
+      outline-offset: 2px;
     }
   }
 
@@ -68,8 +66,7 @@ $large-button-height: 40px;
     background-color: var(--highlight-color, theme.$btn-primary-bg);
 
     &:focus {
-      @include accessibility.accessibleOutline;
-      outline-offset: 1px;
+      outline-offset: 2px;
     }
   }
 
