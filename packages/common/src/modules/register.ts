@@ -16,6 +16,7 @@ import SettingsService from '../services/SettingsService';
 import WatchHistoryController from '../controllers/WatchHistoryController';
 import CheckoutController from '../controllers/CheckoutController';
 import AccountController from '../controllers/AccountController';
+import ProfileController from '../controllers/ProfileController';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';
@@ -29,7 +30,7 @@ import JWEpgService from '../services/epg/JWEpgService';
 import AccountService from '../services/integrations/AccountService';
 import CheckoutService from '../services/integrations/CheckoutService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
-
+import ProfileService from '../services/integrations/ProfileService';
 // Cleeng integration
 import CleengService from '../services/integrations/cleeng/CleengService';
 import CleengAccountService from '../services/integrations/cleeng/CleengAccountService';
@@ -41,10 +42,8 @@ import JWPAccountService from '../services/integrations/jwp/JWPAccountService';
 import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService';
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
 import { getIntegrationType } from './functions/getIntegrationType';
-import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
-import ProfileController from '../controllers/ProfileController';
-import ProfileService from '../services/integrations/ProfileService';
 import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
+import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
 
 // Common services
 container.bind(ConfigService).toSelf();
