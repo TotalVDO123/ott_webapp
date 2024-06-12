@@ -163,7 +163,7 @@ const AccountModal = () => {
   };
 
   const shouldShowBanner = !['delete-account', 'delete-account-confirmation', 'edit-card', 'warning-account-deletion'].includes(view ?? '');
-  const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : 'small';
+  const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : ['choose-offer'].includes(view ?? '') ? 'medium' : 'small';
 
   return (
     <Dialog size={dialogSize} open={!!viewParam} onClose={closeHandler}>

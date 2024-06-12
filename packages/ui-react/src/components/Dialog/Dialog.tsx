@@ -11,7 +11,7 @@ import styles from './Dialog.module.scss';
 type Props = {
   open: boolean;
   onClose: () => void;
-  size?: 'small' | 'large';
+  size?: 'small' | 'medium' | 'large';
   children: React.ReactNode;
   role?: React.AriaRole;
 } & React.AriaAttributes;
