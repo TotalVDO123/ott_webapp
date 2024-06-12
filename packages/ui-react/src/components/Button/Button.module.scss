@@ -59,6 +59,7 @@ $large-button-height: 40px;
 
     &:focus {
       @include accessibility.accessibleOutline;
+      outline-offset: 1px;
     }
   }
 
@@ -68,6 +69,7 @@ $large-button-height: 40px;
 
     &:focus {
       @include accessibility.accessibleOutline;
+      outline-offset: 1px;
     }
   }
 
