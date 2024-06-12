@@ -36,10 +36,12 @@ export const CONTENT_TYPE = {
   series: 'series',
   // Separate episode page
   episode: 'episode',
-  // Page with a list of channels
+  // Page with a list of live channels
   live: 'live',
-  // Separate channel page
+  // Live channel (24x7)
   liveChannel: 'livechannel',
+  // Temporary live stream that starts at a specific time
+  liveEvent: 'liveevent',
   // Static page with markdown
   page: 'page',
   // Page with shelves list
