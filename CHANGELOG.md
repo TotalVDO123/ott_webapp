@@ -1,3 +1,25 @@
+## [6.2.0](https://github.com/jwplayer/ott-web-app/compare/v6.1.2...v6.2.0) (2024-06-12)
+
+
+### Features
+
+* **auth:** disable social login features ([f504e8f](https://github.com/jwplayer/ott-web-app/commit/f504e8f481730ce21e48abf0c31a5e54a31cba1c))
+* extend minimum browser support using APP_LEGACY_BUILD env-var ([1794113](https://github.com/jwplayer/ott-web-app/commit/1794113cce60dbb02ff5ab999b132b354d14a661))
+* **project:** support live channel without tv guide ([92564d4](https://github.com/jwplayer/ott-web-app/commit/92564d42b7a43661d4a94b7ca7029ea91b3b1104))
+* **project:** use content type for live events ([6e6b2d6](https://github.com/jwplayer/ott-web-app/commit/6e6b2d64de729fe3f59f991039ffd8a3c56ef827))
+
+
+### Bug Fixes
+
+* **a11y:** ensure label is present for buttons in busy state ([a388e48](https://github.com/jwplayer/ott-web-app/commit/a388e488c8e10fab8cb13cf26687d2c643e6555e))
+* **a11y:** make related videos section semantically correct ([57e2641](https://github.com/jwplayer/ott-web-app/commit/57e2641f92cf5db8a5ccd7d9d0cce34123c5d675))
+* **epg:** live tag overlap issues ([448c196](https://github.com/jwplayer/ott-web-app/commit/448c19660e83b665c8fb45cd4b7e34021219ed22))
+* generic consent_required validation message ([7146972](https://github.com/jwplayer/ott-web-app/commit/71469721cacb6224e080910e5491da7935f5eea9))
+* **payment:** waiting for payment not working for jwp ppv ([8d92adc](https://github.com/jwplayer/ott-web-app/commit/8d92adc3f666a2cfe512401fc405e8cfcb4af6cd))
+* **project:** hide live event date for live channels ([6009ef5](https://github.com/jwplayer/ott-web-app/commit/6009ef55c9966cecd37a5986bb2e50912e3db65c))
+* **project:** remove focus outline around app ([a706d0e](https://github.com/jwplayer/ott-web-app/commit/a706d0e2f99fa35f4033c9b7b7b7d6e85c546a83))
+* **project:** restrict text length to avoid scrolling issue ([#538](https://github.com/jwplayer/ott-web-app/issues/538)) ([18a1990](https://github.com/jwplayer/ott-web-app/commit/18a19903cddaa3d88eb2047fe01b530ac6a1efb1))
+
 ## [6.1.2](https://github.com/jwplayer/ott-web-app/compare/v6.1.1...v6.1.2) (2024-05-21)
 
 
