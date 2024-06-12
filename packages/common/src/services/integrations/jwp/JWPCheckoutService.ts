@@ -81,9 +81,27 @@ export default class JWPCheckoutService extends CheckoutService {
     return offerId;
   }
 
+  /**
+   * Parse the given offer id and extract the asset id.
+   * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
+   */
+  private parseOfferId(offerId: string | number) {
+    if (typeof offerId === 'string') {
+      // offer id format `S<assetId>_<pricingOptionId>`
+      if (offerId.startsWith('C') || offerId.startsWith('S')) {
+        return parseInt(offerId.slice(1).split('_')[0]);
+      }
+
+      // offer id format `<assetId>`
+      return parseInt(offerId);
+    }
+
+    return offerId;
+  }
+
   private formatOffer = (offer: PlanPrice): Offer => {
     const offerId = offer.access.type === 'subscription' ? `S${offer.id}` : `C${offer.id}`;
-
+    
     return {
       id: offer.id,
       offerId,
