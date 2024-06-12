@@ -8,8 +8,8 @@ import tvodOffer from '@jwp/ott-testing/fixtures/tvodOffer.json';
 
 import ChooseOfferForm from './ChooseOfferForm';
 
-const svodOffers = [monthlyOffer, yearlyOffer] as Offer[];
-const tvodOffers = [tvodOffer] as Offer[];
+const svodOffers = [monthlyOffer, yearlyOffer] as unknown as Offer[];
+const tvodOffers = [tvodOffer] as unknown as Offer[];
 
 describe('<OffersForm>', () => {
   test('renders and matches snapshot', () => {

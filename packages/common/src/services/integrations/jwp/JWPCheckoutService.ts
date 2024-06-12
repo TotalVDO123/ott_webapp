@@ -1,7 +1,7 @@
 import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
 import { inject, injectable } from 'inversify';
 
-import { type JwPlanPricesResponse, type PlanPrice } from '../../../../../../packages/common/types/jw';
+import type { JwPlanPricesResponse, PlanPrice, PlansListResponse } from '../../../../../../packages/common/types/jw';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
   CardPaymentData,
@@ -71,37 +71,21 @@ export default class JWPCheckoutService extends CheckoutService {
     return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.id}`; //`${offer.access.type === 'subscription' ? 'S' : 'C'}S${offer.item_id}_${offer.id}`;
   }
 
-  /**
-   * Parse the given offer id and extract the asset id.
-   * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
-   */
-  private parseOfferId(offerId: string | number) {
-    if (typeof offerId === 'string') {
-      // offer id format `S<assetId>_<pricingOptionId>`
-      if (offerId.startsWith('C') || offerId.startsWith('S')) {
-        return parseInt(offerId.slice(1).split('_')[0]);
-      }
-
-      // offer id format `<assetId>`
-      return parseInt(offerId);
-    }
-
-    return offerId;
-  }
-
-  private formatOffer = (offer: PlanPrice): Offer => {
+  private formatOffer = ({ title, planId, planOriginalId, ...offer }: PlanPrice & { title: string; planId: string; planOriginalId: number }): Offer => {
     return {
-      id: offer.id,
+      id: offer.original_id,
       offerId: this.formatOfferId(offer),
+      planId,
+      planOriginalId,
       offerCurrency: offer.metadata.currency,
       customerPriceInclTax: offer.metadata.amount,
       customerCurrency: offer.metadata.currency,
-      offerTitle: offer.metadata.name,
+      offerTitle: title,
       active: true,
       period: offer.access.period,
       freePeriods: offer.metadata.trial?.quantity ?? 0,
       planSwitchEnabled: false,
-    } as unknown as Offer;
+    } as Offer;
   };
 
   private formatOrder = (payload: CreateOrderArgs): Order => {
@@ -135,24 +119,43 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
+  getAppPlans = async (plansIds: (string | number)[]) => {
+    try {
+      const response = await this.jwpService.get<PlansListResponse>(`/plans?q=id:(${plansIds.map((planId) => `"${planId}"`).join(' OR ')})`);
+      return response.plans;
+    } catch {
+      throw new Error('Failed to get plans');
+    }
+  };
+
   getOffers: GetOffers = async (payload) => {
-    const offers = await Promise.all(
-      payload.offerIds.map(async (planId) => {
-        try {
-          const data = await this.jwpService.get<JwPlanPricesResponse>(`/plans/${planId}/prices`);
+    if (!payload.offerIds.length) {
+      return [];
+    }
 
-          if (data.prices) {
-            return data.prices.map((offer) => this.formatOffer(offer));
+    try {
+      const plans = await this.getAppPlans(payload.offerIds);
+
+      const offers = await Promise.all(
+        plans.map(async (plan) => {
+          try {
+            const data = await this.jwpService.get<JwPlanPricesResponse>(`/plans/${plan.id}/prices`);
+
+            if (data.prices) {
+              return data.prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));
+            }
+
+            return [];
+          } catch {
+            throw new Error();
           }
+        }),
+      );
 
-          return [];
-        } catch {
-          throw new Error('Failed to get offers');
-        }
-      }),
-    );
-
-    return offers.flat();
+      return offers.flat();
+    } catch {
+      throw new Error('Failed to get offers');
+    }
   };
 
   getPaymentMethods: GetPaymentMethods = async () => {
@@ -259,9 +262,9 @@ export default class JWPCheckoutService extends CheckoutService {
     }
   };
 
-  getEntitlements: GetEntitlements = async ({ offerId }) => {
+  getEntitlements: GetEntitlements = async ({ offerId: planId }) => {
     try {
-      const response = await InPlayer.Asset.checkAccessForAsset(this.parseOfferId(offerId));
+      const response = await InPlayer.Asset.checkAccessForAsset(parseInt(planId));
       return this.formatEntitlements(response.data.expires_at, true);
     } catch {
       return this.formatEntitlements();

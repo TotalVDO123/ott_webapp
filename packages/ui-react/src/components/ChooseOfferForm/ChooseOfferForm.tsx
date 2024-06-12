@@ -132,7 +132,12 @@ const ChooseOfferForm: React.FC<Props> = ({ values, errors, submitting, offers, 
       <div className={styles.tabs}>
         <ButtonGroup>
           {Object.keys(groupedOffers).map((period) => (
-            <Button key={period} label={t(`periods.${period}`)} onClick={() => setOfferFilter(period as OfferPeriod)} active={offerFilter === period} />
+            <Button
+              key={period}
+              label={t(`periods.${period}`).replace(/^[a-z]/, (m) => m.toUpperCase())}
+              onClick={() => setOfferFilter(period as OfferPeriod)}
+              active={offerFilter === period}
+            />
           ))}
         </ButtonGroup>
       </div>

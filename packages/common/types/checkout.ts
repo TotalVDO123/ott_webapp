@@ -5,6 +5,8 @@ import type { EmptyEnvironmentServiceRequest, EnvironmentServiceRequest, Promise
 export type Offer = {
   id: number | null;
   offerId: string;
+  planId: string;
+  planOriginalId: number;
   offerPrice: number;
   offerCurrency: string;
   offerCurrencySymbol: string;

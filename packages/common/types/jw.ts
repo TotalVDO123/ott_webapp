@@ -6,6 +6,32 @@ export type JwListResponse<N extends string = string, T extends Record<string, u
   [P in N]: T[];
 };
 
+export type PlanDetailsResponse = {
+  id: string;
+  original_id: number;
+  metadata: {
+    name: string;
+    access_model: 'svod' | 'authvod' | 'free';
+    tags: {
+      include: string[];
+      exclude: string[];
+    };
+    custom_params: {
+      include: Record<string, string>;
+      exclude: Record<string, string>;
+    };
+  };
+  relationships: {
+    prices?: { id: string; type: 'price' }[];
+  };
+  created: string;
+  last_modified: string;
+  type: 'plan';
+  schema: string;
+};
+
+export type PlansListResponse = JwListResponse<'plans', PlanDetailsResponse>;
+
 export type PlanPrice = {
   id: string;
   access: {
@@ -21,7 +47,7 @@ export type PlanPrice = {
   };
   original_id: number;
   relationships: {
-    plans: { id: string; type: 'plan' }[];
+    plans?: { id: string; type: 'plan' }[];
   };
   schema: string;
   type: 'price';

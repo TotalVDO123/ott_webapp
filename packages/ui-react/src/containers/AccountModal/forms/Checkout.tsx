@@ -42,7 +42,8 @@ const Checkout = () => {
       onSubmitPaypalPaymentSuccess: ({ redirectUrl }) => {
         window.location.href = redirectUrl;
       },
-      onSubmitStripePaymentSuccess: () => navigate(modalURLFromLocation(location, 'waiting-for-payment'), { replace: true }),
+      onSubmitStripePaymentSuccess: () =>
+        navigate(modalURLFromLocation(location, 'waiting-for-payment', { offerId: selectedOffer?.planOriginalId }), { replace: true }),
     });
 
   const {
@@ -102,7 +103,7 @@ const Checkout = () => {
   }
 
   const cancelUrl = modalURLFromWindowLocation('payment-cancelled');
-  const waitingUrl = modalURLFromWindowLocation('waiting-for-payment', { offerId: selectedOffer?.offerId });
+  const waitingUrl = modalURLFromWindowLocation('waiting-for-payment', { offerId: selectedOffer?.planOriginalId });
   const errorUrl = modalURLFromWindowLocation('payment-error');
   const successUrlPaypal = offerType === 'svod' ? waitingUrl : createURL(window.location.href, { u: '' });
   const referrer = window.location.href;
