@@ -148,7 +148,6 @@
   },
   "registration": {
     "already_account": "¿Ya tienes una cuenta?",
-    "consent_required": "Se requiere consentimiento, marque la casilla para continuar.",
     "consents_error": "Acepte todos los consentimientos necesarios para continuar.",
     "continue": "Continuar",
     "email": "Correo electrónico",
