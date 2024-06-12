@@ -64,6 +64,14 @@ export default class JWPCheckoutService extends CheckoutService {
   };
 
   /**
+   * Format a (Cleeng like) offer id for the given access fee (pricing option). For JWP, we need the asset id and
+   * access fee id in some cases.
+   */
+  private formatOfferId(offer: PlanPrice) {
+    return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.id}`; //`${offer.access.type === 'subscription' ? 'S' : 'C'}S${offer.item_id}_${offer.id}`;
+  }
+
+  /**
    * Parse the given offer id and extract the asset id.
    * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
    */
@@ -82,11 +90,9 @@ export default class JWPCheckoutService extends CheckoutService {
   }
 
   private formatOffer = (offer: PlanPrice): Offer => {
-    const offerId = offer.access.type === 'subscription' ? `S${offer.id}` : `C${offer.id}`;
-
     return {
       id: offer.id,
-      offerId,
+      offerId: this.formatOfferId(offer),
       offerCurrency: offer.metadata.currency,
       customerPriceInclTax: offer.metadata.amount,
       customerCurrency: offer.metadata.currency,
