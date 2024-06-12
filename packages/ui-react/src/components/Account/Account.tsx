@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 import DOMPurify from 'dompurify';
@@ -72,7 +72,7 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
     shallow,
   );
 
-  const { canChangePasswordWithOldPassword, canExportAccountData, canDeleteAccount } = accountController.getFeatures();
+  const { canChangePasswordWithOldPassword, canExportAccountData } = accountController.getFeatures();
   // users authenticated with social (register_source: facebook, google, twitter) do not have password by default
   const registerSource = customer?.metadata?.register_source;
   const isSocialLogin = (registerSource && registerSource !== 'inplayer') || false;
@@ -381,46 +381,6 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
                       required={consent.required}
                     />
                   ))}
-                </div>
-              ),
-            }),
-          canExportAccountData &&
-            formSection({
-              label: t('account.export_data_title'),
-              content: (section) => (
-                <div className={styles.textWithButtonContainer}>
-                  <div>
-                    <Trans t={t} i18nKey="account.export_data_body" values={{ email: section.values.email }} />
-                  </div>
-                  <div>
-                    <Button
-                      label={t('account.export_data_title')}
-                      type="button"
-                      disabled={exportData.isLoading}
-                      onClick={async () => {
-                        exportData.mutate();
-                      }}
-                    />
-                  </div>
-                </div>
-              ),
-            }),
-          canDeleteAccount &&
-            formSection({
-              label: t('account.delete_account.title'),
-              content: () => (
-                <div className={styles.textWithButtonContainer}>
-                  <div>{t('account.delete_account.body')}</div>
-                  <div>
-                    <Button
-                      label={t('account.delete_account.title')}
-                      type="button"
-                      variant="danger"
-                      onClick={() => {
-                        navigate(modalURLFromLocation(location, shouldAddPassword ? 'warning-account-deletion' : 'delete-account'));
-                      }}
-                    />
-                  </div>
                 </div>
               ),
             }),
