@@ -46,8 +46,8 @@ const processBillingReceipt = (receipt: Blob | string, transactionId: string) =>
 
 const EXTERNAL_PAYMENT_METHODS = ['Apple In-App', 'Android In-App', 'Roku In-App'];
 const STORE_LINKS: Record<string, string> = {
-  apple: 'https://support.apple.com/en-qa/118428',
-  android: 'https://support.google.com/googleplay/answer/7018481?hl=en',
+  apple: 'https://support.apple.com/118428',
+  android: 'https://support.google.com/googleplay/answer/7018481',
   roku: 'https://support.roku.com/article/208756478',
 };
 
