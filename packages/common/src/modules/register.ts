@@ -16,7 +16,6 @@ import SettingsService from '../services/SettingsService';
 import WatchHistoryController from '../controllers/WatchHistoryController';
 import CheckoutController from '../controllers/CheckoutController';
 import AccountController from '../controllers/AccountController';
-import ProfileController from '../controllers/ProfileController';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';
@@ -30,7 +29,6 @@ import JWEpgService from '../services/epg/JWEpgService';
 import AccountService from '../services/integrations/AccountService';
 import CheckoutService from '../services/integrations/CheckoutService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
-import ProfileService from '../services/integrations/ProfileService';
 
 // Cleeng integration
 import CleengService from '../services/integrations/cleeng/CleengService';
@@ -42,7 +40,6 @@ import CleengSubscriptionService from '../services/integrations/cleeng/CleengSub
 import JWPAccountService from '../services/integrations/jwp/JWPAccountService';
 import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService';
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
-import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
 
@@ -63,7 +60,6 @@ container.bind(EpgController).toSelf();
 // Integration controllers
 container.bind(AccountController).toSelf();
 container.bind(CheckoutController).toSelf();
-container.bind(ProfileController).toSelf();
 
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
@@ -85,4 +81,3 @@ container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(SubscriptionService).to(JWPSubscriptionService).whenTargetNamed(INTEGRATION.JWP);
-container.bind(ProfileService).to(JWPProfileService).whenTargetNamed(INTEGRATION.JWP);
