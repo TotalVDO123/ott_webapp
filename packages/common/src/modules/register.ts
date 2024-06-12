@@ -42,6 +42,9 @@ import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService'
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
+import ProfileController from '../controllers/ProfileController';
+import ProfileService from '../services/integrations/ProfileService';
+import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
 
 // Common services
 container.bind(ConfigService).toSelf();
@@ -60,7 +63,7 @@ container.bind(EpgController).toSelf();
 // Integration controllers
 container.bind(AccountController).toSelf();
 container.bind(CheckoutController).toSelf();
-
+container.bind(ProfileController).toSelf();
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
 container.bind(EpgService).to(ViewNexaEpgService).whenTargetNamed(EPG_TYPE.viewNexa);
@@ -81,3 +84,4 @@ container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(SubscriptionService).to(JWPSubscriptionService).whenTargetNamed(INTEGRATION.JWP);
+container.bind(ProfileService).to(JWPProfileService).whenTargetNamed(INTEGRATION.JWP);
