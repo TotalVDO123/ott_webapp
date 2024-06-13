@@ -1,20 +1,33 @@
 import { useQuery, useQueryClient } from 'react-query';
 import type { GetPlaylistParams, Playlist } from '@jwp/ott-common/types/playlist';
-import ApiService from '@jwp/ott-common/src/services/ApiService';
+import type { ApiError } from '@jwp/ott-common/src/utils/api';
+import type { ListType } from '@jwp/ott-common/types/config';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { generatePlaylistPlaceholder } from '@jwp/ott-common/src/utils/collection';
 import { isScheduledOrLiveMedia } from '@jwp/ott-common/src/utils/liveEvent';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
-import type { ApiError } from '@jwp/ott-common/src/utils/api';
+import ContentController from '@jwp/ott-common/src/controllers/ContentController';
 
 const placeholderData = generatePlaylistPlaceholder(30);
 
-export default function usePlaylist(playlistId?: string, params: GetPlaylistParams = {}, enabled: boolean = true, usePlaceholderData: boolean = true) {
-  const apiService = getModule(ApiService);
+export default function usePlaylist({
+  playlistId,
+  type,
+  params,
+  enabled = true,
+  usePlaceholderData = true,
+}: {
+  playlistId: string | undefined;
+  type: Exclude<ListType, 'continue_watching' | 'favorites'>;
+  params: GetPlaylistParams;
+  enabled?: boolean;
+  usePlaceholderData?: boolean;
+}) {
+  const contentController = getModule(ContentController);
   const queryClient = useQueryClient();
 
   const callback = async (playlistId?: string, params?: GetPlaylistParams) => {
-    const playlist = await apiService.getPlaylistById(playlistId, { ...params });
+    const playlist = await contentController.getContentList(playlistId, type, { ...params });
 
     // This pre-caches all playlist items and makes navigating a lot faster.
     playlist?.playlist?.forEach((playlistItem) => {

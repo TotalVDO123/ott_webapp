@@ -1,7 +1,7 @@
 // To organize imports in a better way
 /* eslint-disable import/order */
 import 'reflect-metadata'; // include once in the app for inversify (see: https://github.com/inversify/InversifyJS/blob/master/README.md#-installation)
-import { INTEGRATION, EPG_TYPE } from '../constants';
+import { INTEGRATION, EPG_TYPE, LIST_TYPE } from '../constants';
 import { container } from './container';
 import { DETERMINE_INTEGRATION_TYPE, INTEGRATION_TYPE } from './types';
 
@@ -20,6 +20,7 @@ import ProfileController from '../controllers/ProfileController';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';
+import ContentController from '../controllers/ContentController';
 
 // Epg services
 import EpgService from '../services/EpgService';
@@ -46,6 +47,11 @@ import JWPProfileService from '../services/integrations/jwp/JWPProfileService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
 
+// Content
+import PlaylistService from '../services/content/PlaylistService';
+import ContentService from '../services/content/ContentService';
+import RecommendationsService from '../services/content/RecommendationsService';
+
 // Common services
 container.bind(ConfigService).toSelf();
 container.bind(WatchHistoryService).toSelf();
@@ -59,6 +65,7 @@ container.bind(AppController).toSelf();
 container.bind(WatchHistoryController).toSelf();
 container.bind(FavoritesController).toSelf();
 container.bind(EpgController).toSelf();
+container.bind(ContentController).toSelf();
 
 // Integration controllers
 container.bind(AccountController).toSelf();
@@ -68,6 +75,10 @@ container.bind(ProfileController).toSelf();
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
 container.bind(EpgService).to(ViewNexaEpgService).whenTargetNamed(EPG_TYPE.viewNexa);
+
+// Content services
+container.bind(ContentService).to(PlaylistService).whenTargetNamed(LIST_TYPE.playlist);
+container.bind(ContentService).to(RecommendationsService).whenTargetNamed(LIST_TYPE.content_list);
 
 // Functions
 container.bind(INTEGRATION_TYPE).toDynamicValue(getIntegrationType);

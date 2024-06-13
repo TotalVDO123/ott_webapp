@@ -1,3 +1,5 @@
+import type { LIST_TYPE } from '../src/constants';
+
 import type { AdScheduleUrls } from './ad-schedule';
 
 /**
@@ -39,12 +41,12 @@ export type Drm = {
   defaultPolicyId: string;
 };
 
-export type ContentType = 'playlist' | 'continue_watching' | 'favorites';
+export type ListType = keyof typeof LIST_TYPE;
 
 export type Content = {
   contentId?: string;
   title?: string;
-  type: ContentType;
+  type: ListType;
   featured?: boolean;
   backgroundColor?: string | null;
 };
@@ -52,7 +54,7 @@ export type Content = {
 export type Menu = {
   label: string;
   contentId: string;
-  type?: Extract<ContentType, 'playlist'>;
+  type?: Extract<ListType, 'playlist' | 'content_list'>;
   filterTags?: string;
 };
 

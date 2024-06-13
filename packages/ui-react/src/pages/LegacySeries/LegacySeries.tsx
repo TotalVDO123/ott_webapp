@@ -16,6 +16,7 @@ import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakp
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
+import { LIST_TYPE } from '@jwp/ott-common/src/constants';
 
 import VideoLayout from '../../components/VideoLayout/VideoLayout';
 import InlinePlayer from '../../containers/InlinePlayer/InlinePlayer';
@@ -46,7 +47,11 @@ const LegacySeries = () => {
   const episodeId = useQueryParam('e');
 
   // Main data
-  const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId, {}, true, false);
+  const {
+    isLoading: isSeriesPlaylistLoading,
+    data: seriesPlaylist,
+    isError: isPlaylistError,
+  } = usePlaylist({ playlistId: seriesId, type: LIST_TYPE.playlist, params: {}, enabled: true, usePlaceholderData: false });
   const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '');
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '');
 

@@ -17,6 +17,7 @@ import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
+import { LIST_TYPE } from '@jwp/ott-common/src/constants';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import VideoLayout from '../../../../components/VideoLayout/VideoLayout';
@@ -54,7 +55,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(media?.trailerId || '');
-  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(playlistId || '');
+  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({ playlistId: playlistId || '', type: LIST_TYPE.playlist, params: {} });
 
   // Event
   const liveEvent = useLiveEvent(media);

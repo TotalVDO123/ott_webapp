@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import type { Playlist, PlaylistItem } from '@jwp/ott-common/types/playlist';
-import type { AccessModel, ContentType } from '@jwp/ott-common/types/config';
+import type { AccessModel, ListType } from '@jwp/ott-common/types/config';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
 import { mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
@@ -35,7 +35,7 @@ export const featuredTileBreakpoints: Breakpoints = {
 
 export type ShelfProps = {
   playlist: Playlist;
-  type: ContentType;
+  type: ListType;
   onCardHover?: (playlistItem: PlaylistItem) => void;
   watchHistory?: { [key: string]: number };
   enableTitle?: boolean;

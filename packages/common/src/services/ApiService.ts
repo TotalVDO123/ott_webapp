@@ -6,7 +6,7 @@ import { createURL } from '../utils/urlFormatting';
 import { getDataOrThrow } from '../utils/api';
 import { filterMediaOffers } from '../utils/entitlements';
 import { useConfigStore as ConfigStore } from '../stores/ConfigStore';
-import type { GetPlaylistParams, Playlist, PlaylistItem } from '../../types/playlist';
+import type { Playlist, PlaylistItem } from '../../types/playlist';
 import type { AdSchedule } from '../../types/ad-schedule';
 import type { EpisodeInSeries, EpisodesRes, EpisodesWithPagination, GetSeriesParams, Series } from '../../types/series';
 import env from '../env';
@@ -26,8 +26,8 @@ export default class ApiService {
    * We use playlistLabel prop to define the label used for all media items inside.
    * That way we can change the behavior of the same media items being in different playlists
    */
-  private generateAlternateImageURL = ({ item, label, playlistLabel }: { item: PlaylistItem; label: string; playlistLabel?: string }) => {
-    const pathname = `/v2/media/${item.mediaid}/images/${playlistLabel || label}.webp`;
+  private generateAlternateImageURL = ({ mediaId, label, playlistLabel }: { mediaId: string; label: string; playlistLabel?: string }) => {
+    const pathname = `/v2/media/${mediaId}/images/${playlistLabel || label}.webp`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { poster_fallback: 1, fallback: playlistLabel ? label : null });
 
     return url;
@@ -48,16 +48,17 @@ export default class ApiService {
    * Transform incoming media items
    * - Parses productId into MediaOffer[] for all cleeng offers
    */
-  private transformMediaItem = (item: PlaylistItem, playlist?: Playlist) => {
+  transformMediaItem = (item: PlaylistItem, playlist?: Playlist) => {
     const config = ConfigStore.getState().config;
     const offerKeys = Object.keys(config?.integrations)[0];
     const playlistLabel = playlist?.imageLabel;
+    const mediaId = item.mediaid;
 
     const transformedMediaItem = {
       ...item,
-      cardImage: this.generateAlternateImageURL({ item, label: ImageProperty.CARD, playlistLabel }),
-      channelLogoImage: this.generateAlternateImageURL({ item, label: ImageProperty.CHANNEL_LOGO, playlistLabel }),
-      backgroundImage: this.generateAlternateImageURL({ item, label: ImageProperty.BACKGROUND }),
+      cardImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.CARD, playlistLabel }),
+      channelLogoImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.CHANNEL_LOGO, playlistLabel }),
+      backgroundImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.BACKGROUND }),
       mediaOffers: item.productIds ? filterMediaOffers(offerKeys, item.productIds) : undefined,
       scheduledStart: this.parseDate(item, 'VCH.ScheduledStart'),
       scheduledEnd: this.parseDate(item, 'VCH.ScheduledEnd'),
@@ -67,18 +68,6 @@ export default class ApiService {
     transformedMediaItem.mediaStatus = getMediaStatusFromEventState(transformedMediaItem);
 
     return transformedMediaItem;
-  };
-
-  /**
-   * Transform incoming playlists
-   */
-  private transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
-    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
-
-    // remove the related media item (when this is a recommendations playlist)
-    if (relatedMediaId) playlist.playlist.filter((item) => item.mediaid !== relatedMediaId);
-
-    return playlist;
   };
 
   private transformEpisodes = (episodesRes: EpisodesRes, seasonNumber?: number) => {
@@ -95,22 +84,6 @@ export default class ApiService {
         })),
       pagination: { page, page_limit, total },
     };
-  };
-
-  /**
-   * Get playlist by id
-   */
-  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}): Promise<Playlist | undefined> => {
-    if (!id) {
-      return undefined;
-    }
-
-    const pathname = `/v2/playlists/${id}`;
-    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, params);
-    const response = await fetch(url);
-    const data = (await getDataOrThrow(response)) as Playlist;
-
-    return this.transformPlaylist(data, params.related_media_id);
   };
 
   /**
@@ -244,18 +217,5 @@ export default class ApiService {
     const response = await fetch(url, { credentials: 'omit' });
 
     return (await getDataOrThrow(response)) as AdSchedule;
-  };
-
-  getAppContentSearch = async (siteId: string, searchQuery: string | undefined) => {
-    const pathname = `/v2/sites/${siteId}/app_content/media/search`;
-
-    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {
-      search_query: searchQuery,
-    });
-
-    const response = await fetch(url);
-    const data = (await getDataOrThrow(response)) as Playlist;
-
-    return this.transformPlaylist(data);
   };
 }

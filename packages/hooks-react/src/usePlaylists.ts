@@ -1,5 +1,5 @@
-import { PersonalShelf, PersonalShelves, PLAYLIST_LIMIT } from '@jwp/ott-common/src/constants';
-import ApiService from '@jwp/ott-common/src/services/ApiService';
+import { LIST_TYPE, PersonalShelf, PersonalShelves, PLAYLIST_LIMIT } from '@jwp/ott-common/src/constants';
+import ContentController from '@jwp/ott-common/src/controllers/ContentController';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useFavoritesStore } from '@jwp/ott-common/src/stores/FavoritesStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
@@ -22,7 +22,7 @@ type UsePlaylistResult = {
 const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined) => {
   const page_limit = PLAYLIST_LIMIT.toString();
   const queryClient = useQueryClient();
-  const apiService = getModule(ApiService);
+  const contentController = getModule(ContentController);
 
   const favorites = useFavoritesStore((state) => state.getPlaylist());
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
@@ -32,14 +32,14 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
       enabled: !!contentId && (!rowsToLoad || rowsToLoad > index) && !PersonalShelves.some((pType) => pType === type),
       queryKey: ['playlist', contentId],
       queryFn: async () => {
-        const playlist = await apiService.getPlaylistById(contentId, { page_limit });
+        const list = await contentController.getContentList(contentId, type, { page_limit });
 
-        // This pre-caches all playlist items and makes navigating a lot faster.
-        playlist?.playlist?.forEach((playlistItem) => {
-          queryClient.setQueryData(['media', playlistItem.mediaid], playlistItem);
-        });
-
-        return playlist;
+        if (type === LIST_TYPE.playlist) {
+          list?.playlist?.forEach((playlistItem) => {
+            queryClient.setQueryData(['media', playlistItem.mediaid], playlistItem);
+          });
+        }
+        return list;
       },
       placeholderData: !!contentId && placeholderData,
       refetchInterval: (data: Playlist | undefined) => {

@@ -1,5 +1,5 @@
 import type { PlaylistItem } from '../../types/playlist';
-import { CONTENT_TYPE } from '../constants';
+import { MEDIA_CONTENT_TYPE } from '../constants';
 
 import { isContentType } from './common';
 
@@ -18,7 +18,7 @@ export const enum MediaStatus {
 }
 
 export const isLiveEvent = (playlistItem?: PlaylistItem) => {
-  return !!playlistItem && isContentType(playlistItem, CONTENT_TYPE.liveEvent);
+  return !!playlistItem && isContentType(playlistItem, MEDIA_CONTENT_TYPE.liveEvent);
 };
 
 export const isScheduledOrLiveMedia = (playlistItem: PlaylistItem) => {
