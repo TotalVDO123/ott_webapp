@@ -19,7 +19,7 @@ export const useSearch = (query: string) => {
   const contentController = getModule(ContentController);
 
   const searchQuery: UseQueryResult<Playlist | undefined, ApiError> = useQuery(
-    ['app-search', query],
+    ['search', query],
     async () => {
       const searchResult = await contentController.getContentSearch(searchPlaylist || '', hasAppContentSearch ? LIST_TYPE.content_list : LIST_TYPE.playlist, {
         search: query || '',

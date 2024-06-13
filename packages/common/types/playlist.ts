@@ -2,7 +2,11 @@ import type { MediaStatus } from '../src/utils/liveEvent';
 
 import type { MediaOffer } from './media';
 
-export type GetPlaylistParams = { page_limit?: string; related_media_id?: string; token?: string; search?: string };
+export type GetContentListParams = { page_limit?: string; related_media_id?: string; token?: string };
+
+export type GetContentSearchParams = { page_limit?: string; token?: string; search: string };
+
+export type GetPlaylistParams = { page_limit?: string; token?: string; search?: string; related_media_id?: string };
 
 export type Image = {
   src: string;

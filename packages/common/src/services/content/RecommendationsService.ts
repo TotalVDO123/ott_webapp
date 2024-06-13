@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import type { GetPlaylistParams, Playlist, PlaylistItem } from '../../../types/playlist';
+import type { GetContentListParams, GetContentSearchParams, Playlist, PlaylistItem } from '../../../types/playlist';
 import type { ContentList } from '../../../types/content-list';
 import { createURL } from '../../utils/urlFormatting';
 import { getDataOrThrow } from '../../utils/api';
@@ -49,10 +49,7 @@ export default class RecommendationsService extends ContentService {
     return playlist;
   };
 
-  /**
-   * Get recommendations by id
-   */
-  getContentList = async ({ id, siteId, params }: { id: string | undefined; siteId: string; params: GetPlaylistParams }): Promise<Playlist | undefined> => {
+  getContentList = async ({ id, siteId, params }: { id: string | undefined; siteId: string; params: GetContentListParams }): Promise<Playlist | undefined> => {
     if (!id || !siteId) {
       throw new Error('List ID and Site ID are required');
     }
@@ -65,7 +62,7 @@ export default class RecommendationsService extends ContentService {
     return this.transformContentList(data);
   };
 
-  getContentSearch = async ({ siteId, params }: { siteId: string; params: GetPlaylistParams }) => {
+  getContentSearch = async ({ siteId, params }: { siteId: string; params: GetContentSearchParams }) => {
     const pathname = `/v2/sites/${siteId}/app_content/media/search`;
 
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {

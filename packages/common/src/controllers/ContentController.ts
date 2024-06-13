@@ -3,12 +3,12 @@ import { injectable } from 'inversify';
 import { getNamedModule } from '../modules/container';
 import ContentService from '../services/content/ContentService';
 import type { ListType } from '../../types/config';
-import type { GetPlaylistParams } from '../../types/playlist';
+import type { GetContentListParams, GetContentSearchParams } from '../../types/playlist';
 import { useConfigStore } from '../stores/ConfigStore';
 
 @injectable()
 export default class ContentController {
-  getContentList = async (id: string | undefined, type: ListType, params: GetPlaylistParams) => {
+  getContentList = async (id: string | undefined, type: ListType, params: GetContentListParams) => {
     const { config } = useConfigStore.getState();
 
     const contentService = this.getContentService(type);
@@ -18,7 +18,7 @@ export default class ContentController {
     return list;
   };
 
-  getContentSearch = async (id: string | undefined, type: ListType, params: GetPlaylistParams) => {
+  getContentSearch = async (id: string | undefined, type: ListType, params: GetContentSearchParams) => {
     const { config } = useConfigStore.getState();
 
     const contentService = this.getContentService(type);

@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import type { GetPlaylistParams, Playlist } from '../../../types/playlist';
+import type { GetContentListParams, GetContentSearchParams, Playlist } from '../../../types/playlist';
 import { createURL } from '../../utils/urlFormatting';
 import { getDataOrThrow } from '../../utils/api';
 import env from '../../env';
@@ -29,7 +29,7 @@ export default class PlaylistService extends ContentService {
     return playlist;
   };
 
-  getPlaylist = async ({ id, params = {} }: { id: string | undefined; params: GetPlaylistParams }): Promise<Playlist | undefined> => {
+  getPlaylist = async ({ id, params = {} }: { id: string | undefined; params: Record<string, string> }): Promise<Playlist | undefined> => {
     if (!id) {
       return undefined;
     }
@@ -45,11 +45,11 @@ export default class PlaylistService extends ContentService {
   /**
    * Get playlist by id
    */
-  getContentList = async ({ id, params = {} }: { id: string | undefined; params: GetPlaylistParams }): Promise<Playlist | undefined> => {
+  getContentList = async ({ id, params }: { id: string | undefined; params: GetContentListParams }): Promise<Playlist | undefined> => {
     return this.getPlaylist({ id, params });
   };
 
-  getContentSearch = async ({ id, params = {} }: { id: string | undefined; params: GetPlaylistParams }): Promise<Playlist | undefined> => {
+  getContentSearch = async ({ id, params }: { id: string | undefined; params: GetContentSearchParams }): Promise<Playlist | undefined> => {
     return this.getPlaylist({ id, params });
   };
 }
