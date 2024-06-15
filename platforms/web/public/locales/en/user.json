@@ -9,7 +9,6 @@
     "continue": "Continue",
     "delete": "Delete",
     "delete_account": {
-      "body": "Permanently delete your account and all of your content.",
       "error": "An error occurred while deleting your account. Please try again.",
       "invalid_credentials": "The submitted password is not valid",
       "modal": {
@@ -44,10 +43,8 @@
       "validation_error": "Please correct your mistakes before proceeding.",
       "wrong_combination": "Incorrect email/password combination"
     },
-    "export_data_body": "Export all of your personal account data to <strong>{{email}}</strong> as an attachment.",
     "export_data_error": "An error occurred while exporting your account data.",
     "export_data_success": "Please check your email.",
-    "export_data_title": "Export account data",
     "firstname": "First name",
     "lastname": "Last name",
     "other_registration_details": "Other registration details",

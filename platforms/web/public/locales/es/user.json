@@ -9,7 +9,6 @@
     "continue": "Continuar",
     "delete": "Eliminar",
     "delete_account": {
-      "body": "Elimine permanentemente su cuenta y todo su contenido.",
       "error": "Ocurrió un error al eliminar su cuenta. Inténtalo de nuevo.",
       "invalid_credentials": "La contraseña ingresada no es válida",
       "modal": {
@@ -44,10 +43,8 @@
       "validation_error": "Corrija sus errores antes de continuar.",
       "wrong_combination": "Combinación de correo electrónico/contraseña incorrecta"
     },
-    "export_data_body": "Exporte todos los datos de su cuenta personal a <strong>{{email}}</strong> como un archivo adjunto.",
     "export_data_error": "Ocurrió un error al exportar los datos de su cuenta.",
     "export_data_success": "Please check your email.",
-    "export_data_title": "Por favor revise su correo electrónico.",
     "firstname": "Nombre",
     "lastname": "Apellido",
     "other_registration_details": "Otros detalles de registro",
