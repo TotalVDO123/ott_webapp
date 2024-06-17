@@ -17,7 +17,6 @@ import IconButton from '../IconButton/IconButton';
 import Alert from '../Alert/Alert';
 import Button from '../Button/Button';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
-import OfferSwitch from '../OfferSwitch/OfferSwitch';
 import TextField from '../form-fields/TextField/TextField';
 import Icon from '../Icon/Icon';
 import Link from '../Link/Link';
@@ -79,12 +78,9 @@ const Payment = ({
   canRenewSubscription = false,
   canShowReceipts = false,
   canUpdatePaymentMethod,
-  onUpgradeSubscriptionClick,
-  offerSwitchesAvailable,
   offers = [],
   pendingDowngradeOfferId = '',
   changeSubscriptionPlan,
-  onChangePlanClick,
   selectedOfferId,
   setSelectedOfferId,
   isUpgradeOffer,
@@ -159,8 +155,6 @@ const Payment = ({
     }
   }
 
-  const showChangeSubscriptionButton = (!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription);
-
   return (
     <>
       <Alert
@@ -219,21 +213,13 @@ const Payment = ({
                   </Link>
                 </p>
               ) : (
-                showChangeSubscriptionButton && (
+                activeSubscription?.status !== 'cancelled' && (
                   <Button
-                    className={styles.upgradeSubscription}
-                    label={t('user:payment.change_subscription')}
-                    disabled={!canRenewSubscription && activeSubscription.status === 'cancelled'}
-                    onClick={() => {
-                      if (offers.length > 1 && !canRenewSubscription) {
-                        setIsChangingOffer(true);
-                      } else {
-                        onUpgradeSubscriptionClick?.();
-                      }
-                    }}
-                    fullWidth={isMobile}
-                    color="primary"
-                    data-testid="change-subscription-button"
+                    className={styles.changePlanCancelButton}
+                    label={t('user:payment.cancel_subscription')}
+                    onClick={onCancelSubscriptionClick}
+                    variant="danger"
+                    data-testid="cancel-subscription-button"
                   />
                 )
               )}
@@ -256,40 +242,6 @@ const Payment = ({
               <p>{t('user:payment.no_subscription')}</p>
               <Button variant="contained" color="primary" label={t('user:payment.complete_subscription')} onClick={onCompleteSubscriptionClick} />
             </React.Fragment>
-          )}
-          {isChangingOffer && (
-            <div className={styles.changePlanContainer}>
-              {offers
-                .filter((o) => o.planSwitchEnabled)
-                .map((offer) => (
-                  <OfferSwitch
-                    key={offer.offerId}
-                    isCurrentOffer={offer.offerId === activeSubscription?.accessFeeId}
-                    pendingDowngradeOfferId={pendingDowngradeOfferId}
-                    offer={offer}
-                    selected={selectedOfferId === offer.offerId}
-                    onChange={(offerId) => setSelectedOfferId(offerId)}
-                    expiresAt={activeSubscription?.expiresAt}
-                  />
-                ))}
-              <div className={styles.changePlanButtons}>
-                <Button
-                  label={t('user:account.save')}
-                  onClick={onChangePlanClick}
-                  disabled={selectedOfferId === activeSubscription?.accessFeeId || changeSubscriptionPlan.isLoading}
-                />
-                <Button label={t('user:account.cancel')} onClick={() => setIsChangingOffer(false)} variant="text" />
-                {activeSubscription?.status !== 'cancelled' && (
-                  <Button
-                    className={styles.changePlanCancelButton}
-                    label={t('user:payment.cancel_subscription')}
-                    onClick={onCancelSubscriptionClick}
-                    variant="danger"
-                    data-testid="cancel-subscription-button"
-                  />
-                )}
-              </div>
-            </div>
           )}
         </section>
       )}
