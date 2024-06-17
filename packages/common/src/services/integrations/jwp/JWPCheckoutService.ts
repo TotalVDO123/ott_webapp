@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
 import type {
+  AccessMethod,
   CardPaymentData,
   CreateOrder,
   CreateOrderArgs,
@@ -299,4 +300,6 @@ export default class JWPCheckoutService extends CheckoutService {
   finalizeAdyenPaymentDetails = undefined;
 
   getOffer = undefined;
+
+  accessMethod: AccessMethod = 'plan';
 }

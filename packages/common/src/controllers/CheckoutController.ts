@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import i18next from 'i18next';
 
 import type {
+  AccessMethod,
   AddAdyenPaymentDetailsResponse,
   AdyenPaymentSession,
   CardPaymentData,
@@ -354,5 +355,9 @@ export default class CheckoutController {
 
   getEntitlements: GetEntitlements = (payload) => {
     return this.checkoutService.getEntitlements(payload);
+  };
+
+  getAccessMethod = (): AccessMethod => {
+    return this.checkoutService.accessMethod;
   };
 }

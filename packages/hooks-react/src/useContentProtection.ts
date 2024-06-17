@@ -43,11 +43,11 @@ const useContentProtection = <T>(
         return genericEntitlementService.getMediaToken(host, id, authData?.jwt, params, drmPolicyId);
       }
       // if provider is JWP
-      if (jwp && configId && !!id && signingEnabled) {
+      if (jwp && configId && !!id) {
         return jwpEntitlementService.getJWPMediaToken(configId, id);
       }
     },
-    { enabled: signingEnabled && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
+    { enabled: !!jwp || (signingEnabled && enabled && !!id), keepPreviousData: false, staleTime: 15 * 60 * 1000 },
   );
 
   const queryResult = useQuery<T | undefined>([type, id, params, token], async () => callback(token, drmPolicyId), {

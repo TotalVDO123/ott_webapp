@@ -11,6 +11,8 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import ChooseOfferForm from '../../../components/ChooseOfferForm/ChooseOfferForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
 import useQueryParam from '../../../hooks/useQueryParam';
+import { getModule } from '@jwp/ott-common/src/modules/container';
+import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 const ChooseOffer = () => {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const ChooseOffer = () => {
   const { t } = useTranslation('account');
   const isSwitch = useQueryParam('u') === 'upgrade-subscription';
   const isPendingOffer = useAccountStore(({ pendingOffer }) => ({ isPendingOffer: !!pendingOffer }));
-
+  const checkoutController = getModule(CheckoutController, false);
   const { isLoading, mediaOffers, subscriptionOffers, switchSubscriptionOffers, defaultOfferType, hasMultipleOfferTypes, chooseOffer, switchSubscription } =
     useOffers();
 
@@ -78,6 +80,10 @@ const ChooseOffer = () => {
         <LoadingOverlay inline />
       </div>
     );
+  }
+
+  if (checkoutController?.getAccessMethod() === 'plan') {
+    return <div>plan</div>;
   }
 
   return (

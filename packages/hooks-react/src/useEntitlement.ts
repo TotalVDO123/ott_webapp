@@ -1,4 +1,4 @@
-import { useQueries } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import type { GetEntitlementsResponse } from '@jwp/ott-common/types/checkout';
 import type { MediaOffer } from '@jwp/ott-common/types/media';
@@ -8,6 +8,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
+import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementService';
 
 export type UseEntitlementResult = {
   isEntitled: boolean;
@@ -33,7 +34,7 @@ const notifyOnChangeProps = ['data' as const, 'isLoading' as const];
  *
  *  */
 const useEntitlement: UseEntitlement = (playlistItem) => {
-  const { accessModel } = useConfigStore();
+  const { accessModel, config } = useConfigStore();
   const { user, subscription } = useAccountStore(
     ({ user, subscription }) => ({
       user,
@@ -43,8 +44,9 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   );
 
   const checkoutController = getModule(CheckoutController, false);
+  const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const isPreEntitled = playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
+  const isPreEntitled = !config.integrations.jwp && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = playlistItem?.mediaOffers || [];
 
   // this query is invalidated when the subscription gets reloaded
@@ -58,8 +60,20 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
     })),
   );
 
+  const { data: token } = useQuery(
+    ['token', 'media', playlistItem?.mediaid, {}],
+    async () => {
+      if (playlistItem?.mediaid) {
+        return jwpEntitlementService.getJWPMediaToken(config.id, playlistItem.mediaid);
+      }
+      return '';
+    },
+    { enabled: !!config.integrations.jwp, keepPreviousData: false, staleTime: 15 * 60 * 1000, retry: 2 },
+  );
+
   // when the user is logged out the useQueries will be disabled but could potentially return its cached data
-  const isMediaEntitled = !!user && mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted);
+  const isMediaEntitled =
+    !!token || (!!user && mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
   const isMediaEntitlementLoading = !isMediaEntitled && mediaEntitlementQueries.some((item) => item.isLoading);
 
   const isEntitled = !!playlistItem && (isPreEntitled || isMediaEntitled);

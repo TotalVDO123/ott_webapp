@@ -11,6 +11,8 @@ import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import Play from '@jwp/ott-theme/assets/icons/play.svg?react';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
+import { getModule } from '@jwp/ott-common/src/modules/container';
+import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 import Button from '../../components/Button/Button';
 import Icon from '../../components/Icon/Icon';
@@ -29,6 +31,7 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const navigate = useNavigate();
   const location = useLocation();
   const breakpoint = useBreakpoint();
+  const checkoutController = getModule(CheckoutController);
 
   // account
   const accessModel = useConfigStore((state) => state.accessModel);
@@ -49,7 +52,7 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (hasMediaOffers) return t('buy');
     if (!isLoggedIn) return t('sign_up_to_start_watching');
 
-    return t('complete_your_subscription');
+    return checkoutController.getAccessMethod() === 'plan' ? t('show_plans') : t('complete_your_subscription');
   }, [isEntitled, isLoggedIn, hasMediaOffers, videoProgress, t]);
 
   const handleStartWatchingClick = useCallback(() => {
@@ -62,6 +65,7 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     }
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
+    if (checkoutController.getAccessMethod() === 'plan') return navigate(modalURLFromLocation(location, 'list-plans'));
 
     return navigate('/u/payments');
   }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, onClick]);

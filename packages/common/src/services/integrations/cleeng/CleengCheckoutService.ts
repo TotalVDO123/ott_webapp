@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
   CreateOrder,
   CreateOrderPayload,
@@ -183,4 +184,6 @@ export default class CleengCheckoutService extends CheckoutService {
     this.cleengService.post('/connectors/adyen/payment-details/finalize', JSON.stringify(payload), { authenticate: true });
 
   directPostCardPayment = async () => false;
+
+  accessMethod: AccessMethod = 'offer';
 }

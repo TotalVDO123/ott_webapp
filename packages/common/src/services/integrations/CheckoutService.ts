@@ -1,4 +1,5 @@
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
   CreateOrder,
   DeletePaymentMethod,
@@ -61,4 +62,6 @@ export default abstract class CheckoutService {
   abstract addAdyenPaymentDetails?: AddAdyenPaymentDetails;
 
   abstract finalizeAdyenPaymentDetails?: FinalizeAdyenPaymentDetails;
+
+  abstract accessMethod: AccessMethod;
 }
