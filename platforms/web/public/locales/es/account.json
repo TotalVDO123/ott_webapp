@@ -83,19 +83,20 @@
     "yearly": "Anual",
     "yearly_subscription": "Suscripción anual"
   },
+  "external_payment": {
+    "explanation": "Esta suscripción se gestiona a través de {{paymentProvider}}.",
+    "manage_subscription": "Haga clic aquí para más información."
+  },
   "login": {
     "email": "Correo electrónico",
-    "facebook": "Inicia sesión con Facebook",
     "field_is_not_valid_email": "Por favor, vuelve a ingresar tus datos de correo electrónico y prueba nuevamente.",
     "field_required": "Este campo es obligatorio, por favor ingresa un {{field}} válido.",
     "forgot_password": "¿Olvidaste tu contraseña?",
-    "google": "Inicia sesión con Google",
     "not_registered": "¿Nuevo/a en {{siteName}}?",
     "password": "Contraseña",
     "sign_in": "Iniciar sesión",
     "sign_in_success": "Has iniciado sesión correctamente.",
     "sign_up": "Registrarse",
-    "twitter": "Inicia sesión con Twitter",
     "view_password": "Ver contraseña",
     "wrong_combination": "Combinación de correo electrónico/contraseña incorrecta",
     "wrong_email": "Por favor, verifica tu correo electrónico e intenta nuevamente."
@@ -144,7 +145,6 @@
   },
   "registration": {
     "already_account": "¿Ya tienes una cuenta?",
-    "consent_required": "Se requiere consentimiento, marque la casilla para continuar.",
     "consents_error": "Acepte todos los consentimientos necesarios para continuar.",
     "continue": "Continuar",
     "email": "Correo electrónico",

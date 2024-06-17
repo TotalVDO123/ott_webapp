@@ -14,6 +14,7 @@
     "codecept:desktop": "cd test-e2e && rm -rf \"./output/desktop\" && codeceptjs run-workers --suites ${WORKER_COUNT:=8} --config ./codecept.desktop.cjs",
     "codecept:mobile": "cd test-e2e && rm -rf \"./output/mobile\" && codeceptjs run-workers --suites ${WORKER_COUNT:=8} --config ./codecept.mobile.cjs",
     "generate-pwa-assets": "pwa-assets-generator",
+    "i18next": "i18next-workspaces parse ./ && i18next-workspaces namespaces ./ src/i18n/resources.ts",
     "lint:ts": "tsc --pretty --noEmit -p ./ && tsc --pretty --noEmit -p ./test-e2e",
     "serve-report:desktop": "cd test-e2e && allure serve \"./output/desktop\"",
     "serve-report:mobile": "cd test-e2e && allure serve \"./output/mobile\"",
@@ -26,6 +27,11 @@
   },
   "dependencies": {
     "@codeceptjs/allure-legacy": "^1.0.2",
+    "@jwp/ott-common": "*",
+    "@jwp/ott-hooks-react": "*",
+    "@jwp/ott-testing": "*",
+    "@jwp/ott-theme": "*",
+    "@jwp/ott-ui-react": "*",
     "i18next": "^22.4.15",
     "i18next-browser-languagedetector": "^6.1.1",
     "i18next-http-backend": "^2.2.0",
@@ -56,11 +62,14 @@
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "codeceptjs": "3.5.5",
     "core-js": "^3.37.0",
+    "eslint-config-jwp": "*",
     "eslint-plugin-codeceptjs": "^1.3.0",
+    "i18next-parser": "^8.13.0",
     "jsdom": "^22.1.0",
     "luxon": "^3.2.1",
     "playwright": "^1.38.1",
     "postcss": "^8.4.31",
+    "postcss-config-jwp": "*",
     "react-app-polyfill": "^3.0.0",
     "reflect-metadata": "^0.1.13",
     "sass": "^1.49.10",
@@ -85,14 +94,5 @@
     "gh-pages": "^3.2.3",
     "lighthouse": "^9.6.7",
     "sharp": "^0.33.2"
-  },
-  "peerDependencies": {
-    "@jwp/ott-common": "*",
-    "@jwp/ott-hooks-react": "*",
-    "@jwp/ott-testing": "*",
-    "@jwp/ott-theme": "*",
-    "@jwp/ott-ui-react": "*",
-    "eslint-config-jwp": "*",
-    "postcss-config-jwp": "*"
   }
 }

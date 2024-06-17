@@ -15,7 +15,6 @@ import FormFeedback from '../FormFeedback/FormFeedback';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
 import Link from '../Link/Link';
 import { modalURLFromLocation } from '../../utils/location';
-import SocialButtonsList from '../SocialButtonsList/SocialButtonsList';
 import PasswordField from '../form-fields/PasswordField/PasswordField';
 
 import styles from './RegistrationForm.module.scss';
@@ -49,7 +48,6 @@ const RegistrationForm: React.FC<Props> = ({
   consentValues,
   onConsentChange,
   consentErrors,
-  socialLoginURLs,
 }: Props) => {
   const { t, i18n } = useTranslation('account');
   const location = useLocation();
@@ -84,7 +82,6 @@ const RegistrationForm: React.FC<Props> = ({
           </FormFeedback>
         ) : null}
       </div>
-      <SocialButtonsList socialLoginURLs={socialLoginURLs} />
       <h2 className={styles.title}>{t('registration.sign_up')}</h2>
       <TextField
         value={values.email}
@@ -126,7 +123,7 @@ const RegistrationForm: React.FC<Props> = ({
                 value={consentValues[consent.name] || ''}
                 required={consent.required}
                 error={!!consentError}
-                helperText={t('registration.consent_required')}
+                helperText={consentError ? t('registration.field_required') : undefined}
                 onChange={onConsentChange}
                 lang={htmlLang}
               />

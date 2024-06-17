@@ -1,3 +1,5 @@
+import type { Playlist, PlaylistItem } from '../../types/playlist';
+
 export function debounce<T extends (...args: any[]) => void>(callback: T, wait = 200) {
   let timeout: NodeJS.Timeout | null;
   return (...args: unknown[]) => {
@@ -101,6 +103,8 @@ export function logDev(message: unknown, ...optionalParams: unknown[]) {
     }
   }
 }
+
+export const isContentType = (item: PlaylistItem | Playlist, contentType: string) => item.contentType?.toLowerCase() === contentType.toLowerCase();
 
 export const isTruthyCustomParamValue = (value: unknown): boolean => ['true', '1', 'yes', 'on'].includes(String(value)?.toLowerCase());
 

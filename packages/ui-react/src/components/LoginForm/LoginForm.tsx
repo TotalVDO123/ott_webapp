@@ -15,7 +15,6 @@ import Link from '../Link/Link';
 import IconButton from '../IconButton/IconButton';
 import FormFeedback from '../FormFeedback/FormFeedback';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
-import SocialButtonsList from '../SocialButtonsList/SocialButtonsList';
 import Icon from '../Icon/Icon';
 import { modalURLFromLocation } from '../../utils/location';
 
@@ -33,7 +32,7 @@ type Props = {
   siteName?: string;
 };
 
-const LoginForm: React.FC<Props> = ({ onSubmit, onChange, socialLoginURLs, values, errors, validationError, submitting, siteName }: Props) => {
+const LoginForm: React.FC<Props> = ({ onSubmit, onChange, values, errors, validationError, submitting, siteName }: Props) => {
   const [viewPassword, toggleViewPassword] = useToggle();
   const { t } = useTranslation('account');
   const location = useLocation();
@@ -45,8 +44,6 @@ const LoginForm: React.FC<Props> = ({ onSubmit, onChange, socialLoginURLs, value
           {errors.form}
         </FormFeedback>
       ) : null}
-
-      <SocialButtonsList socialLoginURLs={socialLoginURLs} />
       <h2 className={styles.title}>{t('login.sign_in')}</h2>
       <TextField
         value={values.email}

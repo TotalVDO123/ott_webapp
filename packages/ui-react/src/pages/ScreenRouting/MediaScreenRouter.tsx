@@ -16,6 +16,7 @@ import MediaMovie from './mediaScreens/MediaMovie/MediaMovie';
 import MediaSeries from './mediaScreens/MediaSeries/MediaSeries';
 import MediaLiveChannel from './mediaScreens/MediaLiveChannel/MediaLiveChannel';
 import MediaEpisode from './mediaScreens/MediaEpisode/MediaEpisode';
+import MediaEvent from './mediaScreens/MediaEvent/MediaEvent';
 
 export const mediaScreenMap = new ScreenMap<PlaylistItem, ScreenComponent<PlaylistItem>>();
 
@@ -23,6 +24,7 @@ export const mediaScreenMap = new ScreenMap<PlaylistItem, ScreenComponent<Playli
 mediaScreenMap.registerByContentType(MediaSeries, CONTENT_TYPE.series);
 mediaScreenMap.registerByContentType(MediaEpisode, CONTENT_TYPE.episode);
 mediaScreenMap.registerByContentType(MediaLiveChannel, CONTENT_TYPE.liveChannel);
+mediaScreenMap.registerByContentType(MediaEvent, CONTENT_TYPE.liveEvent);
 mediaScreenMap.registerByContentType(MediaStaticPage, CONTENT_TYPE.page);
 mediaScreenMap.registerDefault(MediaMovie);
 

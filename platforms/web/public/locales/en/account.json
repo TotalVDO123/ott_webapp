@@ -77,19 +77,20 @@
     "yearly": "Yearly",
     "yearly_subscription": "Yearly subscription"
   },
+  "external_payment": {
+    "explanation": "This subscription is managed via {{paymentProvider}}.",
+    "manage_subscription": "Click here for more information."
+  },
   "login": {
     "email": "Email",
-    "facebook": "Sign in with Facebook",
     "field_is_not_valid_email": "Please re-enter your email details and try again.",
     "field_required": "This field is required, please fill in a valid {{field}}",
     "forgot_password": "Forgot password?",
-    "google": "Sign in with Google",
     "not_registered": "New to {{siteName}}?",
     "password": "Password",
     "sign_in": "Sign in",
     "sign_in_success": "Sign in successful",
     "sign_up": "Sign up",
-    "twitter": "Sign in with Twitter",
     "view_password": "View password",
     "wrong_combination": "Incorrect email/password combination",
     "wrong_email": "Please check your email and try again."
@@ -134,7 +135,6 @@
   },
   "registration": {
     "already_account": "Already have an account?",
-    "consent_required": "Consent required, please check the box to continue.",
     "consents_error": "Please accept all required consents to continue.",
     "continue": "Continue",
     "email": "Email",

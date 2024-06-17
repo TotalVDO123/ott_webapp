@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { formatDurationTag, formatLocalizedDateTime, formatSeriesMetaString } from '@jwp/ott-common/src/utils/formatting';
 import { isLiveChannel, isSeries } from '@jwp/ott-common/src/utils/media';
-import { MediaStatus } from '@jwp/ott-common/src/utils/liveEvent';
+import { isLiveEvent, MediaStatus } from '@jwp/ott-common/src/utils/liveEvent';
 import Lock from '@jwp/ott-theme/assets/icons/lock.svg?react';
 import Today from '@jwp/ott-theme/assets/icons/today.svg?react';
 import { testId } from '@jwp/ott-common/src/utils/common';
@@ -110,7 +110,7 @@ function Card({
       {!featured && !disabled && (
         <div className={styles.titleContainer}>
           {heading}
-          {!!scheduledStart && (
+          {!!scheduledStart && isLiveEvent(item) && (
             <div className={classNames(styles.scheduledStart, { [styles.loading]: loading })}>{formatLocalizedDateTime(scheduledStart, language)}</div>
           )}
         </div>

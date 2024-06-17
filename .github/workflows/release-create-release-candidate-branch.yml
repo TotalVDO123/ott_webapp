@@ -23,7 +23,7 @@ jobs:
           git config --global user.email 'ott-release-script@jwplayer.com'
           git fetch origin ${{ github.ref_name }}
           git merge origin/${{ github.ref_name }}
-          yarn && yarn i18next
+          yarn && yarn workspace @jwp/ott-web run i18next
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
 

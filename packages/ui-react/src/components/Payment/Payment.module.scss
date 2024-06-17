@@ -73,6 +73,10 @@
   }
 }
 
+.explanation {
+  font-size: 14px;
+}
+
 .cardDetails {
   display: flex;
   margin-top: calc(#{variables.$base-spacing} * 2);
