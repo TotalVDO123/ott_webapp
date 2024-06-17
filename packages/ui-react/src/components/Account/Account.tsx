@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 import DOMPurify from 'dompurify';
-import { useMutation } from 'react-query';
 import type { CustomFormField } from '@jwp/ott-common/types/account';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
@@ -16,7 +15,6 @@ import VisibilityOff from '@jwp/ott-theme/assets/icons/visibility_off.svg?react'
 import env from '@jwp/ott-common/src/env';
 
 import type { FormSectionContentArgs, FormSectionProps } from '../Form/FormSection';
-import Alert from '../Alert/Alert';
 import Button from '../Button/Button';
 import Form from '../Form/Form';
 import IconButton from '../IconButton/IconButton';
@@ -52,16 +50,8 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
   const navigate = useNavigate();
   const location = useLocation();
   const [viewPassword, toggleViewPassword] = useToggle();
-  const exportData = useMutation(accountController.exportAccountData);
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const exportDataMessage = exportData.isSuccess ? t('account.export_data_success') : t('account.export_data_error');
-  const htmlLang = i18n.language !== env.APP_DEFAULT_LANGUAGE ? env.APP_DEFAULT_LANGUAGE : undefined;
 
-  useEffect(() => {
-    if (exportData.isSuccess || exportData.isError) {
-      setIsAlertVisible(true);
-    }
-  }, [exportData.isSuccess, exportData.isError]);
+  const htmlLang = i18n.language !== env.APP_DEFAULT_LANGUAGE ? env.APP_DEFAULT_LANGUAGE : undefined;
 
   const { customer, customerConsents, publisherConsents } = useAccountStore(
     ({ user, customerConsents, publisherConsents }) => ({
@@ -72,7 +62,7 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
     shallow,
   );
 
-  const { canChangePasswordWithOldPassword, canExportAccountData } = accountController.getFeatures();
+  const { canChangePasswordWithOldPassword } = accountController.getFeatures();
   // users authenticated with social (register_source: facebook, google, twitter) do not have password by default
   const registerSource = customer?.metadata?.register_source;
   const isSocialLogin = (registerSource && registerSource !== 'inplayer') || false;
@@ -386,9 +376,6 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
             }),
         ].filter(isTruthy)}
       </Form>
-      {canExportAccountData && (
-        <Alert open={isAlertVisible} message={exportDataMessage} onClose={() => setIsAlertVisible(false)} isSuccess={exportData.isSuccess} />
-      )}
     </>
   );
 };
