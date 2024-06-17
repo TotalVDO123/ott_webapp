@@ -121,7 +121,9 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getAppPlans = async (plansIds: (string | number)[]) => {
     try {
-      const response = await this.jwpService.get<PlansListResponse>(`/plans?q=id:(${plansIds.map((planId) => `"${planId}"`).join(' OR ')})`);
+      const response = await this.jwpService.get<PlansListResponse>(
+        `/v3/sites/${this.jwpService.siteId}/plans?q=id:(${plansIds.map((planId) => `"${planId}"`).join(' OR ')})`,
+      );
       return response.plans;
     } catch {
       throw new Error('Failed to get plans');
@@ -139,7 +141,7 @@ export default class JWPCheckoutService extends CheckoutService {
       const offers = await Promise.all(
         plans.map(async (plan) => {
           try {
-            const data = await this.jwpService.get<JwPlanPricesResponse>(`/plans/${plan.id}/prices`);
+            const data = await this.jwpService.get<JwPlanPricesResponse>(`/v3/sites/${this.jwpService.siteId}/plans/${plan.id}/prices`);
 
             if (data.prices) {
               return data.prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));

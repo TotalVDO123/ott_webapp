@@ -9,10 +9,10 @@ type RequestOptions = {
 export default class JWPBaseService {
   private sandbox = true;
 
-  private siteId = '';
+  siteId = '';
 
   // private getBaseUrl = () => (this.sandbox ? 'https://staging-v2.inplayer.com' : 'https://services.inplayer.com');
-  private getBaseUrl = () => `${this.sandbox ? 'https://services-daily.inplayer.com' : 'https://services.inplayer.com'}/v3/sites/${this.siteId}`;
+  private getBaseUrl = () => (this.sandbox ? 'https://services-daily.inplayer.com' : 'https://services.inplayer.com');
 
   private performRequest = async (path: string = '/', method = 'GET', body?: string, options: RequestOptions = {}) => {
     try {
