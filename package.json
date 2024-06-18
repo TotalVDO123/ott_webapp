@@ -36,8 +36,8 @@
     "web": "yarn --cwd platforms/web"
   },
   "devDependencies": {
-    "@commitlint/cli": "^12.1.1",
-    "@commitlint/config-conventional": "^12.1.1",
+    "@commitlint/cli": "^17.1.1",
+    "@commitlint/config-conventional": "^17.1.1",
     "@types/node": "^18.15.3",
     "csv-parse": "^5.4.0",
     "eslint": "^8.57.0",

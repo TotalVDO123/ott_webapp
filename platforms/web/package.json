@@ -91,8 +91,8 @@
     "workbox-window": "^6.5.4"
   },
   "optionalDependencies": {
-    "gh-pages": "^3.2.3",
-    "lighthouse": "^9.6.7",
+    "gh-pages": "^6.1.1",
+    "lighthouse": "^12.1.0",
     "sharp": "^0.33.2"
   }
 }
