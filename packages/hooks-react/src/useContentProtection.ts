@@ -8,6 +8,7 @@ import { getModule } from '@jwp/ott-common/src/modules/container';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
+import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 const useContentProtection = <T>(
   type: EntitlementType,
@@ -19,8 +20,11 @@ const useContentProtection = <T>(
 ) => {
   const genericEntitlementService = getModule(GenericEntitlementService);
   const jwpEntitlementService = getModule(JWPEntitlementService);
+  const checkoutController = getModule(CheckoutController);
 
-  const { configId, signingConfig, contentProtection, jwp, urlSigning } = useConfigStore(({ config }) => ({
+  const accessMethod = checkoutController.getAccessMethod();
+
+  const { configId, signingConfig, contentProtection, urlSigning } = useConfigStore(({ config }) => ({
     configId: config.id,
     signingConfig: config.contentSigningService,
     contentProtection: config.contentProtection,
@@ -34,20 +38,23 @@ const useContentProtection = <T>(
   const { data: token, isLoading } = useQuery(
     ['token', type, id, params],
     async () => {
-      // if provider is not JWP
-      if (!!id && !!host) {
+      if (!id) {
+        return;
+      }
+
+      if (accessMethod === 'plan') {
+        return jwpEntitlementService.getJWPMediaToken(configId, id);
+      }
+
+      if (host) {
         const accountController = getModule(AccountController);
         const authData = await accountController.getAuthData();
         const { host, drmPolicyId } = signingConfig;
 
         return genericEntitlementService.getMediaToken(host, id, authData?.jwt, params, drmPolicyId);
       }
-      // if provider is JWP
-      if (jwp && configId && !!id && signingEnabled) {
-        return jwpEntitlementService.getJWPMediaToken(configId, id);
-      }
     },
-    { enabled: signingEnabled && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
+    { enabled: !!id && (accessMethod === 'plan' || (signingEnabled && enabled)), keepPreviousData: false, staleTime: 15 * 60 * 1000 },
   );
 
   const queryResult = useQuery<T | undefined>([type, id, params, token], async () => callback(token, drmPolicyId), {

@@ -1,0 +1,21 @@
+.title {
+  margin-bottom: 16px;
+  font-weight: var(--body-font-weight-bold);
+  font-size: 24px;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.offers {
+  display: flex;
+  justify-content: space-around;
+  margin: 0 -4px 24px;
+  padding-bottom: 8px;
+  overflow-x: auto;
+}
+
+

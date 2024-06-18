@@ -7,9 +7,12 @@ import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import { getModule } from '@jwp/ott-common/src/modules/container';
+import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 import ChooseOfferForm from '../../../components/ChooseOfferForm/ChooseOfferForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
+import ChoosePlanForm from '../../../components/ChoosePlanForm/ChoosePlanForm';
 import useQueryParam from '../../../hooks/useQueryParam';
 
 const ChooseOffer = () => {
@@ -18,6 +21,7 @@ const ChooseOffer = () => {
   const { t } = useTranslation('account');
   const isSwitch = useQueryParam('u') === 'upgrade-subscription';
   const isPendingOffer = useAccountStore(({ pendingOffer }) => ({ isPendingOffer: !!pendingOffer }));
+  const checkoutController = getModule(CheckoutController);
 
   const { isLoading, mediaOffers, subscriptionOffers, switchSubscriptionOffers, defaultOfferType, hasMultipleOfferTypes, chooseOffer, switchSubscription } =
     useOffers();
@@ -85,6 +89,10 @@ const ChooseOffer = () => {
         <LoadingOverlay inline />
       </div>
     );
+  }
+
+  if (checkoutController.getAccessMethod() === 'plan') {
+    return <ChoosePlanForm values={values} errors={errors} onChange={handleChange} onSubmit={handleSubmit} offers={visibleOffers} submitting={submitting} />;
   }
 
   return (

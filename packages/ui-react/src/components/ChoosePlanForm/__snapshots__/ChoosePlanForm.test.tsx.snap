@@ -1,0 +1,161 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<PlansForm> > renders and matches snapshot 1`] = `
+<div>
+  <form
+    data-testid="choose-offer-form"
+    novalidate=""
+  >
+    <h1
+      class="_title_eb8471"
+    >
+      choose_offer.title
+    </h1>
+    <div
+      class="_tabs_eb8471"
+    >
+      <div
+        class="_buttonGroup_f8f296"
+      >
+        <button
+          class="_button_f8f296 _default_f8f296 _outlined_f8f296 _active_f8f296"
+          type="button"
+        >
+          <span>
+            Periods.month
+          </span>
+        </button>
+        <button
+          class="_button_f8f296 _default_f8f296 _outlined_f8f296"
+          type="button"
+        >
+          <span>
+            Periods.year
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="_offers_eb8471"
+    >
+      <div
+        aria-labelledby="title-S916977979_NL"
+        class="_offer_059dc4"
+      >
+        <input
+          checked=""
+          class="_radio_059dc4"
+          data-testid="S916977979_NL"
+          id="S916977979_NL"
+          name="selectedOfferId"
+          type="radio"
+          value="S916977979_NL"
+        />
+        <div
+          class="_label_059dc4"
+        >
+          <label
+            for="S916977979_NL"
+          >
+            <h2
+              class="_offerTitle_059dc4"
+              id="title-S916977979_NL"
+            >
+              Monthly subscription (recurring) to JW OTT Webapp
+            </h2>
+            <span
+              class="hidden"
+            >
+              .
+            </span>
+            <hr
+              aria-hidden="true"
+              class="_offerDivider_059dc4"
+            />
+            <ul
+              class="_offerBenefits_059dc4"
+            >
+              <li>
+                <svg
+                  aria-hidden="true"
+                  class="_icon_585b29"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"
+                  />
+                </svg>
+                choose_offer.benefits.first_periods_free
+                <span
+                  class="hidden"
+                >
+                  .
+                </span>
+              </li>
+              <li>
+                <svg
+                  aria-hidden="true"
+                  class="_icon_585b29"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"
+                  />
+                </svg>
+                choose_offer.benefits.cancel_anytime
+                <span
+                  class="hidden"
+                >
+                  .
+                </span>
+              </li>
+              <li>
+                <svg
+                  aria-hidden="true"
+                  class="_icon_585b29"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"
+                  />
+                </svg>
+                choose_offer.benefits.watch_on_all_devices
+                <span
+                  class="hidden"
+                >
+                  .
+                </span>
+              </li>
+            </ul>
+            <div
+              class="_fill_059dc4"
+            />
+            <div
+              class="_offerPrice_059dc4"
+            >
+              € 6,99
+               
+              <small>
+                /
+                periods.month
+              </small>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <button
+      aria-disabled="false"
+      class="_button_f8f296 _primary_f8f296 _fullWidth_f8f296"
+      type="submit"
+    >
+      <span>
+        choose_offer.continue
+      </span>
+    </button>
+  </form>
+</div>
+`;

@@ -46,7 +46,9 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   const checkoutController = getModule(CheckoutController, false);
   const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const isPreEntitled = playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
+  const accessMethod = checkoutController?.getAccessMethod();
+
+  const isPreEntitled = accessMethod === 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = playlistItem?.mediaOffers || [];
 
   // this query is invalidated when the subscription gets reloaded
@@ -60,25 +62,21 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
     })),
   );
 
-  const { isLoading: isTokenLoading, data: hasAccessToken = false } = useQuery(
-    ['access', playlistItem?.mediaid],
-    () => {
+  const { isLoading: isTokenLoading, data: token } = useQuery(
+    ['token', 'media', playlistItem?.mediaid, {}],
+    async () => {
       if (!playlistItem?.mediaid) {
-        return;
+        return '';
       }
 
-      const token = jwpEntitlementService.getJWPMediaToken(config.id, playlistItem.mediaid);
-
-      return !!token;
+      return await jwpEntitlementService.getJWPMediaToken(config.id, playlistItem.mediaid);
     },
-    {
-      enabled: !!playlistItem?.mediaid,
-    },
+    { enabled: accessMethod === 'plan', keepPreviousData: false, staleTime: 15 * 60 * 1000, retry: 2 },
   );
 
   // when the user is logged out the useQueries will be disabled but could potentially return its cached data
   const isMediaEntitled =
-    hasAccessToken || (!!user && mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
+    !!token || (!!user && mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
   const isMediaEntitlementLoading = !isMediaEntitled && (isTokenLoading || mediaEntitlementQueries.some((item) => item.isLoading));
 
   const isEntitled = !!playlistItem && (isPreEntitled || isMediaEntitled);

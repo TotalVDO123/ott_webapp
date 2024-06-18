@@ -28,5 +28,6 @@
   "total_episodes_many": "{{count}} episodios",
   "total_episodes_other": "{{count}} episodios",
   "trailer": "Tráiler",
-  "watch_trailer": "Ver el tráiler"
+  "watch_trailer": "Ver el tráiler",
+  "show_plans": "Mostrar planos"
 }

@@ -17,6 +17,7 @@ import WaitingForPayment from '../../components/WaitingForPayment/WaitingForPaym
 import UpgradeSubscription from '../../components/UpgradeSubscription/UpgradeSubscription';
 import DeleteAccountPasswordWarning from '../../components/DeleteAccountPasswordWarning/DeleteAccountPasswordWarning';
 import UpdatePaymentMethod from '../UpdatePaymentMethod/UpdatePaymentMethod';
+import ListPlans from '../../components/ListPlans/ListPlans';
 
 import EditCardDetails from './forms/EditCardDetails';
 import EditPassword from './forms/EditPassword';
@@ -61,6 +62,7 @@ export type AccountModals = {
   'payment-method-success': 'payment-method-success';
   'waiting-for-payment': 'waiting-for-payment';
   'finalize-payment': 'finalize-payment';
+  'list-plans': 'list-plans';
 };
 
 const AccountModal = () => {
@@ -159,6 +161,8 @@ const AccountModal = () => {
         return <WaitingForPayment />;
       case 'finalize-payment':
         return <FinalizePayment />;
+      case 'list-plans':
+        return <ListPlans />;
     }
   };
 

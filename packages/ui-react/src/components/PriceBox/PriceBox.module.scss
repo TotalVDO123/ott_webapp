@@ -3,35 +3,16 @@
 @use '@jwp/ott-ui-react/src/styles/accessibility';
 @use '@jwp/ott-ui-react/src/styles/mixins/responsive';
 
-.title {
-  margin-bottom: 8px;
-  font-weight: var(--body-font-weight-bold);
-  font-size: 24px;
-}
-
-.subtitle {
-  margin-bottom: 24px;
-  font-weight: var(--body-font-weight-bold);
-  font-size: 18px;
-}
-
-.offerGroupSwitch {
-  display: flex;
+.offer {
   flex: 1;
-  justify-content: center;
-  margin-bottom: 24px;
+  min-width: 200px;
+  max-width: 250px;
+  margin: 0 4px;
 
-  > input  {
-    &:checked + .label {
-      border-radius: 4px;
-      transform: scale(1.02);
-    }
+  &:focus-within .label {
+    @include accessibility.accessibleOutlineContrast;
+    transform: scale(1.03);
   }
-}
-
-.offers {
-  display: flex;
-  margin: 0 -4px 24px;
 }
 
 .radio {
@@ -42,7 +23,7 @@
   white-space: nowrap;
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
-
+  
   &:checked + .label {
     color: variables.$black;
     background-color: variables.$white;
@@ -62,16 +43,54 @@
   transition: border 0.2s ease, background 0.2s ease, transform 0.2s ease-out;
 }
 
-.offerGroupLabel {
-  padding: 8px 16px;
+.offerTitle {
   font-weight: var(--body-font-weight-bold);
   font-size: 20px;
+  text-align: center;
+}
 
-  &:nth-child(2) {
-    border-radius: 4px 0 0 4px;
-  }
-  &:nth-child(4) {
-    border-radius: 0 4px 4px 0;
+.offerDivider {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.54;
+}
+
+.offerBenefits {
+  margin-bottom: 16px;
+  padding: 0;
+
+  > li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 4px 0;
+
+    > svg {
+      flex-shrink: 0;
+      margin-right: 4px;
+      fill: variables.$green;
+    }
+
+    @include responsive.mobile-only() {
+      font-size: 14px;
+    }
   }
 }
 
+.fill {
+  flex: 1;
+}
+
+.offerPrice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  font-size: 32px;
+
+  > small {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+}

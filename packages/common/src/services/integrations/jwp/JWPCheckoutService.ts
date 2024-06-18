@@ -1,9 +1,10 @@
 import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 
-import type { JwPlanPricesResponse, PlanPrice, PlansListResponse } from '../../../../../../packages/common/types/jw';
+import type { PlanPrice } from '../../../../../../packages/common/types/jw';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
+  AccessMethod,
   CardPaymentData,
   CreateOrder,
   CreateOrderArgs,
@@ -24,25 +25,17 @@ import type { Config } from '../../../../types/config';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
-import AccountService from '../AccountService';
-import { INTEGRATION_TYPE } from '../../../modules/types';
-import { getNamedModule } from '../../../modules/container';
-
-import JWPBaseService from './base/JWPBaseService';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
-  private readonly jwpService: JWPBaseService;
-  private readonly accountService: AccountService;
   private readonly cardPaymentProvider = 'stripe';
+  siteId = '';
 
-  constructor(jwpService: JWPBaseService, @inject(INTEGRATION_TYPE) integrationType: string) {
-    super();
-    this.jwpService = jwpService;
-    this.accountService = getNamedModule(AccountService, integrationType);
-  }
+  accessMethod: AccessMethod = 'plan';
 
-  initialize = async (config: Config) => this.jwpService.setup(this.accountService.sandbox, config.siteId);
+  initialize = async (config: Config) => {
+    this.siteId = config.siteId;
+  };
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -119,12 +112,11 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  getAppPlans = async (plansIds: (string | number)[]) => {
+  getAppPlans = async (plansIds: string[]) => {
     try {
-      const response = await this.jwpService.get<PlansListResponse>(
-        `/v3/sites/${this.jwpService.siteId}/plans?q=id:(${plansIds.map((planId) => `"${planId}"`).join(' OR ')})`,
-      );
-      return response.plans;
+      const response = await InPlayer.Payment.getSitePlans(this.siteId, plansIds);
+
+      return response.data.plans;
     } catch {
       throw new Error('Failed to get plans');
     }
@@ -136,15 +128,17 @@ export default class JWPCheckoutService extends CheckoutService {
     }
 
     try {
-      const plans = await this.getAppPlans(payload.offerIds);
+      const plans = await this.getAppPlans(payload.offerIds as string[]);
 
       const offers = await Promise.all(
         plans.map(async (plan) => {
           try {
-            const data = await this.jwpService.get<JwPlanPricesResponse>(`/v3/sites/${this.jwpService.siteId}/plans/${plan.id}/prices`);
+            const response = await InPlayer.Payment.getSitePlanPrices(this.siteId, plan.id);
 
-            if (data.prices) {
-              return data.prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));
+            if (response.data.prices) {
+              return response.data.prices.map((offer) =>
+                this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
+              );
             }
 
             return [];

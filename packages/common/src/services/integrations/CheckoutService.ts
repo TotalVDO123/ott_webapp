@@ -1,4 +1,5 @@
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
   CreateOrder,
   DeletePaymentMethod,
@@ -24,6 +25,8 @@ import type { Config } from '../../../types/config';
 
 export default abstract class CheckoutService {
   abstract initialize: (config: Config) => Promise<void>;
+
+  abstract accessMethod: AccessMethod;
 
   abstract getOffers: GetOffers;
 

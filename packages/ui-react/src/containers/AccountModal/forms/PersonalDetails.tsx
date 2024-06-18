@@ -40,7 +40,9 @@ const PersonalDetails = () => {
   );
 
   const nextStep = useCallback(() => {
-    const hasOffers = accessModel === ACCESS_MODEL.SVOD || (accessModel === ACCESS_MODEL.AUTHVOD && hasMediaOffers);
+    const hasPlans = true; //TODO check from the store
+
+    const hasOffers = accessModel === ACCESS_MODEL.SVOD || (accessModel === ACCESS_MODEL.AUTHVOD && hasMediaOffers) || hasPlans;
 
     navigate(modalURLFromLocation(location, hasOffers ? 'choose-offer' : 'welcome'), { replace: true });
   }, [navigate, location, accessModel, hasMediaOffers]);
