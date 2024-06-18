@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 
 import type { GetContentListParams, GetContentSearchParams, Playlist, PlaylistItem } from '../../../types/playlist';
-import type { ContentList } from '../../../types/content-list';
+import type { RecommendationsList } from '../../../types/recommendations';
 import { createURL } from '../../utils/urlFormatting';
 import { getDataOrThrow } from '../../utils/api';
 import env from '../../env';
@@ -21,16 +21,16 @@ export default class RecommendationsService extends ContentService {
   /**
    * Transform incoming recommendations lists
    */
-  private transformContentList = (contentList: ContentList): Playlist => {
-    const { list, ...rest } = contentList;
+  private transformContentList = (recommendations: RecommendationsList): Playlist => {
+    const { list, ...rest } = recommendations;
 
     const playlist: Playlist = { ...rest, playlist: [] };
 
-    playlist.playlist = contentList.list.map((item) => {
+    playlist.playlist = list.map((item) => {
       const { custom_params, media_id, description, tags, ...rest } = item;
 
       const playlistItem: PlaylistItem = {
-        feedid: contentList.id,
+        feedid: recommendations.id,
         mediaid: media_id,
         tags: tags.join(','),
         description: description || '',
@@ -57,7 +57,7 @@ export default class RecommendationsService extends ContentService {
     const pathname = `/v2/sites/${siteId}/content_lists/${id}`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, params);
     const response = await fetch(url);
-    const data = (await getDataOrThrow(response)) as ContentList;
+    const data = (await getDataOrThrow(response)) as RecommendationsList;
 
     return this.transformContentList(data);
   };
@@ -70,7 +70,7 @@ export default class RecommendationsService extends ContentService {
     });
 
     const response = await fetch(url);
-    const data = (await getDataOrThrow(response)) as ContentList;
+    const data = (await getDataOrThrow(response)) as RecommendationsList;
 
     return this.transformContentList(data);
   };

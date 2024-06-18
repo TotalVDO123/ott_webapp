@@ -36,8 +36,6 @@ export const MEDIA_CONTENT_TYPE = {
   series: 'series',
   // Separate episode page
   episode: 'episode',
-  // Page with a list of live channels
-  live: 'live',
   // Live channel (24x7)
   liveChannel: 'livechannel',
   // Temporary live stream that starts at a specific time

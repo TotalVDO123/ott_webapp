@@ -49,6 +49,9 @@ export default class PlaylistService extends ContentService {
     return this.getPlaylist({ id, params });
   };
 
+  /**
+   * Get search playlist by id
+   */
   getContentSearch = async ({ id, params }: { id: string | undefined; params: GetContentSearchParams }): Promise<Playlist | undefined> => {
     return this.getPlaylist({ id, params });
   };
