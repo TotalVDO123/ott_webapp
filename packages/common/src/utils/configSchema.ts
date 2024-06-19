@@ -7,14 +7,14 @@ const contentSchema: SchemaOf<Content> = object({
   title: string().notRequired(),
   featured: boolean().notRequired(),
   backgroundColor: string().nullable().notRequired(),
-  type: mixed().oneOf(['playlist', 'continue_watching', 'favorites', 'content_list']),
+  type: mixed().oneOf(['playlist', 'continue_watching', 'favorites']),
 }).defined();
 
 const menuSchema: SchemaOf<Menu> = object().shape({
   label: string().defined(),
   contentId: string().defined(),
   filterTags: string().notRequired(),
-  type: mixed().oneOf(['playlist', 'content_list']).notRequired(),
+  type: mixed().oneOf(['playlist']).notRequired(),
 });
 
 const featuresSchema: SchemaOf<Features> = object({
