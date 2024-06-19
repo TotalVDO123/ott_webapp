@@ -1,8 +1,9 @@
-import { LIST_TYPE, PersonalShelf, PersonalShelves, PLAYLIST_LIMIT } from '@jwp/ott-common/src/constants';
-import ContentController from '@jwp/ott-common/src/controllers/ContentController';
+import { PLAYLIST_TYPE, PersonalShelf, PersonalShelves, PLAYLIST_LIMIT } from '@jwp/ott-common/src/constants';
+import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useFavoritesStore } from '@jwp/ott-common/src/stores/FavoritesStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { generatePlaylistPlaceholder } from '@jwp/ott-common/src/utils/collection';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
 import { isScheduledOrLiveMedia } from '@jwp/ott-common/src/utils/liveEvent';
@@ -22,8 +23,9 @@ type UsePlaylistResult = {
 const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined) => {
   const page_limit = PLAYLIST_LIMIT.toString();
   const queryClient = useQueryClient();
-  const contentController = getModule(ContentController);
+  const apiService = getModule(ApiService);
 
+  const siteId = useConfigStore((state) => state.config.siteId);
   const favorites = useFavoritesStore((state) => state.getPlaylist());
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
 
@@ -32,14 +34,20 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
       enabled: !!contentId && (!rowsToLoad || rowsToLoad > index) && !PersonalShelves.some((pType) => pType === type),
       queryKey: ['playlist', contentId],
       queryFn: async () => {
-        const list = await contentController.getContentList(contentId, type, { page_limit });
+        if (type === PLAYLIST_TYPE.playlist) {
+          const playlist = await apiService.getPlaylistById(contentId, { page_limit });
 
-        if (type === LIST_TYPE.playlist) {
-          list?.playlist?.forEach((playlistItem) => {
+          // This pre-caches all playlist items and makes navigating a lot faster.
+          playlist?.playlist?.forEach((playlistItem) => {
             queryClient.setQueryData(['media', playlistItem.mediaid], playlistItem);
           });
+
+          return playlist;
+        } else if (type === PLAYLIST_TYPE.content_list) {
+          const contentList = await apiService.getContentList({ siteId, id: contentId });
+
+          return contentList;
         }
-        return list;
       },
       placeholderData: !!contentId && placeholderData,
       refetchInterval: (data: Playlist | undefined) => {

@@ -41,7 +41,7 @@ describe('createPath, mediaURL, playlistURL and liveChannelsURL', () => {
   });
   test('valid playlist path', () => {
     const playlist = playlistFixture as Playlist;
-    const url = playlistURL(playlist.feedid || '', playlist.title);
+    const url = playlistURL({ id: playlist.feedid || '', title: playlist.title });
 
     expect(url).toEqual('/p/dGSUzs9o/all-films');
   });

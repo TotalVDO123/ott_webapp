@@ -1,5 +1,5 @@
 import type { PlaylistItem } from '../../types/playlist';
-import { RELATIVE_PATH_USER_MY_PROFILE, PATH_MEDIA, PATH_PLAYLIST, PATH_USER_MY_PROFILE, PATH_RECOMMENDATIONS } from '../paths';
+import { RELATIVE_PATH_USER_MY_PROFILE, PATH_MEDIA, PATH_PLAYLIST, PATH_USER_MY_PROFILE } from '../paths';
 
 import { getLegacySeriesPlaylistIdFromEpisodeTags, getSeriesPlaylistIdFromCustomParams } from './media';
 
@@ -103,12 +103,8 @@ export const mediaURL = ({
   return createPath(PATH_MEDIA, { id: media.mediaid, title: slugify(media.title) }, { r: playlistId, play: play ? '1' : null, e: episodeId });
 };
 
-export const playlistURL = (id: string, title?: string) => {
-  return createPath(PATH_PLAYLIST, { id, title: title ? slugify(title) : undefined });
-};
-
-export const recommendationsURL = (id: string, title?: string) => {
-  return createPath(PATH_RECOMMENDATIONS, { id, title: title ? slugify(title) : undefined });
+export const playlistURL = ({ id, title, type }: { id: string; title?: string; type?: 'playlist' | 'content_list' }) => {
+  return createPath(PATH_PLAYLIST, { id, title: title ? slugify(title) : undefined }, { t: type });
 };
 
 export const liveChannelsURL = (playlistId: string, channelId?: string, play = false) => {

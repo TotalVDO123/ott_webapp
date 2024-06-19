@@ -1,6 +1,6 @@
 import type { CustomParams } from './custom-params';
 
-export type RecommendationsItem = {
+export type ContentListItem = {
   media_id: string;
   title: string;
   description: string | null;
@@ -9,9 +9,11 @@ export type RecommendationsItem = {
   custom_params: CustomParams;
 };
 
-export type RecommendationsList = {
+export type ContentList = {
   id: string;
   title: string;
   description: string | undefined;
-  list: RecommendationsItem[];
+  list: ContentListItem[];
 };
+
+export type GetContentSearchParams = { searchTerm: string };

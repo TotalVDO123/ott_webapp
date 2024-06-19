@@ -82,9 +82,9 @@ const SidebarContainer = () => {
         <li>
           <MenuButton label={t('home')} to="/" />
         </li>
-        {menu.map((item) => (
-          <li key={item.contentId}>
-            <MenuButton label={item.label} to={playlistURL(item.contentId)} />
+        {menu.map(({ contentId, type, label }) => (
+          <li key={contentId}>
+            <MenuButton label={label} to={playlistURL({ id: contentId, type })} />
           </li>
         ))}
       </ul>

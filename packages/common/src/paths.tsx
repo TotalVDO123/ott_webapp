@@ -2,7 +2,6 @@ export const PATH_HOME = '/';
 
 export const PATH_MEDIA = '/m/:id/*';
 export const PATH_PLAYLIST = '/p/:id/*';
-export const PATH_RECOMMENDATIONS = '/r/:id/*';
 export const PATH_LEGACY_SERIES = '/s/:id/*';
 
 export const PATH_SEARCH = '/q/*';

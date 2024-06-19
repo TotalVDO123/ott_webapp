@@ -49,8 +49,6 @@ const DemoContentLoader = ({ query }: { query: BootstrapData }) => {
 
   const { configSource } = data || {};
 
-  console.error(Object.entries(error || {}));
-
   return (
     <>
       {/* Show the error page when error except in demo mode (the demo mode shows its own error) */}

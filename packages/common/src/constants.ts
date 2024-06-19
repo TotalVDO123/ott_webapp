@@ -86,7 +86,7 @@ export const EPG_TYPE = {
   viewNexa: 'viewnexa',
 } as const;
 
-export const LIST_TYPE = {
+export const PLAYLIST_TYPE = {
   playlist: 'playlist',
   continue_watching: 'continue_watching',
   favorites: 'favorites',

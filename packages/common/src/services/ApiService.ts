@@ -6,7 +6,8 @@ import { createURL } from '../utils/urlFormatting';
 import { getDataOrThrow } from '../utils/api';
 import { filterMediaOffers } from '../utils/entitlements';
 import { useConfigStore as ConfigStore } from '../stores/ConfigStore';
-import type { Playlist, PlaylistItem } from '../../types/playlist';
+import type { GetPlaylistParams, Playlist, PlaylistItem } from '../../types/playlist';
+import type { ContentList, GetContentSearchParams } from '../../types/content-list';
 import type { AdSchedule } from '../../types/ad-schedule';
 import type { EpisodeInSeries, EpisodesRes, EpisodesWithPagination, GetSeriesParams, Series } from '../../types/series';
 import env from '../env';
@@ -42,6 +43,49 @@ export default class ApiService {
     }
 
     return date ? parseISO(date) : undefined;
+  };
+
+  /**
+   * Transform incoming content lists
+   */
+  private transformContentList = (contentList: ContentList): Playlist => {
+    const { list, ...rest } = contentList;
+
+    const playlist: Playlist = { ...rest, playlist: [] };
+
+    playlist.playlist = list.map((item) => {
+      const { custom_params, media_id, description, tags, ...rest } = item;
+
+      const playlistItem: PlaylistItem = {
+        feedid: contentList.id,
+        mediaid: media_id,
+        tags: tags.join(','),
+        description: description || '',
+        sources: [],
+        images: [],
+        image: '',
+        link: '',
+        pubdate: 0,
+        ...rest,
+        ...custom_params,
+      };
+
+      return this.transformMediaItem(playlistItem, playlist);
+    });
+
+    return playlist;
+  };
+
+  /**
+   * Transform incoming playlists
+   */
+  private transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
+    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
+
+    // remove the related media item (when this is a recommendations playlist)
+    if (relatedMediaId) playlist.playlist.filter((item) => item.mediaid !== relatedMediaId);
+
+    return playlist;
   };
 
   /**
@@ -217,5 +261,47 @@ export default class ApiService {
     const response = await fetch(url, { credentials: 'omit' });
 
     return (await getDataOrThrow(response)) as AdSchedule;
+  };
+
+  /**
+   * Get playlist by id
+   */
+  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}): Promise<Playlist | undefined> => {
+    if (!id) {
+      return undefined;
+    }
+
+    const pathname = `/v2/playlists/${id}`;
+    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, params);
+    const response = await fetch(url);
+    const data = (await getDataOrThrow(response)) as Playlist;
+
+    return this.transformPlaylist(data, params.related_media_id);
+  };
+
+  getContentList = async ({ id, siteId }: { id: string | undefined; siteId: string }): Promise<Playlist | undefined> => {
+    if (!id || !siteId) {
+      throw new Error('List ID and Site ID are required');
+    }
+
+    const pathname = `/v2/sites/${siteId}/content_lists/${id}`;
+    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {});
+    const response = await fetch(url);
+    const data = (await getDataOrThrow(response)) as ContentList;
+
+    return this.transformContentList(data);
+  };
+
+  getContentSearch = async ({ siteId, params }: { siteId: string; params: GetContentSearchParams }) => {
+    const pathname = `/v2/sites/${siteId}/app_content/media/search`;
+
+    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {
+      search_query: params.searchTerm,
+    });
+
+    const response = await fetch(url);
+    const data = (await getDataOrThrow(response)) as ContentList;
+
+    return this.transformContentList(data);
   };
 }

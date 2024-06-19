@@ -15,7 +15,6 @@ import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
-import { LIST_TYPE } from '@jwp/ott-common/src/constants';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import VideoLayout from '../../../../components/VideoLayout/VideoLayout';
@@ -52,11 +51,7 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(data?.trailerId || '');
-  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({
-    playlistId: features?.recommendationsPlaylist || '',
-    type: LIST_TYPE.playlist,
-    params: { related_media_id: id },
-  });
+  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(features?.recommendationsPlaylist || '', { related_media_id: id });
 
   // User, entitlement
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
