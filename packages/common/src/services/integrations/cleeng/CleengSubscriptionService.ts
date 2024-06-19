@@ -24,6 +24,8 @@ export default class CleengSubscriptionService extends SubscriptionService {
     this.cleengService = cleengService;
   }
 
+  initialize = async () => {};
+
   getActiveSubscription: GetActiveSubscription = async ({ customerId }) => {
     const response = await this.getSubscriptions({ customerId });
 
