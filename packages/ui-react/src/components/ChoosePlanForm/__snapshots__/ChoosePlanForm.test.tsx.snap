@@ -18,19 +18,19 @@ exports[`<PlansForm> > renders and matches snapshot 1`] = `
         class="_buttonGroup_f8f296"
       >
         <button
-          class="_button_f8f296 _default_f8f296 _outlined_f8f296 _active_f8f296"
+          class="_button_f8f296 _groupedButton_eb8471 _default_f8f296 _outlined_f8f296 _active_f8f296"
           type="button"
         >
           <span>
-            Periods.month
+            periods.month
           </span>
         </button>
         <button
-          class="_button_f8f296 _default_f8f296 _outlined_f8f296"
+          class="_button_f8f296 _groupedButton_eb8471 _default_f8f296 _outlined_f8f296"
           type="button"
         >
           <span>
-            Periods.year
+            periods.year
           </span>
         </button>
       </div>
