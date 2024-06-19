@@ -83,6 +83,12 @@
     "yearly": "Anual",
     "yearly_subscription": "Suscripción anual"
   },
+  "list_plans": {
+    "title": "",
+    "description": "",
+    "go_to_account_settings": "",
+    "or": ""
+  },
   "external_payment": {
     "explanation": "Esta suscripción se gestiona a través de {{paymentProvider}}.",
     "manage_subscription": "Haga clic aquí para más información."

@@ -112,11 +112,71 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  getAppPlans = async (plansIds: string[]) => {
-    try {
-      const response = await InPlayer.Payment.getSitePlans(this.siteId, plansIds);
+  getPlans = async (searchString: string) => {
+    const response = await InPlayer.Payment.getSitePlans(this.siteId, searchString);
 
-      return response.data.plans;
+    const plans = response.data.plans.filter((plan) => plan.metadata.access_model === 'svod');
+
+    return plans;
+  };
+
+  getPlanPrices = async (planId: string) => {
+    const response = await InPlayer.Payment.getSitePlanPrices(this.siteId, planId);
+
+    return response.data.prices;
+  };
+
+  getPlansWithPriceOffers = async (searchString: string) => {
+    try {
+      const plans = await this.getPlans(searchString);
+
+      const offers = await Promise.all(
+        plans.map(async (plan) => {
+          try {
+            const prices = await this.getPlanPrices(plan.id);
+
+            if (prices?.length) {
+              const offers = prices.map((offer) =>
+                this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
+              );
+
+              return [plan, offers] as const;
+            }
+
+            return [plan, [] as Offer[]] as const;
+          } catch {
+            throw new Error();
+          }
+        }),
+      );
+
+      return offers;
+    } catch {
+      throw new Error('Failed to get plans');
+    }
+  };
+
+  getAppPlansPriceOffers = async (searchString: string) => {
+    try {
+      const plans = await this.getPlans(searchString);
+
+      const offers = await Promise.all(
+        plans.map(async (plan) => {
+          try {
+            const prices = await this.getPlanPrices(plan.id);
+
+            if (prices) {
+              return prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));
+            }
+
+            return [];
+          } catch {
+            throw new Error();
+          }
+        }),
+      );
+
+      return offers;
     } catch {
       throw new Error('Failed to get plans');
     }
@@ -128,25 +188,7 @@ export default class JWPCheckoutService extends CheckoutService {
     }
 
     try {
-      const plans = await this.getAppPlans(payload.offerIds as string[]);
-
-      const offers = await Promise.all(
-        plans.map(async (plan) => {
-          try {
-            const response = await InPlayer.Payment.getSitePlanPrices(this.siteId, plan.id);
-
-            if (response.data.prices) {
-              return response.data.prices.map((offer) =>
-                this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
-              );
-            }
-
-            return [];
-          } catch {
-            throw new Error();
-          }
-        }),
-      );
+      const offers = await this.getAppPlansPriceOffers(`q=id:(${payload.offerIds.map((planId) => `"${planId}"`).join(' OR ')})`);
 
       return offers.flat();
     } catch {

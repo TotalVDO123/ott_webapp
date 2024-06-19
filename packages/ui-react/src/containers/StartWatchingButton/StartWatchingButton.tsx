@@ -44,7 +44,7 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const videoProgress = watchHistoryItem?.progress;
 
   // entitlement
-  const setRequestedMediaOffers = useCheckoutStore((s) => s.setRequestedMediaOffers);
+  const { setRequestedMediaOffers, subscriptionOffers } = useCheckoutStore();
   const { isEntitled, mediaOffers } = useEntitlement(item);
   const hasMediaOffers = !!mediaOffers.length;
 
@@ -67,10 +67,12 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     }
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
-    if (checkoutController.getAccessMethod() === 'plan') return navigate(modalURLFromLocation(location, 'list-plans'));
+    if (checkoutController.getAccessMethod() === 'plan' && subscriptionOffers.length) {
+      return navigate(modalURLFromLocation(location, 'list-plans', { mediaId: item.mediaid }));
+    }
 
     return navigate('/u/payments');
-  }, [checkoutController, isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, onClick]);
+  }, [checkoutController, isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, subscriptionOffers, item, onClick]);
 
   useEffect(() => {
     // set the TVOD mediaOffers in the checkout store

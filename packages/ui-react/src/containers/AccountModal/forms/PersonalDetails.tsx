@@ -27,7 +27,7 @@ const PersonalDetails = () => {
   const { t } = useTranslation('account');
   const accessModel = useConfigStore((s) => s.accessModel);
   const { data, isLoading } = useQuery('captureStatus', accountController.getCaptureStatus);
-  const { mediaOffers } = useOffers();
+  const { mediaOffers, subscriptionOffers } = useOffers();
   const hasMediaOffers = mediaOffers.length > 0;
   const [questionValues, setQuestionValues] = useState<Record<string, string>>({});
   const [questionErrors, setQuestionErrors] = useState<Record<string, string>>({});
@@ -40,12 +40,12 @@ const PersonalDetails = () => {
   );
 
   const nextStep = useCallback(() => {
-    const hasPlans = true; //TODO check from the store
+    const hasSubscriptionPlansOrOffers = !!subscriptionOffers.length;
 
-    const hasOffers = accessModel === ACCESS_MODEL.SVOD || (accessModel === ACCESS_MODEL.AUTHVOD && hasMediaOffers) || hasPlans;
+    const hasOffers = accessModel === ACCESS_MODEL.SVOD || (accessModel === ACCESS_MODEL.AUTHVOD && hasMediaOffers) || hasSubscriptionPlansOrOffers;
 
     navigate(modalURLFromLocation(location, hasOffers ? 'choose-offer' : 'welcome'), { replace: true });
-  }, [navigate, location, accessModel, hasMediaOffers]);
+  }, [navigate, location, accessModel, hasMediaOffers, subscriptionOffers]);
 
   useEffect(() => {
     if (!data) return;

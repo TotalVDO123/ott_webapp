@@ -1820,10 +1820,10 @@
   resolved "https://registry.yarnpkg.com/@img/sharp-win32-x64/-/sharp-win32-x64-0.33.2.tgz#148e96dfd6e68747da41a311b9ee4559bb1b1471"
   integrity sha512-E4magOks77DK47FwHUIGH0RYWSgRBfGdK56kIHSVeB9uIS4pPFr4N2kIVsXdQQo4LzOsENKV5KAhRlRL7eMAdg==
 
-"@inplayer-org/inplayer.js@^3.13.26":
-  version "3.13.26"
-  resolved "https://registry.yarnpkg.com/@inplayer-org/inplayer.js/-/inplayer.js-3.13.26.tgz#89258f23bb3f4c7d5c126099af03f814a1659035"
-  integrity sha512-49znmMbdwf5GLVrX2jeCia59SeWH0o9X/BCCEdUHiYj0DlKrUVYLCThZZ6zCjUNdOQ6Ny3FiRg9Nd5niKZ9+IQ==
+"@inplayer-org/inplayer.js@^3.13.27":
+  version "3.13.27"
+  resolved "https://registry.yarnpkg.com/@inplayer-org/inplayer.js/-/inplayer.js-3.13.27.tgz#54c4748fc8c88d7ae9632179daffe5f14aec815d"
+  integrity sha512-bpTIAs09mdEZCpMMDi6ZrHYOUxDlAy6zEN6qpWILdKtSn957OoQEsZ7+4WR9hvudTB6NfQF5eOLLTpkZe//LdQ==
   dependencies:
     aws-iot-device-sdk "^2.2.6"
     axios "^0.21.2"

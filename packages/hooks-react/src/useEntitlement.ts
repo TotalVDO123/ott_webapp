@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQueries, useQuery } from 'react-query';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import type { GetEntitlementsResponse } from '@jwp/ott-common/types/checkout';
@@ -49,7 +50,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   const accessMethod = checkoutController?.getAccessMethod();
 
   const isPreEntitled = accessMethod === 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
-  const mediaOffers = playlistItem?.mediaOffers || [];
+  const mediaOffers = useMemo(() => playlistItem?.mediaOffers || [], [playlistItem?.mediaOffers]);
 
   // this query is invalidated when the subscription gets reloaded
   const mediaEntitlementQueries = useQueries(

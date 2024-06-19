@@ -46,9 +46,10 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
           {Object.keys(groupedOffers).map((period) => (
             <Button
               key={period}
-              label={t(`periods.${period}`).replace(/^[a-z]/, (m) => m.toUpperCase())}
+              label={t(`periods.${period}`)}
               onClick={() => setOfferFilter(period as OfferPeriod)}
               active={offerFilter === period}
+              className={styles.groupedButton}
             />
           ))}
         </ButtonGroup>

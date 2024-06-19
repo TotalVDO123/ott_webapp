@@ -1,0 +1,115 @@
+@use '@jwp/ott-ui-react/src/styles/variables';
+@use '@jwp/ott-ui-react/src/styles/theme';
+@use '@jwp/ott-ui-react/src/styles/accessibility';
+@use '@jwp/ott-ui-react/src/styles/mixins/responsive';
+
+.plan {
+  flex: 1;
+  min-width: 200px;
+  max-width: 250px;
+  margin: 0 4px;
+}
+
+.box {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  background-color: rgba(variables.$black, 0.34);
+  border: 1px solid rgba(variables.$white, 0.34);
+  border-radius: 4px;
+}
+
+.planTitle {
+  font-weight: var(--body-font-weight-bold);
+  font-size: 20px;
+  text-align: center;
+}
+
+.titleDivider {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.54;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid currentColor;
+    opacity: 0.54;
+  }
+
+  &:not(:empty) {
+    &::before {
+      margin-right: .25em;
+    }
+
+    &::after {
+      margin-left: .25em;
+    }
+  }
+}
+
+.planBenefits {
+  margin-bottom: 16px;
+  padding: 0;
+
+  > li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 4px 0;
+
+    > svg {
+      flex-shrink: 0;
+      margin-right: 4px;
+      fill: variables.$green;
+    }
+
+    @include responsive.mobile-only() {
+      font-size: 14px;
+    }
+  }
+}
+
+.fill {
+  flex: 1;
+}
+
+.planPrices {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}
+
+.planPrice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  font-size: 32px;
+
+  > small {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+}

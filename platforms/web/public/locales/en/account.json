@@ -77,6 +77,12 @@
     "yearly": "Yearly",
     "yearly_subscription": "Yearly subscription"
   },
+  "list_plans": {
+    "title": "Change plan to watch",
+    "description": "This video is not available in your current subscription plan. To watch it, please cancel your current subscription and subscribe to one of the following plans.",
+    "go_to_account_settings": "Go to Account settings",
+    "or": "or"
+  },
   "external_payment": {
     "explanation": "This subscription is managed via {{paymentProvider}}.",
     "manage_subscription": "Click here for more information."
