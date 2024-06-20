@@ -15,7 +15,7 @@ export type Env = {
 const env: Env = {
   APP_VERSION: '',
   APP_API_BASE_URL: 'https://content-portal.jwplatform.com',
-  APP_PLAYER_ID: 'M4qoGvUk',
+  APP_PLAYER_ID: 'ov7MiL14',
   APP_FOOTER_TEXT: '',
   APP_DEFAULT_LANGUAGE: 'en',
 };

@@ -51,14 +51,14 @@ const CancelSubscription = () => {
   if (!subscription) return null;
 
   return (
-    <React.Fragment>
+    <div style={{ padding: '16px' }}>
       {cancelled ? (
         <SubscriptionCancelled expiresDate={expirationDateFormatted} onClose={closeHandler} />
       ) : (
         <CancelSubscriptionForm onConfirm={cancelSubscriptionConfirmHandler} onCancel={closeHandler} submitting={submitting} error={error} />
       )}
       {submitting ? <LoadingOverlay transparentBackground inline /> : null}
-    </React.Fragment>
+    </div>
   );
 };
 export default CancelSubscription;

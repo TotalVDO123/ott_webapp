@@ -239,10 +239,7 @@ const Payment = ({
                   />
                 )
               )}
-              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') &&
-              !isGrantedSubscription &&
-              !isChangingOffer &&
-              canRenewSubscription ? (
+              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') && !isGrantedSubscription && !isChangingOffer ? (
                 <Button
                   label={t('user:payment.cancel_subscription')}
                   onClick={onCancelSubscriptionClick}
