@@ -52,10 +52,10 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (isEntitled) return typeof videoProgress === 'number' ? t('continue_watching') : t('start_watching');
     if (hasMediaOffers) return t('buy');
     if (!isLoggedIn) return t('sign_up_to_start_watching');
-    if (checkoutController.getAccessMethod() === 'plan') return t('show_plans');
+    if (checkoutController.getAccessMethod() === 'plan' && subscriptionOffers.length) return t('show_plans');
 
     return t('complete_your_subscription');
-  }, [checkoutController, isEntitled, isLoggedIn, hasMediaOffers, videoProgress, t]);
+  }, [checkoutController, isEntitled, isLoggedIn, hasMediaOffers, videoProgress, subscriptionOffers, t]);
 
   const handleStartWatchingClick = useCallback(() => {
     if (isEntitled) {

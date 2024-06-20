@@ -16,10 +16,11 @@
 
 .offers {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   margin: 0 -4px 24px;
   padding-bottom: 8px;
   overflow-x: auto;
+  column-gap: 12px;
 }
 
 
