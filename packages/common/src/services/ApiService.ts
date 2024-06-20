@@ -295,7 +295,7 @@ export default class ApiService {
   };
 
   getContentSearch = async ({ siteId, params }: { siteId: string; params: GetContentSearchParams }) => {
-    const pathname = `/v2/sites/${siteId}/app_content/media/search`;
+    const pathname = `/v2/sites/${siteId}/app_content/search`;
 
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {
       search_query: params.searchTerm,
