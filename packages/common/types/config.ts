@@ -43,6 +43,8 @@ export type Drm = {
 
 export type PlaylistType = keyof typeof PLAYLIST_TYPE;
 
+export type PlaylistMenuType = Extract<PlaylistType, 'playlist' | 'content_list'>;
+
 export type Content = {
   contentId?: string;
   title?: string;
@@ -54,7 +56,7 @@ export type Content = {
 export type Menu = {
   label: string;
   contentId: string;
-  type?: Extract<PlaylistType, 'playlist' | 'content_list'>;
+  type?: PlaylistMenuType;
   filterTags?: string;
 };
 

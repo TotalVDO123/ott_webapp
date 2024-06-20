@@ -83,7 +83,9 @@ export default class ApiService {
     playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
 
     // remove the related media item (when this is a recommendations playlist)
-    if (relatedMediaId) playlist.playlist.filter((item) => item.mediaid !== relatedMediaId);
+    if (relatedMediaId) {
+      playlist.playlist = playlist.playlist.filter((item) => item.mediaid !== relatedMediaId);
+    }
 
     return playlist;
   };

@@ -4,7 +4,7 @@ import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import type { ApiError } from '@jwp/ott-common/src/utils/api';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
-import { CACHE_TIME, STALE_TIME } from '@jwp/ott-common/src/constants';
+import { CACHE_TIME, PLAYLIST_TYPE, STALE_TIME } from '@jwp/ott-common/src/constants';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
@@ -40,7 +40,13 @@ export const useSearch = (query: string) => {
   const searchPlaylist = config?.features?.searchPlaylist;
   const hasAppContentSearch = isTruthyCustomParamValue(config?.custom?.appContentSearch);
 
-  const playlistQuery = usePlaylist(searchPlaylist || '', { search: query || '' }, !hasAppContentSearch, !!query);
+  const playlistQuery = usePlaylist({
+    contentId: searchPlaylist || '',
+    type: PLAYLIST_TYPE.playlist,
+    params: { search: query || '' },
+    enabled: !hasAppContentSearch,
+    usePlaceholderData: !!query,
+  });
   // New app content search flow
   const appContentSearchQuery = useAppContentSearch({ siteId, enabled: hasAppContentSearch, query });
 

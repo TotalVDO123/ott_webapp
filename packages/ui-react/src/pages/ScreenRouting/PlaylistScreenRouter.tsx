@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { PLAYLIST_TYPE, PLAYLIST_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
-import { usePlaylistContent } from '@jwp/ott-hooks-react/src/usePlaylistContent';
+import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 
 import Loading from '../Loading/Loading';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
 import type { ScreenComponent } from '../../../types/screens';
 import useQueryParam from '../../hooks/useQueryParam';
 
-import PlaylistGrid from './sharedScreens/PlaylistGrid/PlaylistGrid';
+import PlaylistGrid from './playlistScreens/PlaylistGrid/PlaylistGrid';
 import PlaylistLiveChannels from './playlistScreens/PlaylistLiveChannels/PlaylistLiveChannels';
 
 export const playlistScreenMap = new ScreenMap<Playlist, ScreenComponent<Playlist>>();
@@ -19,9 +19,9 @@ export const playlistScreenMap = new ScreenMap<Playlist, ScreenComponent<Playlis
 const PlaylistScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
-  const type = (useQueryParam('t') || PLAYLIST_TYPE.playlist) as 'playlist' | 'content_list';
+  const type = useQueryParam('t') === 'c' ? PLAYLIST_TYPE.content_list : PLAYLIST_TYPE.playlist;
 
-  const { isLoading, isFetching, error, data } = usePlaylistContent({ id, type });
+  const { isLoading, isFetching, error, data } = usePlaylist({ contentId: id, type });
   const { t } = useTranslation('error');
 
   if (isLoading) {

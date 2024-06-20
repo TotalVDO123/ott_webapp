@@ -10,6 +10,7 @@ import { MediaStatus } from '@jwp/ott-common/src/utils/liveEvent';
 import { createLiveEventMetadata } from '@jwp/ott-common/src/utils/metadata';
 import { mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { generateMovieJSONLD } from '@jwp/ott-common/src/utils/structuredData';
+import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 import { useLiveEvent } from '@jwp/ott-hooks-react/src/useLiveEvent';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
@@ -54,7 +55,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(media?.trailerId || '');
-  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(playlistId || '', {});
+  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({ contentId: playlistId || '', type: PLAYLIST_TYPE.playlist });
 
   // Event
   const liveEvent = useLiveEvent(media);

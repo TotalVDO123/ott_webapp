@@ -9,6 +9,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { createVideoMetadata } from '@jwp/ott-common/src/utils/metadata';
 import { mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { generateMovieJSONLD } from '@jwp/ott-common/src/utils/structuredData';
+import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
@@ -51,7 +52,11 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(data?.trailerId || '');
-  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(features?.recommendationsPlaylist || '', { related_media_id: id });
+  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({
+    contentId: features?.recommendationsPlaylist || '',
+    type: PLAYLIST_TYPE.playlist,
+    params: { related_media_id: id },
+  });
 
   // User, entitlement
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
