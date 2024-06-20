@@ -68,11 +68,11 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
     if (checkoutController.getAccessMethod() === 'plan' && subscriptionOffers.length) {
-      return navigate(modalURLFromLocation(location, 'list-plans', { mediaId: item.mediaid }));
+      return navigate(modalURLFromLocation(location, 'list-plans'));
     }
 
     return navigate('/u/payments');
-  }, [checkoutController, isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, subscriptionOffers, item, onClick]);
+  }, [checkoutController, isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, subscriptionOffers, onClick]);
 
   useEffect(() => {
     // set the TVOD mediaOffers in the checkout store

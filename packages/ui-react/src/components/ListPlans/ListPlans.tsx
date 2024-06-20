@@ -1,15 +1,13 @@
 import React, { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
+import { useMatch } from 'react-router';
 import { useQueryClient } from 'react-query';
 import usePlansForMedia from '@jwp/ott-hooks-react/src/usePlansForMedia';
 import LoadingOverlay from '@jwp/ott-ui-react/src/components/LoadingOverlay/LoadingOverlay';
-import { PATH_USER_ACCOUNT } from '@jwp/ott-common/src/paths';
+import { PATH_MEDIA, PATH_USER_ACCOUNT } from '@jwp/ott-common/src/paths';
 
 import PlanBox from '../PlanBox/PlanBox';
 import Button from '../Button/Button';
-import useQueryParam from '../../hooks/useQueryParam';
-import { modalURLFromLocation } from '../../utils/location';
 
 import styles from './ListPlans.module.scss';
 
@@ -17,10 +15,9 @@ const ListPlans: React.FC = () => {
   const { t } = useTranslation('account');
 
   const queryClient = useQueryClient();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const match = useMatch(PATH_MEDIA);
 
-  const mediaId = useQueryParam('mediaId');
+  const mediaId = match?.params.id || '';
 
   useLayoutEffect(() => {
     if (mediaId) {
@@ -28,13 +25,7 @@ const ListPlans: React.FC = () => {
     }
   }, [mediaId, queryClient]);
 
-  const { isLoading, data: plans } = usePlansForMedia(mediaId || '');
-
-  useLayoutEffect(() => {
-    navigate(modalURLFromLocation(location, 'list-plans', { mediaId: undefined }), { replace: true });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaId]);
+  const { isLoading, data: plans } = usePlansForMedia(mediaId);
 
   if (isLoading) {
     return (
