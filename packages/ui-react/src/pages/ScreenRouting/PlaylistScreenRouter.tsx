@@ -16,6 +16,10 @@ import PlaylistLiveChannels from './playlistScreens/PlaylistLiveChannels/Playlis
 
 export const playlistScreenMap = new ScreenMap<Playlist, ScreenComponent<Playlist>>();
 
+// register playlist screens
+playlistScreenMap.registerDefault(PlaylistGrid);
+playlistScreenMap.register(PlaylistLiveChannels, (item) => item?.contentType === PLAYLIST_CONTENT_TYPE.live && item.type === PLAYLIST_TYPE.playlist);
+
 const PlaylistScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
@@ -34,12 +38,6 @@ const PlaylistScreenRouter = () => {
 
   if (data.playlist.length === 0) {
     return <ErrorPage title={t('empty_shelves_heading')} message={t('empty_shelves_description')} />;
-  }
-
-  // register playlist screens
-  playlistScreenMap.registerDefault(PlaylistGrid);
-  if (type === PLAYLIST_TYPE.playlist) {
-    playlistScreenMap.registerByContentType(PlaylistLiveChannels, PLAYLIST_CONTENT_TYPE.live);
   }
 
   const PlaylistScreen = playlistScreenMap.getScreen(data);

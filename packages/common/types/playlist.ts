@@ -1,3 +1,4 @@
+import type { PlaylistMenuType } from './config';
 import type { CustomParams } from './custom-params';
 
 export type GetPlaylistParams = { page_limit?: string; token?: string; search?: string; related_media_id?: string };
@@ -55,5 +56,6 @@ export type Playlist = {
   shelfImageAspectRatio?: string;
   cardImageAspectRatio?: string;
   imageLabel?: string;
+  type: PlaylistMenuType;
   [key: string]: unknown;
 };

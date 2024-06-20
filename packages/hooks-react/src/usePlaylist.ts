@@ -36,7 +36,7 @@ export const getPlaylistQueryOptions = ({
     queryKey: ['playlist', type, contentId],
     queryFn: async () => {
       if (type === PLAYLIST_TYPE.playlist) {
-        const playlist = await apiService.getPlaylistById(contentId, { page_limit: params?.page_limit });
+        const playlist = await apiService.getPlaylistById(contentId, params);
 
         // This pre-caches all playlist items and makes navigating a lot faster.
         playlist?.playlist?.forEach((playlistItem) => {
