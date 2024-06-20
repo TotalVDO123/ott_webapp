@@ -11,7 +11,7 @@ import LegacySeries from '@jwp/ott-ui-react/src/pages/LegacySeries/LegacySeries'
 import MediaScreenRouter from '@jwp/ott-ui-react/src/pages/ScreenRouting/MediaScreenRouter';
 import PlaylistScreenRouter from '@jwp/ott-ui-react/src/pages/ScreenRouting/PlaylistScreenRouter';
 import Layout from '@jwp/ott-ui-react/src/containers/Layout/Layout';
-import { PATH_ABOUT, PATH_LEGACY_SERIES, PATH_MEDIA, PATH_PLAYLIST, PATH_SEARCH, PATH_USER } from '@jwp/ott-common/src/paths';
+import { PATH_ABOUT, PATH_CONTENT_LIST, PATH_LEGACY_SERIES, PATH_MEDIA, PATH_PLAYLIST, PATH_SEARCH, PATH_USER } from '@jwp/ott-common/src/paths';
 
 import RoutesContainer from '#src/containers/RoutesContainer/RoutesContainer';
 
@@ -24,6 +24,7 @@ export default function AppRoutes() {
         <Route element={<Layout />} errorElement={<RootErrorPage />}>
           <Route index element={<Home />} />
           <Route path={PATH_PLAYLIST} element={<PlaylistScreenRouter />} />
+          <Route path={PATH_CONTENT_LIST} element={<PlaylistScreenRouter />} />
           <Route path={PATH_MEDIA} element={<MediaScreenRouter />} />
           <Route path={PATH_LEGACY_SERIES} element={<LegacySeries />} />
           <Route path={PATH_SEARCH} element={<Search />} />

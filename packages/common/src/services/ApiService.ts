@@ -11,7 +11,6 @@ import type { ContentList, GetContentSearchParams } from '../../types/content-li
 import type { AdSchedule } from '../../types/ad-schedule';
 import type { EpisodeInSeries, EpisodesRes, EpisodesWithPagination, GetSeriesParams, Series } from '../../types/series';
 import env from '../env';
-import { PLAYLIST_TYPE } from '../constants';
 
 // change the values below to change the property used to look up the alternate image
 enum ImageProperty {
@@ -52,7 +51,7 @@ export default class ApiService {
   private transformContentList = (contentList: ContentList): Playlist => {
     const { list, ...rest } = contentList;
 
-    const playlist: Playlist = { ...rest, playlist: [], type: PLAYLIST_TYPE.content_list };
+    const playlist: Playlist = { ...rest, playlist: [] };
 
     playlist.playlist = list.map((item) => {
       const { custom_params, media_id, description, tags, ...rest } = item;
@@ -81,7 +80,6 @@ export default class ApiService {
    * Transform incoming playlists
    */
   private transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
-    playlist.type = PLAYLIST_TYPE.content_list;
     playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
 
     // remove the related media item (when this is a recommendations playlist)
