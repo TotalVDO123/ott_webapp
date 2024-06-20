@@ -57,11 +57,6 @@ export async function checkSubscription(I: CodeceptJS.I, billingDate: Date, toda
   I.waitForText('/year');
   I.waitForText('Next billing date is on ' + formatDate(billingDate));
 
-  if (hasInlineOfferSwitch) {
-    I.waitForElement('[data-testid="change-subscription-button"]', 10);
-    I.click('[data-testid="change-subscription-button"]');
-  }
-
   I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
 
   I.waitForElement('[class*="transactionItem"]', 10);
@@ -79,11 +74,6 @@ export async function cancelPlan(I: CodeceptJS.I, expirationDate: Date, canRenew
   });
 
   if (!isAlreadyCancelled) {
-    if (providerName?.includes('JW')) {
-      I.waitForElement('[data-testid="change-subscription-button"]', 10);
-      I.click('[data-testid="change-subscription-button"]');
-    }
-
     I.waitForElement('[data-testid="cancel-subscription-button"]', 10);
     I.click('[data-testid="cancel-subscription-button"]');
     I.see('We are sorry to see you go.');
