@@ -699,6 +699,15 @@ exports[`User Component tests > Payments Page 1`] = `
             user:payment.change_subscription
           </span>
         </button>
+        <button
+          class="_button_f8f296 _default_f8f296 _outlined_f8f296"
+          data-testid="cancel-subscription-button"
+          type="button"
+        >
+          <span>
+            user:payment.cancel_subscription
+          </span>
+        </button>
       </section>
       <section
         aria-labelledby="payment-method_1235"
