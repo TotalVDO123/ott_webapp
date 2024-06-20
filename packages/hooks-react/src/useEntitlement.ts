@@ -49,7 +49,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
 
   const accessMethod = checkoutController?.getAccessMethod();
 
-  const isPreEntitled = accessMethod === 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
+  const isPreEntitled = accessMethod !== 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = useMemo(() => playlistItem?.mediaOffers || [], [playlistItem?.mediaOffers]);
 
   // this query is invalidated when the subscription gets reloaded
@@ -77,7 +77,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
 
   // when the user is logged out the useQueries will be disabled but could potentially return its cached data
   const isMediaEntitled =
-    !!token || (!!user && mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
+    !!token || (!!user && !!mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
   const isMediaEntitlementLoading = !isMediaEntitled && (isTokenLoading || mediaEntitlementQueries.some((item) => item.isLoading));
 
   const isEntitled = !!playlistItem && (isPreEntitled || isMediaEntitled);
