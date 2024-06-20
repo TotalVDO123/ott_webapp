@@ -1,4 +1,4 @@
-import React, { useMemo, type FC, type SVGProps } from 'react';
+import type { FC, SVGProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Offer } from '@jwp/ott-common/types/checkout';
 import { getOfferPrice } from '@jwp/ott-common/src/utils/offers';
@@ -27,26 +27,8 @@ type Props = {
   prices: Offer[];
 };
 
-const PlanBox: React.FC<Props> = ({ plan, prices }) => {
+const PlanBox: FC<Props> = ({ plan, prices }) => {
   const { t } = useTranslation('account');
-
-  const getFreeTrialText = (offer: Offer) => {
-    if (offer.freeDays) {
-      return t('choose_offer.benefits.first_days_free', { count: offer.freeDays });
-    } else if (offer.freePeriods) {
-      // t('periods.day', { count })
-      // t('periods.week', { count })
-      // t('periods.month', { count })
-      // t('periods.year', { count })
-      const period = t(`periods.${offer.period}`, { count: offer.freePeriods });
-
-      return t('choose_offer.benefits.first_periods_free', { count: offer.freePeriods, period });
-    }
-
-    return null;
-  };
-
-  const freeTrialOffer = useMemo(() => prices.find((price) => price.freeDays || price.freePeriods), [prices]);
 
   return (
     <div className={styles.plan} aria-labelledby={`title-${plan.id}`}>
@@ -59,7 +41,6 @@ const PlanBox: React.FC<Props> = ({ plan, prices }) => {
           <span className="hidden">.</span>
           <hr className={styles.titleDivider} aria-hidden={true} />
           <ul className={styles.planBenefits}>
-            {freeTrialOffer ? <ListItem text={getFreeTrialText(freeTrialOffer) || ''} icon={CheckCircle} /> : null}
             <ListItem text={t('choose_offer.benefits.cancel_anytime')} icon={CheckCircle} />
             <ListItem text={t('choose_offer.benefits.watch_on_all_devices')} icon={CheckCircle} />
           </ul>
