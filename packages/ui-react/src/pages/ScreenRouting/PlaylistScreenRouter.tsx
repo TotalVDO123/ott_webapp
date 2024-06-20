@@ -19,7 +19,7 @@ export const contentScreenMap = new ScreenMap<Playlist, ScreenComponent<Playlist
 
 // register playlist screens
 playlistScreenMap.registerDefault(PlaylistGrid);
-playlistScreenMap.register(PlaylistLiveChannels, (item) => item?.contentType === PLAYLIST_CONTENT_TYPE.live && item.type === PLAYLIST_TYPE.playlist);
+playlistScreenMap.registerByContentType(PlaylistLiveChannels, PLAYLIST_CONTENT_TYPE.live);
 
 // register content list screens
 contentScreenMap.registerDefault(PlaylistGrid);
@@ -31,7 +31,7 @@ const PlaylistScreenRouter = () => {
 
   const type = matchPath(PATH_CONTENT_LIST, location.pathname) ? PLAYLIST_TYPE.content_list : PLAYLIST_TYPE.playlist;
 
-  const { isLoading, isFetching, error, data } = usePlaylist({ contentId: id, type });
+  const { isLoading, isFetching, error, data } = usePlaylist(id, {}, true, true, type);
   const { t } = useTranslation('error');
 
   if (isLoading) {
@@ -46,9 +46,9 @@ const PlaylistScreenRouter = () => {
     return <ErrorPage title={t('empty_shelves_heading')} message={t('empty_shelves_description')} />;
   }
 
-  const PlaylistScreen = playlistScreenMap.getScreen(data);
+  const Screen = type === PLAYLIST_TYPE.content_list ? contentScreenMap.getScreen(data) : playlistScreenMap.getScreen(data);
 
-  return <PlaylistScreen data={data} isLoading={isFetching} />;
+  return <Screen data={data} isLoading={isFetching} />;
 };
 
 export default PlaylistScreenRouter;

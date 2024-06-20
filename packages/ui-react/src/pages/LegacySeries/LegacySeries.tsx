@@ -10,7 +10,6 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { createPlaylistMetadata, createVideoMetadata } from '@jwp/ott-common/src/utils/metadata';
 import { formatSeriesMetaString } from '@jwp/ott-common/src/utils/formatting';
 import { legacySeriesURL } from '@jwp/ott-common/src/utils/urlFormatting';
-import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
@@ -47,11 +46,7 @@ const LegacySeries = () => {
   const episodeId = useQueryParam('e');
 
   // Main data
-  const {
-    isLoading: isSeriesPlaylistLoading,
-    data: seriesPlaylist,
-    isError: isPlaylistError,
-  } = usePlaylist({ contentId: seriesId, type: PLAYLIST_TYPE.playlist, enabled: true, usePlaceholderData: false });
+  const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId, {}, true, false);
   const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '');
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '');
 
