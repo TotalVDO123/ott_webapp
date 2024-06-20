@@ -4,7 +4,7 @@ import { useMatch } from 'react-router';
 import { useQueryClient } from 'react-query';
 import usePlansForMedia from '@jwp/ott-hooks-react/src/usePlansForMedia';
 import LoadingOverlay from '@jwp/ott-ui-react/src/components/LoadingOverlay/LoadingOverlay';
-import { PATH_MEDIA, PATH_USER_ACCOUNT } from '@jwp/ott-common/src/paths';
+import { PATH_MEDIA, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
 
 import PlanBox from '../PlanBox/PlanBox';
 import Button from '../Button/Button';
@@ -44,7 +44,7 @@ const ListPlans: React.FC = () => {
           <PlanBox key={plan.id} plan={plan} prices={prices} />
         ))}
       </div>
-      <Button variant="contained" color="primary" label={t('list_plans.go_to_account_settings')} to={PATH_USER_ACCOUNT} size="large" fullWidth />
+      <Button variant="contained" color="primary" label={t('list_plans.go_to_account_settings')} to={PATH_USER_PAYMENTS} size="large" fullWidth />
     </div>
   );
 };
