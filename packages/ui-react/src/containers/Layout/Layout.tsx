@@ -51,7 +51,7 @@ const Layout = () => {
     { label: t('home'), to: '/' },
     ...menu.map(({ label, contentId, type }) => ({
       label,
-      to: type === PLAYLIST_TYPE.content_list ? contentListURL({ id: contentId }) : playlistURL({ id: contentId }),
+      to: type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId),
     })),
   ];
 

@@ -103,11 +103,11 @@ export const mediaURL = ({
   return createPath(PATH_MEDIA, { id: media.mediaid, title: slugify(media.title) }, { r: playlistId, play: play ? '1' : null, e: episodeId });
 };
 
-export const playlistURL = ({ id, title }: { id: string; title?: string }) => {
+export const playlistURL = (id: string, title?: string) => {
   return createPath(PATH_PLAYLIST, { id, title: title ? slugify(title) : undefined });
 };
 
-export const contentListURL = ({ id, title }: { id: string; title?: string }) => {
+export const contentListURL = (id: string, title?: string) => {
   return createPath(PATH_CONTENT_LIST, { id, title: title ? slugify(title) : undefined });
 };
 
