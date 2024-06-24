@@ -1,3 +1,5 @@
+import type { PLAYLIST_TYPE } from '../src/constants';
+
 import type { AdScheduleUrls } from './ad-schedule';
 
 /**
@@ -39,12 +41,14 @@ export type Drm = {
   defaultPolicyId: string;
 };
 
-export type ContentType = 'playlist' | 'continue_watching' | 'favorites';
+export type PlaylistType = keyof typeof PLAYLIST_TYPE;
+
+export type PlaylistMenuType = Extract<PlaylistType, 'playlist' | 'content_list'>;
 
 export type Content = {
   contentId?: string;
   title?: string;
-  type: ContentType;
+  type: PlaylistType;
   featured?: boolean;
   backgroundColor?: string | null;
 };
@@ -52,7 +56,7 @@ export type Content = {
 export type Menu = {
   label: string;
   contentId: string;
-  type?: Extract<ContentType, 'playlist'>;
+  type?: PlaylistMenuType;
   filterTags?: string;
 };
 

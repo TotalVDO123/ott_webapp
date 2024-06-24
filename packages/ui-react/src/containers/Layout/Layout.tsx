@@ -4,9 +4,10 @@ import { Outlet } from 'react-router';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { unicodeToChar } from '@jwp/ott-common/src/utils/common';
-import { playlistURL } from '@jwp/ott-common/src/utils/urlFormatting';
+import { contentListURL, playlistURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import env from '@jwp/ott-common/src/env';
 import { useUIStore } from '@jwp/ott-common/src/stores/UIStore';
+import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -48,9 +49,9 @@ const Layout = () => {
 
   const navItems = [
     { label: t('home'), to: '/' },
-    ...menu.map((item) => ({
-      label: item.label,
-      to: playlistURL(item.contentId),
+    ...menu.map(({ label, contentId, type }) => ({
+      label,
+      to: type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId),
     })),
   ];
 

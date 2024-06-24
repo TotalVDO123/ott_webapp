@@ -1,8 +1,6 @@
-import type { MediaStatus } from '../src/utils/liveEvent';
+import type { CustomParams } from './custom-params';
 
-import type { MediaOffer } from './media';
-
-export type GetPlaylistParams = { page_limit?: string; related_media_id?: string; token?: string; search?: string };
+export type GetPlaylistParams = { page_limit?: string; token?: string; search?: string; related_media_id?: string };
 
 export type Image = {
   src: string;
@@ -27,41 +25,15 @@ export type PlaylistItem = {
   feedid: string;
   image: string;
   images: Image[];
-  cardImage?: string;
-  backgroundImage?: string;
-  channelLogoImage?: string;
   link: string;
-  genre?: string;
   mediaid: string;
   pubdate: number;
-  rating?: string;
-  requiresSubscription?: string | null;
   sources: Source[];
-  seriesId?: string;
-  episodeNumber?: string;
-  seasonNumber?: string;
   tags?: string;
-  trailerId?: string;
   title: string;
   tracks?: Track[];
   variations?: Record<string, unknown>;
-  free?: string;
-  productIds?: string;
-  mediaOffers?: MediaOffer[] | null;
-  contentType?: string;
-  liveChannelsId?: string;
-  scheduleUrl?: string | null;
-  scheduleToken?: string;
-  scheduleDataFormat?: string;
-  scheduleDemo?: string;
-  catchupHours?: string;
-  mediaStatus?: MediaStatus;
-  scheduledStart?: Date;
-  scheduledEnd?: Date;
-  markdown?: string;
-  scheduleType?: string;
-  [key: string]: unknown;
-};
+} & CustomParams;
 
 export type Link = {
   first?: string;
