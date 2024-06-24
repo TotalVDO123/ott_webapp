@@ -1,7 +1,6 @@
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useMatch } from 'react-router';
-import { useQueryClient } from 'react-query';
 import usePlansForMedia from '@jwp/ott-hooks-react/src/usePlansForMedia';
 import LoadingOverlay from '@jwp/ott-ui-react/src/components/LoadingOverlay/LoadingOverlay';
 import { PATH_MEDIA, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
@@ -14,17 +13,10 @@ import styles from './ListPlans.module.scss';
 const ListPlans: React.FC = () => {
   const { t } = useTranslation('account');
 
-  const queryClient = useQueryClient();
   const match = useMatch(PATH_MEDIA);
   const location = useLocation();
 
   const mediaId = match?.params.id || '';
-
-  useLayoutEffect(() => {
-    if (mediaId) {
-      queryClient.invalidateQueries(['plans', mediaId]);
-    }
-  }, [mediaId, queryClient]);
 
   const { isLoading, data: plans } = usePlansForMedia(mediaId);
 
