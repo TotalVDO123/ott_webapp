@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { isEpisode, isLegacySeriesFlow } from '@jwp/ott-common/src/utils/media';
-import { CONTENT_TYPE } from '@jwp/ott-common/src/constants';
+import { MEDIA_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 
@@ -21,11 +21,11 @@ import MediaEvent from './mediaScreens/MediaEvent/MediaEvent';
 export const mediaScreenMap = new ScreenMap<PlaylistItem, ScreenComponent<PlaylistItem>>();
 
 // Register media screens
-mediaScreenMap.registerByContentType(MediaSeries, CONTENT_TYPE.series);
-mediaScreenMap.registerByContentType(MediaEpisode, CONTENT_TYPE.episode);
-mediaScreenMap.registerByContentType(MediaLiveChannel, CONTENT_TYPE.liveChannel);
-mediaScreenMap.registerByContentType(MediaEvent, CONTENT_TYPE.liveEvent);
-mediaScreenMap.registerByContentType(MediaStaticPage, CONTENT_TYPE.page);
+mediaScreenMap.registerByContentType(MediaSeries, MEDIA_CONTENT_TYPE.series);
+mediaScreenMap.registerByContentType(MediaEpisode, MEDIA_CONTENT_TYPE.episode);
+mediaScreenMap.registerByContentType(MediaLiveChannel, MEDIA_CONTENT_TYPE.liveChannel);
+mediaScreenMap.registerByContentType(MediaEvent, MEDIA_CONTENT_TYPE.liveEvent);
+mediaScreenMap.registerByContentType(MediaStaticPage, MEDIA_CONTENT_TYPE.page);
 mediaScreenMap.registerDefault(MediaMovie);
 
 // Register legacy series and episode screens when `contentType` is missing
