@@ -61,7 +61,7 @@ export default class JWPCheckoutService extends CheckoutService {
    * access fee id in some cases.
    */
   private formatOfferId(offer: PlanPrice) {
-    return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.id}`; //`${offer.access.type === 'subscription' ? 'S' : 'C'}S${offer.item_id}_${offer.id}`;
+    return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.id}`;
   }
 
   private formatOffer = ({ title, planId, planOriginalId, ...offer }: PlanPrice & { title: string; planId: string; planOriginalId: number }): Offer => {
