@@ -1,3 +1,10 @@
+## [6.3.0](https://github.com/jwplayer/ott-web-app/compare/v6.2.0...v6.3.0) (2024-06-24)
+
+
+### Features
+
+* **project:** add content lists (recommendations) ([#556](https://github.com/jwplayer/ott-web-app/issues/556)) ([790932b](https://github.com/jwplayer/ott-web-app/commit/790932b62471135d8e037d8e027717377016c131))
+
 ## [6.2.0](https://github.com/jwplayer/ott-web-app/compare/v6.1.2...v6.2.0) (2024-06-13)
 
 
