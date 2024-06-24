@@ -115,7 +115,7 @@ export default class JWPCheckoutService extends CheckoutService {
   getPlans = async (searchString: string) => {
     const response = await InPlayer.Payment.getSitePlans(this.siteId, searchString);
 
-    const plans = response.data.plans.filter((plan) => plan.metadata.access_model === 'svod');
+    const plans = (response.data.plans || []).filter((plan) => plan.metadata.access_model === 'svod');
 
     return plans;
   };
@@ -123,7 +123,7 @@ export default class JWPCheckoutService extends CheckoutService {
   getPlanPrices = async (planId: string) => {
     const response = await InPlayer.Payment.getSitePlanPrices(this.siteId, planId);
 
-    return response.data.prices;
+    return response.data.prices || [];
   };
 
   getPlansWithPriceOffers = async (searchString: string) => {
@@ -135,7 +135,7 @@ export default class JWPCheckoutService extends CheckoutService {
           try {
             const prices = await this.getPlanPrices(plan.id);
 
-            if (prices?.length) {
+            if (prices.length) {
               const offers = prices.map((offer) =>
                 this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
               );
@@ -165,7 +165,7 @@ export default class JWPCheckoutService extends CheckoutService {
           try {
             const prices = await this.getPlanPrices(plan.id);
 
-            if (prices) {
+            if (prices.length) {
               return prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));
             }
 

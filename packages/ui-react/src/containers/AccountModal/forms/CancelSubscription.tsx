@@ -48,12 +48,20 @@ const CancelSubscription = () => {
     navigate(modalURLFromLocation(location, null), { replace: true });
   };
 
+  const onFinishUnsubscription = () => {
+    if (location.state?.returnToPathname) {
+      navigate(location.state.returnToPathname, { replace: true });
+    } else {
+      closeHandler();
+    }
+  };
+
   if (!subscription) return null;
 
   return (
     <div style={{ padding: '16px' }}>
       {cancelled ? (
-        <SubscriptionCancelled expiresDate={expirationDateFormatted} onClose={closeHandler} />
+        <SubscriptionCancelled expiresDate={expirationDateFormatted} onClose={onFinishUnsubscription} />
       ) : (
         <CancelSubscriptionForm onConfirm={cancelSubscriptionConfirmHandler} onCancel={closeHandler} submitting={submitting} error={error} />
       )}

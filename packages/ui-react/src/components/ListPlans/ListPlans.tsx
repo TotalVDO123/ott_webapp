@@ -1,6 +1,6 @@
 import React, { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMatch } from 'react-router';
+import { useLocation, useMatch } from 'react-router';
 import { useQueryClient } from 'react-query';
 import usePlansForMedia from '@jwp/ott-hooks-react/src/usePlansForMedia';
 import LoadingOverlay from '@jwp/ott-ui-react/src/components/LoadingOverlay/LoadingOverlay';
@@ -16,6 +16,7 @@ const ListPlans: React.FC = () => {
 
   const queryClient = useQueryClient();
   const match = useMatch(PATH_MEDIA);
+  const location = useLocation();
 
   const mediaId = match?.params.id || '';
 
@@ -44,7 +45,15 @@ const ListPlans: React.FC = () => {
           <PlanBox key={plan.id} plan={plan} prices={prices} />
         ))}
       </div>
-      <Button variant="contained" color="primary" label={t('list_plans.go_to_account_settings')} to={PATH_USER_PAYMENTS} size="large" fullWidth />
+      <Button
+        variant="contained"
+        color="primary"
+        label={t('list_plans.go_to_account_settings')}
+        to={PATH_USER_PAYMENTS}
+        navLinkState={{ returnToPathname: location.pathname }}
+        size="large"
+        fullWidth
+      />
     </div>
   );
 };

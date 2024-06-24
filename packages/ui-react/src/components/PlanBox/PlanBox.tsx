@@ -1,4 +1,4 @@
-import type { FC, SVGProps } from 'react';
+import { type FC, type SVGProps, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Offer } from '@jwp/ott-common/types/checkout';
 import { getOfferPrice } from '@jwp/ott-common/src/utils/offers';
@@ -47,7 +47,7 @@ const PlanBox: FC<Props> = ({ plan, prices }) => {
           <div className={styles.fill} />
           <div className={styles.planPrices}>
             {prices.map((price, i, array) => (
-              <>
+              <Fragment key={price.offerId}>
                 <div className={styles.planPrice}>
                   {getOfferPrice(price)} <small>/{price.period === 'month' ? t('periods.month') : t('periods.year')}</small>
                 </div>
@@ -56,7 +56,7 @@ const PlanBox: FC<Props> = ({ plan, prices }) => {
                     {t('list_plans.or')}
                   </div>
                 )}
-              </>
+              </Fragment>
             ))}
           </div>
         </label>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { AccessModel } from '@jwp/ott-common/types/config';
@@ -128,6 +128,8 @@ const Payment = ({
     }
   }, [selectedOfferId, offers, activeSubscription, setIsUpgradeOffer]);
 
+  const locationStateRef = useRef(location.state);
+
   function onCompleteSubscriptionClick() {
     navigate(modalURLFromLocation(location, 'choose-offer'));
   }
@@ -137,7 +139,7 @@ const Payment = ({
   }
 
   function onCancelSubscriptionClick() {
-    navigate(modalURLFromLocation(location, 'unsubscribe'));
+    navigate(modalURLFromLocation(location, 'unsubscribe'), { state: locationStateRef.current });
   }
 
   function onRenewSubscriptionClick() {
