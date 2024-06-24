@@ -6,6 +6,7 @@ import type { MediaOffer } from '@jwp/ott-common/types/media';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementService';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
@@ -47,7 +48,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   const checkoutController = getModule(CheckoutController, false);
   const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const accessMethod = checkoutController?.getAccessMethod();
+  const accessMethod = useCheckoutStore((state) => state.accessMethod);
 
   const isPreEntitled = accessMethod !== 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = useMemo(() => playlistItem?.mediaOffers || [], [playlistItem?.mediaOffers]);

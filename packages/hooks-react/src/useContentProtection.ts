@@ -7,8 +7,8 @@ import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementSe
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
-import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 const useContentProtection = <T>(
   type: EntitlementType,
@@ -18,11 +18,10 @@ const useContentProtection = <T>(
   enabled: boolean = true,
   placeholderData?: T,
 ) => {
+  const accessMethod = useCheckoutStore((state) => state.accessMethod);
+
   const genericEntitlementService = getModule(GenericEntitlementService);
   const jwpEntitlementService = getModule(JWPEntitlementService);
-  const checkoutController = getModule(CheckoutController);
-
-  const accessMethod = checkoutController.getAccessMethod();
 
   const { configId, signingConfig, contentProtection, urlSigning } = useConfigStore(({ config }) => ({
     configId: config.id,

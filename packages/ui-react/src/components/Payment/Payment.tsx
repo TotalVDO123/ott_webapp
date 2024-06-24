@@ -6,6 +6,7 @@ import type { Customer } from '@jwp/ott-common/types/account';
 import type { Offer } from '@jwp/ott-common/types/checkout';
 import type { PaymentDetail, Subscription, Transaction } from '@jwp/ott-common/types/subscription';
 import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/formatting';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
 import ExternalLink from '@jwp/ott-theme/assets/icons/external_link.svg?react';
 import PayPal from '@jwp/ott-theme/assets/icons/paypal.svg?react';
@@ -104,6 +105,7 @@ const Payment = ({
   const isGrantedSubscription = activeSubscription?.period === 'granted';
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === Breakpoint.xs;
+  const accessMethod = useCheckoutStore((state) => state.accessMethod);
 
   const [isChangingOffer, setIsChangingOffer] = useState(false);
 
@@ -159,7 +161,8 @@ const Payment = ({
     }
   }
 
-  const showChangeSubscriptionButton = (!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription);
+  const showChangeSubscriptionButton =
+    accessMethod !== 'plan' && ((!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription));
 
   return (
     <>

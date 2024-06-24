@@ -46,7 +46,7 @@ export default class CheckoutController {
   initialiseOffers = async () => {
     const requestedMediaOffers = useCheckoutStore.getState().requestedMediaOffers;
     const mediaOffers = requestedMediaOffers ? await this.getOffers({ offerIds: requestedMediaOffers.map(({ offerId }) => offerId) }) : [];
-    useCheckoutStore.setState({ mediaOffers });
+    useCheckoutStore.setState({ mediaOffers, accessMethod: this.getAccessMethod() });
 
     if (!useCheckoutStore.getState().subscriptionOffers.length && this.accountService.svodOfferIds) {
       const subscriptionOffers = await this.getOffers({ offerIds: this.accountService.svodOfferIds });
