@@ -1,10 +1,11 @@
 import { useQuery } from 'react-query';
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import JWPCheckoutService from '@jwp/ott-common/src/services/integrations/jwp/JWPCheckoutService';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { MediaStatus } from '@jwp/ott-common/src/utils/liveEvent';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 
 import useMedia from './useMedia';
 
@@ -84,22 +85,14 @@ const extractCustomParameters = (playlistItem: PlaylistItem): { key: string; val
     .map(([key, value]) => ({ key, value }));
 };
 
-export default function usePlansForMedia(_mediaId: string) {
-  const [mediaId, setMediaId] = useState(_mediaId);
+export default function usePlansForMedia(mediaId: string) {
+  const accessMethod = useCheckoutStore(({ accessMethod }) => accessMethod);
 
   const checkoutController = getModule(JWPCheckoutService);
 
   const siteId = useConfigStore(({ config }) => config.siteId);
 
-  const { isLoading: isMediaLoading, data: mediaData } = useMedia(mediaId, !!checkoutController);
-
-  useLayoutEffect(() => {
-    if (_mediaId && _mediaId !== mediaId) {
-      setMediaId(_mediaId);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_mediaId]);
+  const { isLoading: isMediaLoading, data: mediaData } = useMedia(mediaId, accessMethod === 'plan');
 
   const { isLoading: isPlansLoading, data } = useQuery({
     queryKey: ['plans', mediaData?.mediaid],
