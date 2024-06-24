@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { object, string } from 'yup';
 import { inject, injectable } from 'inversify';
 import { BroadcastChannel } from 'broadcast-channel';
