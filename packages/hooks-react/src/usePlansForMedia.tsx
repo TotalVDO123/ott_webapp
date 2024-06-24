@@ -1,5 +1,5 @@
-import { useQuery } from 'react-query';
-import { useMemo } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
+import { useEffect, useMemo } from 'react';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import JWPCheckoutService from '@jwp/ott-common/src/services/integrations/jwp/JWPCheckoutService';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
@@ -86,6 +86,8 @@ const extractCustomParameters = (playlistItem: PlaylistItem): { key: string; val
 };
 
 export default function usePlansForMedia(mediaId: string) {
+  const queryClient = useQueryClient();
+
   const accessMethod = useCheckoutStore(({ accessMethod }) => accessMethod);
 
   const checkoutController = getModule(JWPCheckoutService);
@@ -114,6 +116,14 @@ export default function usePlansForMedia(mediaId: string) {
   });
 
   const isLoading = isMediaLoading || isPlansLoading;
+
+  useEffect(
+    () => () => {
+      queryClient.invalidateQueries(['plans', mediaId]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return useMemo(() => ({ isLoading, data }), [isLoading, data]);
 }
