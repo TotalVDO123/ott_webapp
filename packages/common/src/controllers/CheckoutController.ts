@@ -353,6 +353,10 @@ export default class CheckoutController {
     return this.checkoutService.getOffers(payload);
   };
 
+  getPlansWithPriceOffers = (searchString: string) => {
+    return this.checkoutService.getPlansWithPriceOffers(searchString);
+  };
+
   getEntitlements: GetEntitlements = (payload) => {
     return this.checkoutService.getEntitlements(payload);
   };

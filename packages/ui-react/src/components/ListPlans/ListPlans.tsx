@@ -33,8 +33,8 @@ const ListPlans: React.FC = () => {
       <h1 className={styles.title}>{t('list_plans.title')}</h1>
       <p className={styles.description}>{t('list_plans.description')}</p>
       <div className={styles.plans}>
-        {plans?.map(([plan, prices]) => (
-          <PlanBox key={plan.id} plan={plan} prices={prices} />
+        {plans?.map(([{ id, name }, prices]) => (
+          <PlanBox key={id} id={id} name={name} prices={prices} />
         ))}
       </div>
       <Button

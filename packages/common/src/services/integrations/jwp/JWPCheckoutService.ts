@@ -135,15 +135,17 @@ export default class JWPCheckoutService extends CheckoutService {
           try {
             const prices = await this.getPlanPrices(plan.id);
 
+            const planProps = { id: plan.id, name: plan.metadata.name };
+
             if (prices.length) {
               const offers = prices.map((offer) =>
                 this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
               );
 
-              return [plan, offers] as const;
+              return [planProps, offers] as const;
             }
 
-            return [plan, [] as Offer[]] as const;
+            return [planProps, [] as Offer[]] as const;
           } catch {
             throw new Error();
           }

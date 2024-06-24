@@ -369,6 +369,7 @@ export type FinalizeAdyenPaymentDetailsResponse = PaymentDetail;
 
 export type GetOffers = PromiseRequest<GetOffersPayload, Offer[]>;
 export type GetOffer = EnvironmentServiceRequest<GetOfferPayload, Offer>;
+export type GetPlansWithPriceOffers = PromiseRequest<string, (readonly [{ id: string; name: string }, Offer[]])[]>;
 export type CreateOrder = EnvironmentServiceRequest<CreateOrderArgs, CreateOrderResponse>;
 export type GetOrder = EnvironmentServiceRequest<GetOrderPayload, GetOrderResponse>;
 export type UpdateOrder = EnvironmentServiceRequest<UpdateOrderPayload, UpdateOrderResponse>;

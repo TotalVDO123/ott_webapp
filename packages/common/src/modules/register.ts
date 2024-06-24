@@ -82,7 +82,6 @@ container.bind(SubscriptionService).to(CleengSubscriptionService).whenTargetName
 // JWP integration
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isJwpIntegrationType);
 container.bind(JWPEntitlementService).toSelf();
-container.bind(JWPCheckoutService).toSelf().whenTargetNamed(INTEGRATION.JWP);
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(SubscriptionService).to(JWPSubscriptionService).whenTargetNamed(INTEGRATION.JWP);

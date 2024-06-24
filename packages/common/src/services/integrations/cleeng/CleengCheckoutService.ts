@@ -60,6 +60,8 @@ export default class CleengCheckoutService extends CheckoutService {
     );
   };
 
+  getPlansWithPriceOffers = async () => [];
+
   getOffer: GetOffer = async (payload) => {
     const customerIP = await this.getCustomerIP();
 

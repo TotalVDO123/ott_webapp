@@ -1,10 +1,9 @@
 import { useQuery, useQueryClient } from 'react-query';
 import { useEffect, useMemo } from 'react';
 import { getModule } from '@jwp/ott-common/src/modules/container';
-import JWPCheckoutService from '@jwp/ott-common/src/services/integrations/jwp/JWPCheckoutService';
+import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { MediaStatus } from '@jwp/ott-common/src/utils/liveEvent';
-import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 
 import useMedia from './useMedia';
@@ -90,9 +89,7 @@ export default function usePlansForMedia(mediaId: string) {
 
   const accessMethod = useCheckoutStore(({ accessMethod }) => accessMethod);
 
-  const checkoutController = getModule(JWPCheckoutService);
-
-  const siteId = useConfigStore(({ config }) => config.siteId);
+  const checkoutController = getModule(CheckoutController);
 
   const { isLoading: isMediaLoading, data: mediaData } = useMedia(mediaId, accessMethod === 'plan');
 
@@ -107,8 +104,6 @@ export default function usePlansForMedia(mediaId: string) {
       const customParameters = extractCustomParameters(mediaData);
 
       const searchString = `q=${buildFilterQuery(tags, customParameters)}`;
-
-      checkoutController.siteId = siteId;
 
       return await checkoutController.getPlansWithPriceOffers(searchString);
     },

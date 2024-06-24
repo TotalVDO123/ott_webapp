@@ -91,7 +91,17 @@ const ChooseOffer = () => {
   }
 
   if (accessMethod === 'plan') {
-    return <ChoosePlanForm values={values} errors={errors} onChange={handleChange} onSubmit={handleSubmit} offers={visibleOffers} submitting={submitting} />;
+    return (
+      <ChoosePlanForm
+        values={values}
+        errors={errors}
+        onChange={handleChange}
+        setValue={setValue}
+        onSubmit={handleSubmit}
+        offers={visibleOffers}
+        submitting={submitting}
+      />
+    );
   }
 
   return (

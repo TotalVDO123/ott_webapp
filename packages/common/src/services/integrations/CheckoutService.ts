@@ -11,6 +11,7 @@ import type {
   GetInitialAdyenPayment,
   GetOffer,
   GetOffers,
+  GetPlansWithPriceOffers,
   GetOrder,
   GetPaymentMethods,
   GetSubscriptionSwitch,
@@ -29,6 +30,8 @@ export default abstract class CheckoutService {
   abstract accessMethod: AccessMethod;
 
   abstract getOffers: GetOffers;
+
+  abstract getPlansWithPriceOffers: GetPlansWithPriceOffers;
 
   abstract createOrder: CreateOrder;
 

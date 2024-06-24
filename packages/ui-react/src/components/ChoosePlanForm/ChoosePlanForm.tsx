@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { FormErrors } from '@jwp/ott-common/types/form';
 import type { Offer, ChooseOfferFormData } from '@jwp/ott-common/types/checkout';
@@ -19,13 +19,14 @@ type Props = {
   values: ChooseOfferFormData;
   errors: FormErrors<ChooseOfferFormData>;
   onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  setValue: (key: keyof ChooseOfferFormData, value: string) => void;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   onBackButtonClickHandler?: () => void;
   offers: Offer[];
   submitting: boolean;
 };
 
-const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, onChange, onSubmit, onBackButtonClickHandler }: Props) => {
+const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, onChange, setValue, onSubmit, onBackButtonClickHandler }: Props) => {
   const { t } = useTranslation('account');
   const { selectedOfferId } = values;
 
@@ -35,6 +36,12 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
   );
 
   const [offerFilter, setOfferFilter] = useState<OfferPeriod>(() => Object.keys(groupedOffers)[0] as OfferPeriod);
+
+  useLayoutEffect(() => {
+    setValue('selectedOfferId', groupedOffers[offerFilter as OfferPeriod][0].offerId);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offerFilter]);
 
   return (
     <form onSubmit={onSubmit} data-testid={testId('choose-offer-form')} noValidate>
@@ -47,7 +54,9 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
             <Button
               key={period}
               label={t(`periods.${period}`)}
-              onClick={() => setOfferFilter(period as OfferPeriod)}
+              onClick={() => {
+                setOfferFilter(period as OfferPeriod);
+              }}
               active={offerFilter === period}
               className={styles.groupedButton}
             />
@@ -64,7 +73,14 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
         )}
       </div>
       {submitting && <LoadingOverlay transparentBackground inline />}
-      <Button label={t('choose_offer.continue')} disabled={submitting || !offers.length} variant="contained" color="primary" type="submit" fullWidth />
+      <Button
+        label={t('choose_offer.continue')}
+        disabled={!selectedOfferId || submitting || !offers.length}
+        variant="contained"
+        color="primary"
+        type="submit"
+        fullWidth
+      />
     </form>
   );
 };
