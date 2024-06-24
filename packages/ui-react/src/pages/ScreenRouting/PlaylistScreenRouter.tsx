@@ -1,11 +1,11 @@
 import React from 'react';
-import { useParams, matchPath, useLocation } from 'react-router';
+import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { PLAYLIST_TYPE, PLAYLIST_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
-import { PATH_CONTENT_LIST } from '@jwp/ott-common/src/paths';
+import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
 
 import Loading from '../Loading/Loading';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
@@ -24,12 +24,9 @@ playlistScreenMap.registerByContentType(PlaylistLiveChannels, PLAYLIST_CONTENT_T
 // register content list screens
 contentScreenMap.registerDefault(PlaylistGrid);
 
-const PlaylistScreenRouter = () => {
+const PlaylistScreenRouter = ({ type }: { type: PlaylistMenuType }) => {
   const params = useParams();
-  const location = useLocation();
   const id = params.id || '';
-
-  const type = matchPath(PATH_CONTENT_LIST, location.pathname) ? PLAYLIST_TYPE.content_list : PLAYLIST_TYPE.playlist;
 
   const { isLoading, isFetching, error, data } = usePlaylist(id, {}, true, true, type);
   const { t } = useTranslation('error');
