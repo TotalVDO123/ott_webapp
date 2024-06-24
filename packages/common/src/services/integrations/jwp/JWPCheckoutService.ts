@@ -150,7 +150,7 @@ export default class JWPCheckoutService extends CheckoutService {
         }),
       );
 
-      return offers;
+      return offers.filter(([, offers]) => offers.length > 0);
     } catch {
       throw new Error('Failed to get plans');
     }
