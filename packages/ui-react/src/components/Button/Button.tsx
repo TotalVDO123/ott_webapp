@@ -29,6 +29,8 @@ type Props = {
   busy?: boolean;
   id?: string;
   activeClassname?: string;
+
+  // we are using 'any' here because this prop is mapped to NavLink's 'state' prop, whose type is also 'any'
   navLinkState?: any;
 } & React.AriaAttributes;
 
