@@ -64,11 +64,10 @@ export default class JWPCheckoutService extends CheckoutService {
     return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.id}`;
   }
 
-  private formatOffer = ({ title, planId, planOriginalId, ...offer }: PlanPrice & { title: string; planId: string; planOriginalId: number }): Offer => {
+  private formatOffer = ({ title, planOriginalId, ...offer }: PlanPrice & { title: string; planOriginalId: number }): Offer => {
     return {
       id: offer.original_id,
       offerId: this.formatOfferId(offer),
-      planId,
       planOriginalId,
       offerCurrency: offer.metadata.currency,
       customerPriceInclTax: offer.metadata.amount,
@@ -138,9 +137,7 @@ export default class JWPCheckoutService extends CheckoutService {
             const planProps = { id: plan.id, name: plan.metadata.name };
 
             if (prices.length) {
-              const offers = prices.map((offer) =>
-                this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }),
-              );
+              const offers = prices.map((offer) => this.formatOffer({ ...offer, planOriginalId: plan.original_id, title: plan.metadata.name }));
 
               return [planProps, offers] as const;
             }
@@ -168,7 +165,7 @@ export default class JWPCheckoutService extends CheckoutService {
             const prices = await this.getPlanPrices(plan.id);
 
             if (prices.length) {
-              return prices.map((offer) => this.formatOffer({ ...offer, planId: plan.id, planOriginalId: plan.original_id, title: plan.metadata.name }));
+              return prices.map((offer) => this.formatOffer({ ...offer, planOriginalId: plan.original_id, title: plan.metadata.name }));
             }
 
             return [];
