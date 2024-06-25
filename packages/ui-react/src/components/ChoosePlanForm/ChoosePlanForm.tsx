@@ -38,9 +38,7 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
   const [offerFilter, setOfferFilter] = useState<OfferPeriod>(() => Object.keys(groupedOffers)[0] as OfferPeriod);
 
   useLayoutEffect(() => {
-    if (offerFilter) {
-      setValue('selectedOfferId', groupedOffers[offerFilter as OfferPeriod][0].offerId);
-    }
+    setValue('selectedOfferId', groupedOffers[offerFilter as OfferPeriod]?.[0].offerId || '');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offerFilter]);
