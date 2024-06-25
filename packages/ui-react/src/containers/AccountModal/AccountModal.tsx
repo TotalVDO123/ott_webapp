@@ -17,7 +17,7 @@ import WaitingForPayment from '../../components/WaitingForPayment/WaitingForPaym
 import UpgradeSubscription from '../../components/UpgradeSubscription/UpgradeSubscription';
 import DeleteAccountPasswordWarning from '../../components/DeleteAccountPasswordWarning/DeleteAccountPasswordWarning';
 import UpdatePaymentMethod from '../UpdatePaymentMethod/UpdatePaymentMethod';
-import ListPlans from '../../components/ListPlans/ListPlans';
+import ListPlansContainer from '../ListPlansContainer/ListPlansContainer';
 
 import EditCardDetails from './forms/EditCardDetails';
 import EditPassword from './forms/EditPassword';
@@ -162,7 +162,7 @@ const AccountModal = () => {
       case 'finalize-payment':
         return <FinalizePayment />;
       case 'list-plans':
-        return <ListPlans />;
+        return <ListPlansContainer />;
     }
   };
 

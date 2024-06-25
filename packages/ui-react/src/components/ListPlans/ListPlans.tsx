@@ -1,32 +1,22 @@
 import React from 'react';
+import { useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useMatch } from 'react-router';
-import usePlansForMedia from '@jwp/ott-hooks-react/src/usePlansForMedia';
-import LoadingOverlay from '@jwp/ott-ui-react/src/components/LoadingOverlay/LoadingOverlay';
-import { PATH_MEDIA, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import { PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import type { Offer } from '@jwp/ott-common/types/checkout';
 
 import PlanBox from '../PlanBox/PlanBox';
 import Button from '../Button/Button';
 
 import styles from './ListPlans.module.scss';
 
-const ListPlans: React.FC = () => {
-  const { t } = useTranslation('account');
+type Props = {
+  plans: (readonly [{ id: string; name: string }, Offer[]])[];
+};
 
-  const match = useMatch(PATH_MEDIA);
+const ListPlans: React.FC<Props> = ({ plans }) => {
   const location = useLocation();
 
-  const mediaId = match?.params.id || '';
-
-  const { isLoading, data: plans } = usePlansForMedia(mediaId);
-
-  if (isLoading) {
-    return (
-      <div style={{ height: 300 }}>
-        <LoadingOverlay inline />
-      </div>
-    );
-  }
+  const { t } = useTranslation('account');
 
   return (
     <div className={styles.listPlans}>
