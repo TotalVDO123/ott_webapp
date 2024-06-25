@@ -8,10 +8,6 @@ const config: KnipConfig = {
   workspaces: {
     '.': {
       entry: ['scripts/**/*'],
-      ignoreDependencies: [
-        // Workspace packages
-        'eslint-config-jwp',
-      ],
       ignoreBinaries: [
         // false positives from yarn scripts in github actions
         'build',

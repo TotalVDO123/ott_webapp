@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { inject, injectable } from 'inversify';
 
 import type { AccessModel, Config } from '../../../../types/config';
