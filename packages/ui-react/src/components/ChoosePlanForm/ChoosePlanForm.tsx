@@ -59,6 +59,7 @@ const ChoosePlanForm: React.FC<Props> = ({ values, errors, submitting, offers, o
               }}
               active={offerFilter === period}
               className={styles.groupedButton}
+              data-testid={testId(`offer-period-${period}`)}
             />
           ))}
         </ButtonGroup>

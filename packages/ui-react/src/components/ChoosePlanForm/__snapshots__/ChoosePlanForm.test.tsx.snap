@@ -19,6 +19,7 @@ exports[`<PlansForm> > renders and matches snapshot 1`] = `
       >
         <button
           class="_button_f8f296 _groupedButton_eb8471 _default_f8f296 _outlined_f8f296 _active_f8f296"
+          data-testid="offer-period-month"
           type="button"
         >
           <span>
@@ -27,6 +28,7 @@ exports[`<PlansForm> > renders and matches snapshot 1`] = `
         </button>
         <button
           class="_button_f8f296 _groupedButton_eb8471 _default_f8f296 _outlined_f8f296"
+          data-testid="offer-period-year"
           type="button"
         >
           <span>

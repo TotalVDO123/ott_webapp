@@ -55,6 +55,8 @@ describe('<PlansForm>', () => {
       />,
     );
 
+    fireEvent.click(getByTestId('offer-period-year'));
+
     expect(getByTestId('S345569153_NL')).toBeChecked();
   });
 
@@ -71,6 +73,8 @@ describe('<PlansForm>', () => {
         offers={svodOffers}
       />,
     );
+
+    fireEvent.click(getByTestId('offer-period-year'));
 
     fireEvent.click(getByTestId('S345569153_NL'));
 
