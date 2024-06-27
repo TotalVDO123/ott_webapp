@@ -9,6 +9,7 @@ import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/form
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
 import ExternalLink from '@jwp/ott-theme/assets/icons/external_link.svg?react';
 import PayPal from '@jwp/ott-theme/assets/icons/paypal.svg?react';
+import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
 import classNames from 'classnames';
 
@@ -74,6 +75,7 @@ const Payment = ({
   onShowAllTransactionsClick,
   showAllTransactions,
   onShowReceiptClick,
+  canRenewSubscription = false,
   canShowReceipts = false,
   canUpdatePaymentMethod,
   offers = [],
@@ -96,6 +98,8 @@ const Payment = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isGrantedSubscription = activeSubscription?.period === 'granted';
+  const breakpoint = useBreakpoint();
+  const isMobile = breakpoint === Breakpoint.xs;
 
   const [isChangingOffer, setIsChangingOffer] = useState(false);
 
@@ -118,12 +122,20 @@ const Payment = ({
     }
   }, [selectedOfferId, offers, activeSubscription, setIsUpgradeOffer]);
 
+  function onCompleteSubscriptionClick() {
+    navigate(modalURLFromLocation(location, 'choose-offer'));
+  }
+
   function onEditCardDetailsClick() {
     navigate(modalURLFromLocation(location, 'edit-card'));
   }
 
   function onCancelSubscriptionClick() {
     navigate(modalURLFromLocation(location, 'unsubscribe'));
+  }
+
+  function onRenewSubscriptionClick() {
+    navigate(modalURLFromLocation(location, 'renew-subscription'));
   }
 
   function getTitle(period: Subscription['period']) {
@@ -211,8 +223,26 @@ const Payment = ({
                   />
                 )
               )}
+              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') &&
+              !isGrantedSubscription &&
+              !isChangingOffer &&
+              canRenewSubscription ? (
+                <Button
+                  label={t('user:payment.cancel_subscription')}
+                  onClick={onCancelSubscriptionClick}
+                  fullWidth={isMobile}
+                  data-testid="cancel-subscription-button"
+                />
+              ) : canRenewSubscription ? (
+                <Button label={t('user:payment.renew_subscription')} onClick={onRenewSubscriptionClick} />
+              ) : null}
             </React.Fragment>
-          ) : null}
+          ) : isLoading ? null : (
+            <React.Fragment>
+              <p>{t('user:payment.no_subscription')}</p>
+              <Button variant="contained" color="primary" label={t('user:payment.complete_subscription')} onClick={onCompleteSubscriptionClick} />
+            </React.Fragment>
+          )}
         </section>
       )}
       <section aria-labelledby={paymentMethodId} className={panelClassName}>
