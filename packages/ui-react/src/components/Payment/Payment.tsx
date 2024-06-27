@@ -219,7 +219,7 @@ const Payment = ({
                   </Link>
                 </p>
               ) : (
-                showChangeSubscriptionButton && (
+                !showChangeSubscriptionButton && (
                   <Button
                     className={styles.upgradeSubscription}
                     label={t('user:payment.change_subscription')}

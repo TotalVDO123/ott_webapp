@@ -384,7 +384,7 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
                 </div>
               ),
             }),
-          canExportAccountData &&
+          !canExportAccountData &&
             formSection({
               label: t('account.export_data_title'),
               content: (section) => (
@@ -405,7 +405,7 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
                 </div>
               ),
             }),
-          canDeleteAccount &&
+          !canDeleteAccount &&
             formSection({
               label: t('account.delete_account.title'),
               content: () => (
@@ -426,7 +426,7 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
             }),
         ].filter(isTruthy)}
       </Form>
-      {canExportAccountData && (
+      {!canExportAccountData && (
         <Alert open={isAlertVisible} message={exportDataMessage} onClose={() => setIsAlertVisible(false)} isSuccess={exportData.isSuccess} />
       )}
     </>
