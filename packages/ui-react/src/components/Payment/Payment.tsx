@@ -79,6 +79,7 @@ const Payment = ({
   canRenewSubscription = false,
   canShowReceipts = false,
   canUpdatePaymentMethod,
+  onUpgradeSubscriptionClick,
   offerSwitchesAvailable,
   offers = [],
   pendingDowngradeOfferId = '',
@@ -220,12 +221,19 @@ const Payment = ({
               ) : (
                 showChangeSubscriptionButton && (
                   <Button
-                    className={styles.changePlanCancelButton}
-                    label={t('user:payment.cancel_subscription')}
-                    onClick={onCancelSubscriptionClick}
-                    variant="danger"
+                    className={styles.upgradeSubscription}
+                    label={t('user:payment.change_subscription')}
                     disabled={!canRenewSubscription && activeSubscription.status === 'cancelled'}
-                    data-testid="cancel-subscription-button"
+                    onClick={() => {
+                      if (offers.length > 1 && !canRenewSubscription) {
+                        setIsChangingOffer(true);
+                      } else {
+                        onUpgradeSubscriptionClick?.();
+                      }
+                    }}
+                    fullWidth={isMobile}
+                    color="primary"
+                    data-testid="change-subscription-button"
                   />
                 )
               )}
