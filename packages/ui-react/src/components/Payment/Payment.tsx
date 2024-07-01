@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { AccessModel } from '@jwp/ott-common/types/config';
@@ -14,10 +14,8 @@ import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
 import classNames from 'classnames';
 
 import IconButton from '../IconButton/IconButton';
-import Alert from '../Alert/Alert';
 import Button from '../Button/Button';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
-import OfferSwitch from '../OfferSwitch/OfferSwitch';
 import TextField from '../form-fields/TextField/TextField';
 import Icon from '../Icon/Icon';
 import Link from '../Link/Link';
@@ -45,19 +43,6 @@ type Props = {
   canUpdatePaymentMethod: boolean;
   canRenewSubscription?: boolean;
   canShowReceipts?: boolean;
-  offers?: Offer[];
-  pendingDowngradeOfferId?: string;
-  changeSubscriptionPlan: {
-    isLoading: boolean;
-    isError: boolean;
-    isSuccess: boolean;
-    reset: () => void;
-  };
-  onChangePlanClick: () => void;
-  selectedOfferId: string | null;
-  setSelectedOfferId: (offerId: string | null) => void;
-  isUpgradeOffer: boolean | undefined;
-  setIsUpgradeOffer: (isUpgradeOffer: boolean | undefined) => void;
   isExternalPaymentProvider: boolean;
   paymentProvider?: string;
   paymentProviderLink?: string;
@@ -81,14 +66,6 @@ const Payment = ({
   canUpdatePaymentMethod,
   onUpgradeSubscriptionClick,
   offerSwitchesAvailable,
-  offers = [],
-  pendingDowngradeOfferId = '',
-  changeSubscriptionPlan,
-  onChangePlanClick,
-  selectedOfferId,
-  setSelectedOfferId,
-  isUpgradeOffer,
-  setIsUpgradeOffer,
   isExternalPaymentProvider,
   paymentProvider,
   paymentProviderLink,
@@ -104,27 +81,6 @@ const Payment = ({
   const isGrantedSubscription = activeSubscription?.period === 'granted';
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === Breakpoint.xs;
-
-  const [isChangingOffer, setIsChangingOffer] = useState(false);
-
-  useEffect(() => {
-    if (!isChangingOffer) {
-      setSelectedOfferId(activeSubscription?.accessFeeId ?? null);
-    }
-  }, [activeSubscription, isChangingOffer, setSelectedOfferId]);
-
-  useEffect(() => {
-    setIsChangingOffer(false);
-  }, [activeSubscription?.status, activeSubscription?.pendingSwitchId]);
-
-  useEffect(() => {
-    if (selectedOfferId && offers) {
-      setIsUpgradeOffer(
-        (offers.find((offer) => offer.offerId === selectedOfferId)?.customerPriceInclTax ?? 0) >
-          (offers.find((offer) => offer.offerId === activeSubscription?.accessFeeId)?.customerPriceInclTax ?? 0),
-      );
-    }
-  }, [selectedOfferId, offers, activeSubscription, setIsUpgradeOffer]);
 
   function onCompleteSubscriptionClick() {
     navigate(modalURLFromLocation(location, 'choose-offer'));
@@ -159,58 +115,39 @@ const Payment = ({
     }
   }
 
-  const showChangeSubscriptionButton = (!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription);
+  const showChangeSubscriptionButton = !isExternalPaymentProvider && offerSwitchesAvailable;
 
   return (
     <>
-      <Alert
-        isSuccess={!changeSubscriptionPlan.isError}
-        message={
-          !changeSubscriptionPlan.isError
-            ? isUpgradeOffer
-              ? t('user:payment.upgrade_plan_success')
-              : t('user:payment.downgrade_plan_success', {
-                  date: activeSubscription?.expiresAt && formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language),
-                })
-            : t('user:payment.change_plan_error')
-        }
-        open={isChangingOffer && (changeSubscriptionPlan.isSuccess || changeSubscriptionPlan.isError)}
-        onClose={() => {
-          changeSubscriptionPlan.reset();
-          setIsChangingOffer(false);
-        }}
-      />
       <h1 className="hideUntilFocus">{t('nav.payments')}</h1>
       {accessModel === ACCESS_MODEL.SVOD && (
         <section aria-labelledby={subscriptionDetailsId} className={panelClassName}>
           <div className={panelHeaderClassName}>
-            <h2 id={subscriptionDetailsId}>{isChangingOffer ? t('user:payment.change_plan') : t('user:payment.subscription_details')}</h2>
+            <h2 id={subscriptionDetailsId}>{t('user:payment.subscription_details')}</h2>
           </div>
           {activeSubscription ? (
             <React.Fragment>
-              {!isChangingOffer && (
-                <div className={styles.infoBox} key={activeSubscription.subscriptionId}>
-                  <p>
-                    <strong>{getTitle(activeSubscription.period)}</strong> <br />
-                    {activeSubscription.status === 'active' && !isGrantedSubscription && !pendingDowngradeOfferId
-                      ? t('user:payment.next_billing_date_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })
-                      : t('user:payment.subscription_expires_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })}
-                    {(pendingOffer || pendingDowngradeOfferId) && activeSubscription.status !== 'cancelled' && (
-                      <span className={styles.pendingSwitch}>
-                        {t('user:payment.pending_offer_switch', {
-                          title: getTitle(pendingOffer?.period || offers.find((offer) => offer.offerId === pendingDowngradeOfferId)?.period || 'month'),
-                        })}
-                      </span>
-                    )}
-                  </p>
-                  {!isGrantedSubscription && (
-                    <p className={styles.price}>
-                      <strong>{formatPrice(activeSubscription.nextPaymentPrice, activeSubscription.nextPaymentCurrency, customer.country)}</strong>
-                      <small>/{t(`account:periods.${activeSubscription.period}`)}</small>
-                    </p>
+              <div className={styles.infoBox} key={activeSubscription.subscriptionId}>
+                <p>
+                  <strong>{getTitle(activeSubscription.period)}</strong> <br />
+                  {activeSubscription.status === 'active' && !isGrantedSubscription
+                    ? t('user:payment.next_billing_date_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })
+                    : t('user:payment.subscription_expires_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })}
+                  {pendingOffer && activeSubscription.status !== 'cancelled' && (
+                    <span className={styles.pendingSwitch}>
+                      {t('user:payment.pending_offer_switch', {
+                        title: getTitle(pendingOffer?.period),
+                      })}
+                    </span>
                   )}
-                </div>
-              )}
+                </p>
+                {!isGrantedSubscription && (
+                  <p className={styles.price}>
+                    <strong>{formatPrice(activeSubscription.nextPaymentPrice, activeSubscription.nextPaymentCurrency, customer.country)}</strong>
+                    <small>/{t(`account:periods.${activeSubscription.period}`)}</small>
+                  </p>
+                )}
+              </div>
               {isExternalPaymentProvider ? (
                 <p className={styles.explanation}>
                   {t('account:external_payment.explanation', { paymentProvider })}{' '}
@@ -223,24 +160,15 @@ const Payment = ({
                   <Button
                     className={styles.upgradeSubscription}
                     label={t('user:payment.change_subscription')}
-                    disabled={!canRenewSubscription && activeSubscription.status === 'cancelled'}
-                    onClick={() => {
-                      if (offers.length > 1 && !canRenewSubscription) {
-                        setIsChangingOffer(true);
-                      } else {
-                        onUpgradeSubscriptionClick?.();
-                      }
-                    }}
+                    disabled={(!canRenewSubscription && activeSubscription.status === 'cancelled') || !!pendingOffer}
+                    onClick={onUpgradeSubscriptionClick}
                     fullWidth={isMobile}
                     color="primary"
                     data-testid="change-subscription-button"
                   />
                 )
               )}
-              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') &&
-              !isGrantedSubscription &&
-              !isChangingOffer &&
-              canRenewSubscription ? (
+              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') && !isGrantedSubscription && canRenewSubscription ? (
                 <Button
                   label={t('user:payment.cancel_subscription')}
                   onClick={onCancelSubscriptionClick}
@@ -256,40 +184,6 @@ const Payment = ({
               <p>{t('user:payment.no_subscription')}</p>
               <Button variant="contained" color="primary" label={t('user:payment.complete_subscription')} onClick={onCompleteSubscriptionClick} />
             </React.Fragment>
-          )}
-          {isChangingOffer && (
-            <div className={styles.changePlanContainer}>
-              {offers
-                .filter((o) => o.planSwitchEnabled)
-                .map((offer) => (
-                  <OfferSwitch
-                    key={offer.offerId}
-                    isCurrentOffer={offer.offerId === activeSubscription?.accessFeeId}
-                    pendingDowngradeOfferId={pendingDowngradeOfferId}
-                    offer={offer}
-                    selected={selectedOfferId === offer.offerId}
-                    onChange={(offerId) => setSelectedOfferId(offerId)}
-                    expiresAt={activeSubscription?.expiresAt}
-                  />
-                ))}
-              <div className={styles.changePlanButtons}>
-                <Button
-                  label={t('user:account.save')}
-                  onClick={onChangePlanClick}
-                  disabled={selectedOfferId === activeSubscription?.accessFeeId || changeSubscriptionPlan.isLoading}
-                />
-                <Button label={t('user:account.cancel')} onClick={() => setIsChangingOffer(false)} variant="text" />
-                {activeSubscription?.status !== 'cancelled' && (
-                  <Button
-                    className={styles.changePlanCancelButton}
-                    label={t('user:payment.cancel_subscription')}
-                    onClick={onCancelSubscriptionClick}
-                    variant="danger"
-                    data-testid="cancel-subscription-button"
-                  />
-                )}
-              </div>
-            </div>
           )}
         </section>
       )}

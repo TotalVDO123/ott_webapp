@@ -100,7 +100,7 @@ export default class JWPSubscriptionService extends SubscriptionService {
     };
   };
 
-  private formatActiveSubscription = (subscription: SubscriptionDetails, expiresAt: number) => {
+  private formatActiveSubscription = (subscription: SubscriptionDetails, expiresAt: number, pendingSwitchId: string | null) => {
     let status = '';
     switch (subscription.action_type) {
       case 'free-trial':
@@ -134,7 +134,7 @@ export default class JWPSubscriptionService extends SubscriptionService {
       period: subscription.access_type?.period,
       totalPrice: subscription.charged_amount,
       unsubscribeUrl: subscription.unsubscribe_url,
-      pendingSwitchId: null,
+      pendingSwitchId: pendingSwitchId,
     } as Subscription;
   };
 
@@ -159,6 +159,7 @@ export default class JWPSubscriptionService extends SubscriptionService {
 
   getActiveSubscription: GetActiveSubscription = async () => {
     const assetId = this.accountService.assetId;
+    const { data: customer } = await InPlayer.Account.getAccountInfo();
 
     if (assetId === null) throw new Error("Couldn't fetch active subscription, there is no assetId configured");
 
@@ -167,10 +168,13 @@ export default class JWPSubscriptionService extends SubscriptionService {
 
       if (hasAccess) {
         const { data } = await InPlayer.Subscription.getSubscriptions();
-        const activeSubscription = data.collection.find((subscription: SubscriptionDetails) => subscription.item_id === assetId);
+        const activeSubscription = data.collection.find((subscription: SubscriptionDetails) => subscription.item_id === assetId) as
+          | SubscriptionDetails
+          | undefined;
+        const pendingSwitchId = (customer.metadata?.[`${activeSubscription?.subscription_id}_pending_downgrade`] as string) || null;
 
         if (activeSubscription) {
-          return this.formatActiveSubscription(activeSubscription, hasAccess?.data?.expires_at);
+          return this.formatActiveSubscription(activeSubscription, hasAccess?.data?.expires_at, pendingSwitchId);
         }
 
         return this.formatGrantedSubscription(hasAccess.data);

@@ -1,5 +1,5 @@
 import InPlayer, { type AccessFee, type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
-import { injectable } from 'inversify';
+import { inject, injectable, named } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
 import type {
@@ -10,6 +10,8 @@ import type {
   GetEntitlementsResponse,
   GetOffers,
   GetPaymentMethods,
+  GetSubscriptionSwitch,
+  GetSubscriptionSwitches,
   Offer,
   Order,
   Payment,
@@ -17,11 +19,13 @@ import type {
   PaymentWithAdyen,
   PaymentWithoutDetails,
   PaymentWithPayPal,
+  SwitchSubscription,
   UpdateOrder,
 } from '../../../../types/checkout';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
+import AccountService from '../AccountService';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
@@ -85,7 +89,6 @@ export default class JWPCheckoutService extends CheckoutService {
       active: true,
       period: offer.access_type.period === 'month' && offer.access_type.quantity === 12 ? 'year' : offer.access_type.period,
       freePeriods: offer.trial_period ? 1 : 0,
-      planSwitchEnabled: offer.item.plan_switch_enabled ?? false,
     } as Offer;
   };
 
@@ -108,6 +111,10 @@ export default class JWPCheckoutService extends CheckoutService {
       requiredPaymentDetails: true,
     } as Order;
   };
+
+  constructor(@inject(AccountService) @named('JWP') private readonly accountService: AccountService) {
+    super();
+  }
 
   createOrder: CreateOrder = async (payload) => {
     return {
@@ -276,13 +283,50 @@ export default class JWPCheckoutService extends CheckoutService {
     }
   };
 
-  getSubscriptionSwitches = undefined;
+  getSubscriptionSwitches: GetSubscriptionSwitches = async (payload) => {
+    const { data } = await InPlayer.Asset.getAssetAccessFees(this.parseOfferId(payload.offerId));
+
+    const subscriptionSwitches = data?.filter((accessFee) => accessFee.item.plan_switch_enabled).map((accessFee) => this.formatOffer(accessFee)) || [];
+
+    return { responseData: subscriptionSwitches, errors: [] };
+  };
 
   getOrder = undefined;
 
-  switchSubscription = undefined;
+  switchSubscription: SwitchSubscription = async (payload) => {
+    const { subscription, toOfferId } = payload;
+    const accessFeeId = parseInt(toOfferId.split('_')[1]);
 
-  getSubscriptionSwitch = undefined;
+    try {
+      const response = await InPlayer.Subscription.changeSubscriptionPlan({
+        access_fee_id: accessFeeId,
+        inplayer_token: String(subscription.subscriptionId),
+      });
+
+      await this.accountService.updateCustomer({
+        metadata: {
+          [`${subscription.subscriptionId}_pending_downgrade`]: toOfferId,
+        },
+      });
+
+      return {
+        errors: [],
+        responseData: response.data.message,
+      };
+    } catch {
+      throw new Error('Failed to change subscription');
+    }
+  };
+
+  getSubscriptionSwitch: GetSubscriptionSwitch = async ({ subscription }) => {
+    if (subscription.pendingSwitchId) {
+      const offers = await this.getOffers({ offerIds: [subscription.offerId] });
+
+      return { responseData: offers.find((offer) => offer.offerId === subscription.pendingSwitchId) || null, errors: [] };
+    }
+
+    return { responseData: null, errors: [] };
+  };
 
   createAdyenPaymentSession = undefined;
 

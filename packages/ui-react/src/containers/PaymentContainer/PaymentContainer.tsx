@@ -6,7 +6,6 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
-import { useSubscriptionChange } from '@jwp/ott-hooks-react/src/useSubscriptionChange';
 
 import styles from '../../pages/User/User.module.scss';
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay';
@@ -59,12 +58,10 @@ const PaymentContainer = () => {
   const { accessModel } = useConfigStore(({ accessModel }) => ({ accessModel }), shallow);
   const { user: customer, subscription: activeSubscription, transactions, activePayment, pendingOffer, loading } = useAccountStore();
   const { canUpdatePaymentMethod, canShowReceipts, canRenewSubscription } = accountController.getFeatures();
-  const { subscriptionOffers, switchSubscriptionOffers } = useOffers();
+  const { switchSubscriptionOffers } = useOffers();
 
   const [showAllTransactions, setShowAllTransactions] = useState(false);
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
-  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(activeSubscription?.accessFeeId ?? null);
-  const [isUpgradeOffer, setIsUpgradeOffer] = useState<boolean | undefined>(undefined);
 
   const location = useLocation();
 
@@ -85,22 +82,10 @@ const PaymentContainer = () => {
     setIsLoadingReceipt(false);
   };
 
-  const changeSubscriptionPlan = useSubscriptionChange(isUpgradeOffer ?? false, selectedOfferId, customer, activeSubscription?.subscriptionId);
-
-  const onChangePlanClick = async () => {
-    if (selectedOfferId && activeSubscription?.subscriptionId) {
-      changeSubscriptionPlan.mutate({
-        accessFeeId: selectedOfferId.slice(1),
-        subscriptionId: `${activeSubscription.subscriptionId}`,
-      });
-    }
-  };
-
   if (!customer) {
     return <LoadingOverlay />;
   }
 
-  const pendingDowngradeOfferId = (customer.metadata?.[`${activeSubscription?.subscriptionId}_pending_downgrade`] as string) || '';
   const isExternalPaymentProvider = !!activeSubscription && EXTERNAL_PAYMENT_METHODS.includes(activeSubscription.paymentMethod);
   const paymentProvider = activeSubscription?.paymentMethod.split(' ')[0] || 'unknown';
   const paymentProviderLink = STORE_LINKS[paymentProvider.toLowerCase()];
@@ -124,14 +109,6 @@ const PaymentContainer = () => {
       offerSwitchesAvailable={switchSubscriptionOffers.length > 0}
       canShowReceipts={canShowReceipts}
       onShowReceiptClick={handleShowReceiptClick}
-      offers={subscriptionOffers}
-      pendingDowngradeOfferId={pendingDowngradeOfferId}
-      changeSubscriptionPlan={changeSubscriptionPlan}
-      onChangePlanClick={onChangePlanClick}
-      selectedOfferId={selectedOfferId}
-      setSelectedOfferId={(offerId: string | null) => setSelectedOfferId(offerId)}
-      isUpgradeOffer={isUpgradeOffer}
-      setIsUpgradeOffer={(isUpgradeOffer: boolean | undefined) => setIsUpgradeOffer(isUpgradeOffer)}
       isExternalPaymentProvider={isExternalPaymentProvider}
       paymentProvider={paymentProvider}
       paymentProviderLink={paymentProviderLink}

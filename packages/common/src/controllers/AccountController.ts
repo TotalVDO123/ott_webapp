@@ -427,13 +427,11 @@ export default class AccountController {
     // resolve and fetch the pending offer after upgrade/downgrade
     try {
       if (activeSubscription?.pendingSwitchId) {
-        assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
         assertModuleMethod(this.checkoutService.getSubscriptionSwitch, 'getSubscriptionSwitch is not available in checkout service');
 
-        const switchOffer = await this.checkoutService.getSubscriptionSwitch({ switchId: activeSubscription.pendingSwitchId });
-        const offerResponse = await this.checkoutService.getOffer({ offerId: switchOffer.responseData.toOfferId });
+        const switchOffer = await this.checkoutService.getSubscriptionSwitch({ subscription: activeSubscription });
 
-        pendingOffer = offerResponse.responseData;
+        pendingOffer = switchOffer.responseData;
       }
     } catch (error: unknown) {
       logDev('Failed to fetch the pending offer', error);

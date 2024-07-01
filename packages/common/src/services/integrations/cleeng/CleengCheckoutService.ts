@@ -16,6 +16,8 @@ import type {
   GetPaymentMethods,
   GetSubscriptionSwitch,
   GetSubscriptionSwitches,
+  GetSubscriptionSwitchesResponse,
+  GetSubscriptionSwitchResponse,
   PaymentWithoutDetails,
   PaymentWithPayPal,
   SwitchSubscription,
@@ -128,16 +130,31 @@ export default class CleengCheckoutService extends CheckoutService {
   };
 
   getSubscriptionSwitches: GetSubscriptionSwitches = async (payload) => {
-    return this.cleengService.get(`/customers/${payload.customerId}/subscription_switches/${payload.offerId}/availability`, { authenticate: true });
+    const response = await this.cleengService.get<ServiceResponse<GetSubscriptionSwitchesResponse>>(
+      `/customers/${payload.customerId}/subscription_switches/${payload.offerId}/availability`,
+      { authenticate: true },
+    );
+
+    const subscriptionSwitches = await this.getOffers({ offerIds: response.responseData.available.map((switchOffer) => switchOffer.toOfferId) });
+
+    return {
+      responseData: subscriptionSwitches,
+      errors: [],
+    };
   };
 
   getSubscriptionSwitch: GetSubscriptionSwitch = async (payload) => {
-    return this.cleengService.get(`/subscription_switches/${payload.switchId}`, { authenticate: true });
+    const response = await this.cleengService.get<ServiceResponse<GetSubscriptionSwitchResponse>>(
+      `/subscription_switches/${payload.subscription.pendingSwitchId}`,
+      { authenticate: true },
+    );
+
+    return this.getOffer({ offerId: response.responseData.toOfferId });
   };
 
   switchSubscription: SwitchSubscription = async (payload) => {
     return this.cleengService.post(
-      `/customers/${payload.customerId}/subscription_switches/${payload.offerId}`,
+      `/customers/${payload.customerId}/subscription_switches/${payload.subscription.offerId}`,
       JSON.stringify({ toOfferId: payload.toOfferId, switchDirection: payload.switchDirection }),
       { authenticate: true },
     );

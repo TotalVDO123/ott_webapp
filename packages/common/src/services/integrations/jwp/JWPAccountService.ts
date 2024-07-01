@@ -61,7 +61,7 @@ export default class JWPAccountService extends AccountService {
       canUpdateEmail: false,
       canSupportEmptyFullName: false,
       canChangePasswordWithOldPassword: true,
-      canRenewSubscription: false,
+      canRenewSubscription: true,
       canExportAccountData: true,
       canUpdatePaymentMethod: false,
       canShowReceipts: true,

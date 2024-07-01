@@ -27,17 +27,6 @@ describe('<Payment>', () => {
         onShowReceiptClick={vi.fn()}
         onUpgradeSubscriptionClick={vi.fn()}
         onShowAllTransactionsClick={vi.fn()}
-        changeSubscriptionPlan={{
-          isLoading: false,
-          isSuccess: false,
-          isError: false,
-          reset: vi.fn(),
-        }}
-        onChangePlanClick={vi.fn()}
-        selectedOfferId={null}
-        setSelectedOfferId={vi.fn()}
-        isUpgradeOffer={undefined}
-        setIsUpgradeOffer={vi.fn()}
         isExternalPaymentProvider={false}
       />,
     );

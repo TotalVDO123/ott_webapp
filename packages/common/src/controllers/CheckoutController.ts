@@ -53,8 +53,7 @@ export default class CheckoutController {
     }
 
     if (!useCheckoutStore.getState().switchSubscriptionOffers.length) {
-      const subscriptionSwitches = await this.getSubscriptionSwitches();
-      const switchSubscriptionOffers = subscriptionSwitches ? await this.getOffers({ offerIds: subscriptionSwitches }) : [];
+      const switchSubscriptionOffers = await this.getSubscriptionSwitches();
       useCheckoutStore.setState({ switchSubscriptionOffers });
     }
   };
@@ -238,24 +237,20 @@ export default class CheckoutController {
     };
   };
 
-  getSubscriptionSwitches = async (): Promise<string[] | null> => {
+  getSubscriptionSwitches = async (): Promise<Offer[]> => {
     const { getAccountInfo } = useAccountStore.getState();
 
     const { customerId } = getAccountInfo();
     const { subscription } = useAccountStore.getState();
 
-    if (!subscription || !this.checkoutService.getSubscriptionSwitches) return null;
-
-    assertModuleMethod(this.checkoutService.getOffer, 'getOffer is not available in checkout service');
+    if (!subscription || !this.checkoutService.getSubscriptionSwitches) return [];
 
     const response = await this.checkoutService.getSubscriptionSwitches({
       customerId: customerId,
       offerId: subscription.offerId,
     });
 
-    if (!response.responseData.available.length) return null;
-
-    return response.responseData.available.map(({ toOfferId }) => toOfferId);
+    return response.responseData;
   };
 
   switchSubscription = async () => {
@@ -271,9 +266,9 @@ export default class CheckoutController {
     const switchDirection: 'upgrade' | 'downgrade' = determineSwitchDirection(subscription);
 
     const switchSubscriptionPayload = {
+      subscription,
       toOfferId: selectedOffer.offerId,
       customerId: customerId,
-      offerId: subscription.offerId,
       switchDirection: switchDirection,
     };
 

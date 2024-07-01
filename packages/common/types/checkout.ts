@@ -1,5 +1,5 @@
 import type { PayloadWithIPOverride } from './account';
-import type { PaymentDetail } from './subscription';
+import type { PaymentDetail, Subscription } from './subscription';
 import type { EmptyEnvironmentServiceRequest, EnvironmentServiceRequest, PromiseRequest } from './service';
 
 export type Offer = {
@@ -41,7 +41,6 @@ export type Offer = {
   contentExternalId: number | null;
   contentExternalData: string | null;
   contentAgeRestriction: string | null;
-  planSwitchEnabled?: boolean;
 };
 
 export type OfferType = 'svod' | 'tvod';
@@ -188,7 +187,7 @@ export type GetSubscriptionSwitchesResponse = {
 };
 
 export type GetSubscriptionSwitchPayload = {
-  switchId: string;
+  subscription: Subscription;
 };
 
 export type GetSubscriptionSwitchResponse = {
@@ -206,7 +205,7 @@ export type GetSubscriptionSwitchResponse = {
 
 export type SwitchSubscriptionPayload = {
   customerId: string;
-  offerId: string;
+  subscription: Subscription;
   toOfferId: string;
   switchDirection: string;
 };
@@ -372,8 +371,8 @@ export type GetPaymentMethods = EmptyEnvironmentServiceRequest<PaymentMethodResp
 export type PaymentWithoutDetails = EnvironmentServiceRequest<PaymentWithoutDetailsPayload, Payment>;
 export type PaymentWithAdyen = EnvironmentServiceRequest<PaymentWithAdyenPayload, Payment>;
 export type PaymentWithPayPal = EnvironmentServiceRequest<PaymentWithPayPalPayload, PaymentWithPayPalResponse>;
-export type GetSubscriptionSwitches = EnvironmentServiceRequest<GetSubscriptionSwitchesPayload, GetSubscriptionSwitchesResponse>;
-export type GetSubscriptionSwitch = EnvironmentServiceRequest<GetSubscriptionSwitchPayload, GetSubscriptionSwitchResponse>;
+export type GetSubscriptionSwitches = EnvironmentServiceRequest<GetSubscriptionSwitchesPayload, Offer[]>;
+export type GetSubscriptionSwitch = EnvironmentServiceRequest<GetSubscriptionSwitchPayload, Offer | null>;
 export type SwitchSubscription = EnvironmentServiceRequest<SwitchSubscriptionPayload, SwitchSubscriptionResponse>;
 export type GetEntitlements = EnvironmentServiceRequest<GetEntitlementsPayload, GetEntitlementsResponse>;
 export type GetAdyenPaymentSession = EnvironmentServiceRequest<AdyenPaymentMethodPayload, AdyenPaymentSession>;
