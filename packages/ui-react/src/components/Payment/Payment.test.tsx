@@ -23,6 +23,7 @@ describe('<Payment>', () => {
         canUpdatePaymentMethod={false}
         showAllTransactions={false}
         isLoading={false}
+        canSwitchSubscription={false}
         offerSwitchesAvailable={false}
         onShowReceiptClick={vi.fn()}
         onUpgradeSubscriptionClick={vi.fn()}

@@ -58,7 +58,7 @@ const PaymentContainer = () => {
 
   const { accessModel } = useConfigStore(({ accessModel }) => ({ accessModel }), shallow);
   const { user: customer, subscription: activeSubscription, transactions, activePayment, pendingOffer, loading } = useAccountStore();
-  const { canUpdatePaymentMethod, canShowReceipts, canRenewSubscription } = accountController.getFeatures();
+  const { canUpdatePaymentMethod, canShowReceipts, canRenewSubscription, canSwitchSubscription } = accountController.getFeatures();
   const { subscriptionOffers, switchSubscriptionOffers } = useOffers();
 
   const [showAllTransactions, setShowAllTransactions] = useState(false);
@@ -135,6 +135,7 @@ const PaymentContainer = () => {
       isExternalPaymentProvider={isExternalPaymentProvider}
       paymentProvider={paymentProvider}
       paymentProviderLink={paymentProviderLink}
+      canSwitchSubscription={canSwitchSubscription}
     />
   );
 };

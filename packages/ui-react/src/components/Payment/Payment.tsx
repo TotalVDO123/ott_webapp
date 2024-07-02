@@ -61,6 +61,7 @@ type Props = {
   isExternalPaymentProvider: boolean;
   paymentProvider?: string;
   paymentProviderLink?: string;
+  canSwitchSubscription: boolean;
 };
 
 const Payment = ({
@@ -92,6 +93,7 @@ const Payment = ({
   isExternalPaymentProvider,
   paymentProvider,
   paymentProviderLink,
+  canSwitchSubscription,
 }: Props): JSX.Element => {
   const subscriptionDetailsId = useOpaqueId('subscription-details');
   const paymentMethodId = useOpaqueId('payment-method');
@@ -219,23 +221,34 @@ const Payment = ({
                   </Link>
                 </p>
               ) : (
-                showChangeSubscriptionButton && (
-                  <Button
-                    className={styles.upgradeSubscription}
-                    label={t('user:payment.change_subscription')}
-                    disabled={!canRenewSubscription && activeSubscription.status === 'cancelled'}
-                    onClick={() => {
-                      if (offers.length > 1 && !canRenewSubscription) {
-                        setIsChangingOffer(true);
-                      } else {
-                        onUpgradeSubscriptionClick?.();
-                      }
-                    }}
-                    fullWidth={isMobile}
-                    color="primary"
-                    data-testid="change-subscription-button"
-                  />
-                )
+                <>
+                  {canSwitchSubscription && showChangeSubscriptionButton && (
+                    <Button
+                      className={styles.upgradeSubscription}
+                      label={t('user:payment.change_subscription')}
+                      disabled={!canRenewSubscription && activeSubscription.status === 'cancelled'}
+                      onClick={() => {
+                        if (offers.length > 1 && !canRenewSubscription) {
+                          setIsChangingOffer(true);
+                        } else {
+                          onUpgradeSubscriptionClick?.();
+                        }
+                      }}
+                      fullWidth={isMobile}
+                      color="primary"
+                      data-testid="change-subscription-button"
+                    />
+                  )}
+                  {!canSwitchSubscription && activeSubscription?.status !== 'cancelled' && (
+                    <Button
+                      className={styles.changePlanCancelButton}
+                      label={t('user:payment.cancel_subscription')}
+                      onClick={onCancelSubscriptionClick}
+                      variant="danger"
+                      data-testid="cancel-subscription-button"
+                    />
+                  )}
+                </>
               )}
               {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') &&
               !isGrantedSubscription &&

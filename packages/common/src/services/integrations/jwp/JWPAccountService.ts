@@ -67,6 +67,7 @@ export default class JWPAccountService extends AccountService {
       canShowReceipts: true,
       canDeleteAccount: false,
       hasNotifications: true,
+      canSwitchSubscription: false,
       hasSocialURLs: true,
       // Limit of media_ids length passed to the /apps/watchlists endpoint
       watchListSizeLimit: 48,
