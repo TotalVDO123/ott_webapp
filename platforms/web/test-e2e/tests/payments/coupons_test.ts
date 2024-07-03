@@ -61,7 +61,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
     I.dontSee('Coupon code');
 
     I.click('Redeem coupon');
-    I.fillField('couponCode', 'test75');
+    I.fillField('input[name="couponCode"]', 'test75');
     I.click('Apply');
     I.waitForLoaderDone();
     I.see('Your coupon code has been applied');
@@ -72,7 +72,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
       I.see(formatPrice(props.applicableTax, 'EUR', props.locale));
     }
 
-    I.fillField('couponCode', 'test100');
+    I.fillField('input[name="couponCode"]', 'test100');
     I.click('Apply');
     I.waitForLoaderDone();
     I.see(formatPrice(0, 'EUR', props.locale));
@@ -87,6 +87,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
         '',
       );
     }
+
+    I.waitForElement('[data-testid="complete-subscription-button"]', 10);
+    I.click('[data-testid="complete-subscription-button"]');
+
     await finishSubscription(I);
     await checkSubscription(I, addYear(today), today, props.yearlyOffer.price, props.hasInlineOfferSwitch);
   });
