@@ -66,7 +66,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
     await goToCheckout(I);
 
     const alreadySubscribed = await tryTo(() => {
-      I.waitForText('Next billing date is on ' + formatDate(today), 10);
+      I.waitForText('Next billing date is on ' + formatDate(today));
     });
 
     if (!alreadySubscribed) {
@@ -78,9 +78,6 @@ function runTestSuite(props: ProviderProps, providerName: string) {
         props.paymentFields.securityCode,
         props.fieldWrapper,
       );
-
-      I.waitForElement('[data-testid="change-subscription-button"]', 10);
-      I.click('[data-testid="change-subscription-button"]');
 
       await finishSubscription(I);
     }
@@ -102,7 +99,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   Scenario(`I can renew my subscription - ${providerName}`, async ({ I }) => {
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
-      await renewPlan(I, addYear(today), props.yearlyOffer.price);
+      renewPlan(I, addYear(today), props.yearlyOffer.price);
     }
   });
 
