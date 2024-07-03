@@ -9,10 +9,6 @@ jobs:
   create-new-release-version:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: ['20']
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
