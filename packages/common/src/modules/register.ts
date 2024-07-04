@@ -39,6 +39,7 @@ import CleengCheckoutService from '../services/integrations/cleeng/CleengCheckou
 import CleengSubscriptionService from '../services/integrations/cleeng/CleengSubscriptionService';
 
 // InPlayer integration
+import JWPAPIService from '../services/integrations/jwp/base/JWPAPIService';
 import JWPAccountService from '../services/integrations/jwp/JWPAccountService';
 import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService';
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
@@ -81,6 +82,7 @@ container.bind(SubscriptionService).to(CleengSubscriptionService).whenTargetName
 
 // JWP integration
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isJwpIntegrationType);
+container.bind(JWPAPIService).toSelf();
 container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);

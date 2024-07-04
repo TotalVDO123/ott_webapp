@@ -1,5 +1,4 @@
 import InPlayer, { Env } from '@inplayer-org/inplayer.js';
-import type { AccountData, FavoritesData, RegisterField, UpdateAccountData, WatchHistory } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
 import { injectable } from 'inversify';
 
@@ -38,6 +37,20 @@ import AccountService from '../AccountService';
 import StorageService from '../../StorageService';
 import { ACCESS_MODEL } from '../../../constants';
 
+import type {
+  GetRegisterFieldsResponse,
+  RegisterField,
+  CreateAccount,
+  AccountData,
+  CommonResponse,
+  GetWatchHistoryResponse,
+  WatchHistory,
+  FavoritesData,
+  GetFavoritesResponse,
+  ListSocialURLs,
+} from './base/types';
+import JWPAPIService from './base/JWPAPIService';
+
 enum InPlayerEnv {
   Development = 'development',
   Production = 'production',
@@ -49,6 +62,8 @@ const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 @injectable()
 export default class JWPAccountService extends AccountService {
   private readonly storageService;
+  private readonly apiService;
+
   private clientId = '';
 
   accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
@@ -56,7 +71,7 @@ export default class JWPAccountService extends AccountService {
   svodOfferIds: string[] = [];
   sandbox = false;
 
-  constructor(storageService: StorageService) {
+  constructor(storageService: StorageService, apiService: JWPAPIService) {
     super({
       canUpdateEmail: false,
       canSupportEmptyFullName: false,
@@ -73,6 +88,7 @@ export default class JWPAccountService extends AccountService {
     });
 
     this.storageService = storageService;
+    this.apiService = apiService;
   }
 
   private parseJson = (value: string, fallback = {}) => {
@@ -138,6 +154,8 @@ export default class JWPAccountService extends AccountService {
     const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
+    this.apiService.setup(this.sandbox, jwpConfig.clientId);
+
     // calculate access model
     if (jwpConfig.clientId) {
       this.clientId = jwpConfig.clientId;
@@ -159,12 +177,12 @@ export default class JWPAccountService extends AccountService {
       return;
     }
 
-    InPlayer.Account.setToken(token, refreshToken, parseInt(expires));
+    this.apiService.setToken(token, refreshToken, parseInt(expires));
   };
 
   getAuthData = async () => {
-    if (InPlayer.Account.isAuthenticated()) {
-      const credentials = InPlayer.Account.getToken().toObject();
+    if (await this.apiService.isAuthenticated()) {
+      const credentials = await this.apiService.getToken();
 
       return {
         jwt: credentials.token,
@@ -177,7 +195,7 @@ export default class JWPAccountService extends AccountService {
 
   getPublisherConsents: GetPublisherConsents = async () => {
     try {
-      const { data } = await InPlayer.Account.getRegisterFields(this.clientId);
+      const data = await this.apiService.get<GetRegisterFieldsResponse>(`/accounts/register-fields/${this.clientId}`);
 
       const terms = data?.collection.find(({ name }) => name === 'terms');
 
@@ -242,7 +260,7 @@ export default class JWPAccountService extends AccountService {
         },
       };
 
-      const { data } = await InPlayer.Account.updateAccount(params);
+      const data = await this.apiService.put<AccountData>('/accounts', params, { withAuthentication: true });
 
       return this.parseJson(data?.metadata?.consents as string, []);
     } catch {
@@ -258,11 +276,15 @@ export default class JWPAccountService extends AccountService {
     const { oldPassword, newPassword, newPasswordConfirmation } = payload;
 
     try {
-      await InPlayer.Account.changePassword({
-        oldPassword,
-        password: newPassword,
-        passwordConfirmation: newPasswordConfirmation,
-      });
+      await this.apiService.post<void>(
+        '/accounts/change-password',
+        {
+          old_password: oldPassword,
+          password: newPassword,
+          password_confirmation: newPasswordConfirmation,
+        },
+        { withAuthentication: true },
+      );
     } catch (error: unknown) {
       if (isCommonError(error)) {
         throw new Error(error.response.data.message);
@@ -273,10 +295,10 @@ export default class JWPAccountService extends AccountService {
 
   resetPassword: ResetPassword = async ({ customerEmail }) => {
     try {
-      await InPlayer.Account.requestNewPassword({
+      await this.apiService.post<CommonResponse>('/accounts/forgot-password', {
         email: customerEmail,
-        merchantUuid: this.clientId,
-        brandingId: 0,
+        merchant_uuid: this.clientId,
+        branding_id: 0,
       });
     } catch {
       throw new Error('Failed to reset password.');
@@ -285,12 +307,15 @@ export default class JWPAccountService extends AccountService {
 
   login: Login = async ({ email, password, referrer }) => {
     try {
-      const { data } = await InPlayer.Account.signInV2({
-        email,
-        password,
+      const data = await this.apiService.post<CreateAccount>('/v2/accounts/authenticate', {
+        client_id: this.clientId || '',
+        grant_type: 'password',
         referrer,
-        clientId: this.clientId || '',
+        username: email,
+        password,
       });
+
+      this.apiService.setToken(data.access_token, '', data.expires);
 
       const user = this.formatAccount(data.account);
 
@@ -306,21 +331,24 @@ export default class JWPAccountService extends AccountService {
 
   register: Register = async ({ email, password, referrer, consents }) => {
     try {
-      const { data } = await InPlayer.Account.signUpV2({
-        email,
+      const data = await this.apiService.post<CreateAccount>('/accounts', {
+        full_name: email,
+        username: email,
         password,
+        password_confirmation: password,
+        client_id: this.clientId || '',
+        type: 'consumer',
         referrer,
-        passwordConfirmation: password,
-        fullName: email,
+        grant_type: 'password',
         metadata: {
           first_name: ' ',
           surname: ' ',
           ...formatConsentsToRegisterFields(consents),
           consents: JSON.stringify(consents),
         },
-        type: 'consumer',
-        clientId: this.clientId || '',
       });
+
+      this.apiService.setToken(data.access_token, '', data.expires);
 
       const user = this.formatAccount(data.account);
 
@@ -343,8 +371,9 @@ export default class JWPAccountService extends AccountService {
         InPlayer.Notifications.unsubscribe();
       }
 
-      if (InPlayer.Account.isAuthenticated()) {
-        await InPlayer.Account.signOut();
+      if (await this.apiService.isAuthenticated()) {
+        await this.apiService.get<undefined>('/accounts/logout', { withAuthentication: true });
+        await this.apiService.removeToken();
       }
     } catch {
       throw new Error('Failed to sign out.');
@@ -353,7 +382,7 @@ export default class JWPAccountService extends AccountService {
 
   getUser = async () => {
     try {
-      const { data } = await InPlayer.Account.getAccountInfo();
+      const data = await this.apiService.get<AccountData>(`/accounts`, { withAuthentication: true });
 
       const user = this.formatAccount(data);
 
@@ -368,9 +397,9 @@ export default class JWPAccountService extends AccountService {
 
   updateCustomer: UpdateCustomer = async (customer) => {
     try {
-      const response = await InPlayer.Account.updateAccount(this.formatUpdateAccount(customer));
+      const data = await this.apiService.put<AccountData>('/accounts', this.formatUpdateAccount(customer), { withAuthentication: true });
 
-      return this.formatAccount(response.data);
+      return this.formatAccount(data);
     } catch {
       throw new Error('Failed to update user data.');
     }
@@ -380,13 +409,15 @@ export default class JWPAccountService extends AccountService {
     const firstName = customer.firstName?.trim() || '';
     const lastName = customer.lastName?.trim() || '';
     const fullName = `${firstName} ${lastName}`.trim() || (customer.email as string);
+
     const metadata: Record<string, string> = {
       ...customer.metadata,
       first_name: firstName,
       surname: lastName,
     };
-    const data: UpdateAccountData = {
-      fullName,
+
+    const data = {
+      full_name: fullName,
       metadata,
     };
 
@@ -417,14 +448,11 @@ export default class JWPAccountService extends AccountService {
   changePasswordWithResetToken: ChangePassword = async (payload) => {
     const { resetPasswordToken = '', newPassword, newPasswordConfirmation = '' } = payload;
     try {
-      await InPlayer.Account.setNewPassword(
-        {
-          password: newPassword,
-          passwordConfirmation: newPasswordConfirmation,
-          brandingId: 0,
-        },
-        resetPasswordToken,
-      );
+      await this.apiService.put<void>(`/accounts/forgot-password/${resetPasswordToken}`, {
+        password: newPassword,
+        password_confirmation: newPasswordConfirmation,
+        branding_id: 0,
+      });
     } catch (error: unknown) {
       if (isCommonError(error)) {
         throw new Error(error.response.data.message);
@@ -461,7 +489,14 @@ export default class JWPAccountService extends AccountService {
     await Promise.allSettled(
       history.map(({ mediaid, progress }) => {
         if (!savedHistory.includes(mediaid) || current.some((e) => e.mediaid == mediaid && e.progress != progress)) {
-          return InPlayer.Account.updateWatchHistory(mediaid, progress);
+          return this.apiService.patch<WatchHistory>(
+            '/v2/accounts/media/watch-history',
+            {
+              media_id: mediaid,
+              progress,
+            },
+            { withAuthentication: true },
+          );
         }
       }),
     );
@@ -474,29 +509,35 @@ export default class JWPAccountService extends AccountService {
 
     // save new favorites
     await Promise.allSettled(
-      payloadFavoriteIds.map((mediaId) => {
-        return !currentFavoriteIds.includes(mediaId) ? InPlayer.Account.addToFavorites(mediaId) : Promise.resolve();
+      payloadFavoriteIds.map((media_id) => {
+        return !currentFavoriteIds.includes(media_id)
+          ? this.apiService.post<FavoritesData>('/v2/accounts/media/favorites', { media_id }, { withAuthentication: true })
+          : Promise.resolve();
       }),
     );
 
     // delete removed favorites
     await Promise.allSettled(
       currentFavoriteIds.map((mediaId) => {
-        return !payloadFavoriteIds.includes(mediaId) ? InPlayer.Account.deleteFromFavorites(mediaId) : Promise.resolve();
+        return !payloadFavoriteIds.includes(mediaId)
+          ? this.apiService.remove<CommonResponse>(`/v2/accounts/media/favorites/${mediaId}`, { withAuthentication: true })
+          : Promise.resolve();
       }),
     );
   };
 
   getFavorites = async () => {
-    const favoritesData = await InPlayer.Account.getFavorites();
+    const favoritesData = await this.apiService.get<GetFavoritesResponse>('/v2/accounts/media/favorites', { withAuthentication: true });
 
-    return favoritesData.data?.collection?.map(this.formatFavorite) || [];
+    return favoritesData?.collection?.map(this.formatFavorite) || [];
   };
 
   getWatchHistory = async () => {
-    const watchHistoryData = await InPlayer.Account.getWatchHistory({});
+    const watchHistoryData = await this.apiService.get<GetWatchHistoryResponse>(`/v2/accounts/media/watch-history?filter=currently_watching`, {
+      withAuthentication: true,
+    });
 
-    return watchHistoryData.data?.collection?.map(this.formatHistoryItem) || [];
+    return watchHistoryData?.collection?.map(this.formatHistoryItem) || [];
   };
 
   subscribeToNotifications: NotificationsData = async ({ uuid, onMessage }) => {
@@ -516,9 +557,7 @@ export default class JWPAccountService extends AccountService {
   exportAccountData: ExportAccountData = async () => {
     // password is sent as undefined because it is now optional on BE
     try {
-      const response = await InPlayer.Account.exportData({ password: undefined, brandingId: 0 });
-
-      return response.data;
+      return await this.apiService.post<CommonResponse>('/accounts/export', { password: undefined, branding_id: 0 }, { withAuthentication: true });
     } catch {
       throw new Error('Failed to export account data');
     }
@@ -526,9 +565,7 @@ export default class JWPAccountService extends AccountService {
 
   deleteAccount: DeleteAccount = async ({ password }) => {
     try {
-      const response = await InPlayer.Account.deleteAccount({ password, brandingId: 0 });
-
-      return response.data;
+      return await this.apiService.remove<CommonResponse>('/accounts/erase', { withAuthentication: true }, { password, branding_id: 0 });
     } catch (error: unknown) {
       if (isCommonError(error)) {
         throw new Error(error.response.data.message || 'Failed to delete account');
@@ -546,7 +583,9 @@ export default class JWPAccountService extends AccountService {
       }),
     );
 
-    const socialResponse = await InPlayer.Account.getSocialLoginUrls(socialState);
+    const socialResponse = await this.apiService.get<{ status: number; data: ListSocialURLs }>(`/accounts/social?state=${socialState}`, {
+      includeStatus: true,
+    });
 
     if (socialResponse.status !== 200) {
       throw new Error('Failed to fetch social urls');
