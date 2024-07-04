@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^5.66.1",
-    "@inplayer-org/inplayer.js": "^3.13.25",
+    "@inplayer-org/inplayer.js": "^3.13.28",
     "classnames": "^2.5.1",
     "date-fns": "^2.30.0",
     "dompurify": "^2.5.5",

@@ -1,5 +1,5 @@
-import InPlayer, { type AccessFee, type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
-import { injectable } from 'inversify';
+import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
+import { inject, injectable } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
 import type {
@@ -23,9 +23,19 @@ import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
 
+import JWPAPIService from './base/JWPAPIService';
+import type { GetAccessFeesResponse, AccessFee } from './base/types';
+
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
   private readonly cardPaymentProvider = 'stripe';
+
+  private readonly apiService;
+
+  constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
+    super();
+    this.apiService = apiService;
+  }
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -124,7 +134,7 @@ export default class JWPCheckoutService extends CheckoutService {
     const offers = await Promise.all(
       payload.offerIds.map(async (offerId) => {
         try {
-          const { data } = await InPlayer.Asset.getAssetAccessFees(this.parseOfferId(offerId));
+          const data = await this.apiService.get<GetAccessFeesResponse>(`/v2/items/${this.parseOfferId(offerId)}/access-fees`);
 
           return data?.map((offer) => this.formatOffer(offer));
         } catch {
