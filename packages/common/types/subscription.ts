@@ -1,4 +1,4 @@
-import type { ChangeSubscriptionPlanResponse, DefaultCreditCardData, SetDefaultCard } from '@inplayer-org/inplayer.js';
+import type { ChangeSubscriptionPlanResponse, SetDefaultCardResponse, DefaultCreditCardDataParams } from '../src/services/integrations/jwp/base/types';
 
 import type { CleengRequest } from './cleeng';
 import type { EnvironmentServiceRequest, PromiseRequest } from './service';
@@ -120,9 +120,9 @@ export type GetTransactionsResponse = {
   items: Transaction[];
 };
 
-export type UpdateCardDetailsPayload = DefaultCreditCardData;
+export type UpdateCardDetailsPayload = DefaultCreditCardDataParams;
 
-export type UpdateCardDetails = EnvironmentServiceRequest<DefaultCreditCardData, SetDefaultCard>;
+export type UpdateCardDetails = EnvironmentServiceRequest<DefaultCreditCardDataParams, SetDefaultCardResponse>;
 
 export type FetchReceiptPayload = {
   transactionId: string;

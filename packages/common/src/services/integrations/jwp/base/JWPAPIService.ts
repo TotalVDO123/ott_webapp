@@ -5,11 +5,17 @@ import StorageService from '../../../StorageService';
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
 const INPLAYER_IOT_KEY = 'inplayer_iot';
 
+const CONTENT_TYPES = {
+  json: 'application/json',
+  form: 'application/x-www-form-urlencoded',
+};
+
 type RequestOptions = {
   withAuthentication?: boolean;
   keepalive?: boolean;
-  json?: boolean;
-  includeStatus?: boolean;
+  contentType?: keyof typeof CONTENT_TYPES;
+  responseType?: 'json' | 'blob';
+  includeFullResponse?: boolean;
 };
 
 @injectable()
@@ -50,12 +56,17 @@ export default class JWPAPIService {
 
   private getBaseUrl = () => (this.sandbox ? 'https://staging-v2.inplayer.com' : 'https://services.inplayer.com');
 
-  private performRequest = async (path: string = '/', method = 'GET', body?: Record<string, unknown>, { json = false, ...options }: RequestOptions = {}) => {
+  private performRequest = async (
+    path: string = '/',
+    method = 'GET',
+    body?: Record<string, unknown>,
+    { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
+  ) => {
     const headers: Record<string, string> = {
-      'Content-Type': json ? 'application/json' : 'application/x-www-form-urlencoded',
+      'Content-Type': CONTENT_TYPES[contentType],
     };
 
-    if (options.withAuthentication) {
+    if (withAuthentication) {
       const tokenObject = await this.getToken();
 
       if (tokenObject.token) {
@@ -77,24 +88,26 @@ export default class JWPAPIService {
         .filter(Boolean)
         .join('&');
 
-    const resp = await fetch(`${this.getBaseUrl()}${path}`, {
+    const endpoint = /^\//.test(path) ? `${this.getBaseUrl()}${path}` : path;
+
+    const resp = await fetch(endpoint, {
       headers,
-      keepalive: options.keepalive,
+      keepalive,
       method,
       body: _body,
     });
 
-    const resJson = await resp.json();
+    const resParsed = await resp[responseType]?.();
 
     if (!resp.ok) {
-      throw { response: { data: resJson } };
+      throw { response: { data: resParsed } };
     }
 
-    if (options.includeStatus) {
-      return { status: resp.status, data: resJson };
+    if (includeFullResponse) {
+      return { ...resp, data: resParsed };
     }
 
-    return resJson;
+    return resParsed;
   };
 
   setup = (sandbox: boolean, siteId: string) => {

@@ -1,6 +1,6 @@
 import { type ChangeEventHandler, type FC, type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { RegisterFieldOptions } from '@inplayer-org/inplayer.js';
+import type { RegisterFieldOptions } from '@jwp/ott-common/src/services/integrations/jwp/base/types';
 import type { CustomRegisterFieldVariant } from '@jwp/ott-common/types/account';
 import { isTruthyCustomParamValue, testId } from '@jwp/ott-common/src/utils/common';
 

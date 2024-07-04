@@ -3,6 +3,15 @@ export type CommonResponse = {
   message: string;
 };
 
+export type DefaultCreditCardDataParams = {
+  cardNumber: string;
+  cardName: string;
+  cvc: number;
+  expMonth: number;
+  expYear: number;
+  currency: string;
+};
+
 export type AccountData = {
   id: number;
   email: string;
@@ -203,3 +212,147 @@ export type AccessFee = {
 };
 
 export type GetAccessFeesResponse = AccessFee[];
+
+export type MerchantPaymentMethod = {
+  id: number;
+  method_name: string;
+  is_external: boolean;
+};
+
+export type GeneratePayPalParameters = {
+  endpoint: string;
+  business: string;
+  item_name: string;
+  currency_code: string;
+  return: string;
+  cancel_return: string;
+  id?: string;
+};
+
+export type VoucherDiscountPrice = {
+  amount: number;
+  discount_duration: number;
+};
+
+export type ItemDetails = {
+  id: number;
+  merchant_id: number;
+  merchant_uuid: string;
+  is_active: boolean;
+  title: string;
+  access_control_type: AccessControlType;
+  item_type: ItemType;
+  age_restriction: Record<string, number>;
+  metadata: Record<string, string>[];
+  created_at: number;
+  updated_at: number;
+  content: string;
+};
+
+export type GetItemAccessResponse = {
+  id: number;
+  account_id: number;
+  customer_id: number;
+  customer_uuid: string;
+  ip_address: string;
+  country_code: string;
+  created_at: number;
+  expires_at: number;
+  item: ItemDetails;
+};
+
+export type ProfilesData = {
+  id: string;
+  account_id: string;
+  name: string;
+  avatar_url: string;
+  default: boolean;
+  adult: boolean;
+  pin_required: boolean;
+  created_at: number;
+  updated_at: number;
+  credentials: {
+    access_token: string;
+    expires: number;
+  };
+};
+
+export type InplayerSubscription = {
+  cancel_token: string;
+  status: string;
+  description: string;
+  asset_title: string;
+  asset_id: number;
+  formatted_amount: string;
+  amount: number;
+  currency: string;
+  merchant_id: number;
+  created_at: number;
+  updated_at: number;
+  next_billing_date: number;
+  unsubscribe_url: string;
+};
+
+export type GetSubscriptionsResponse = {
+  total: number;
+  page: number;
+  offset: number;
+  limit: number;
+  collection: InplayerSubscription[];
+};
+
+export type PaymentHistory = {
+  merchant_id: number;
+  consumer_id: number;
+  gateway_id: number;
+  transaction_token: string;
+  payment_tool_token: string;
+  trx_token: string;
+  payment_method_name: string;
+  action_type: string;
+  item_access_id: number;
+  item_id: number;
+  item_type: string;
+  item_title: string;
+  charged_amount: number;
+  currency_iso: string;
+  note: string;
+  created_at: number;
+};
+export type GetPaymentHistoryResponse = {
+  collection: PaymentHistory[];
+  total: number;
+};
+
+export type Card = {
+  number: number;
+  card_name: string;
+  exp_month: string;
+  exp_year: string;
+  card_type: string;
+  account_id: number;
+};
+
+export type GetDefaultCardResponse = {
+  cards: Card[];
+};
+
+export type CancelSubscriptionResponse = {
+  code: number;
+  subscription: string;
+  operation: string;
+  description: string;
+  status: string;
+  timestamp: number;
+};
+
+export type ChangeSubscriptionPlanResponse = {
+  message: string;
+};
+
+export type SetDefaultCardResponse = {
+  number: number;
+  card_name: string;
+  exp_month: string;
+  exp_year: string;
+};

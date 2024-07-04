@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import type { ProfilesData } from '@inplayer-org/inplayer.js';
 import * as yup from 'yup';
 
 import ProfileService from '../services/integrations/ProfileService';
@@ -9,6 +8,7 @@ import StorageService from '../services/StorageService';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { EnterProfilePayload, ProfileDetailsPayload, ProfilePayload } from '../../types/profiles';
 import { useProfileStore } from '../stores/ProfileStore';
+import type { ProfilesData } from '../services/integrations/jwp/base/types';
 
 const PERSIST_PROFILE = 'profile';
 

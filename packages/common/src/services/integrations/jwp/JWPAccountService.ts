@@ -584,7 +584,7 @@ export default class JWPAccountService extends AccountService {
     );
 
     const socialResponse = await this.apiService.get<{ status: number; data: ListSocialURLs }>(`/accounts/social?state=${socialState}`, {
-      includeStatus: true,
+      includeFullResponse: true,
     });
 
     if (socialResponse.status !== 200) {

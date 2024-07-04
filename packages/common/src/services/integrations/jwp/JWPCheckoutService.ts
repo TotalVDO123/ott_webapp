@@ -1,4 +1,3 @@
-import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
 import { inject, injectable } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
@@ -24,7 +23,15 @@ import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
 
 import JWPAPIService from './base/JWPAPIService';
-import type { GetAccessFeesResponse, AccessFee } from './base/types';
+import type {
+  CommonResponse,
+  GetAccessFeesResponse,
+  AccessFee,
+  MerchantPaymentMethod,
+  GeneratePayPalParameters,
+  VoucherDiscountPrice,
+  GetItemAccessResponse,
+} from './base/types';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
@@ -148,9 +155,9 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getPaymentMethods: GetPaymentMethods = async () => {
     try {
-      const response = await InPlayer.Payment.getPaymentMethods();
+      const data = await this.apiService.get<MerchantPaymentMethod[]>('/payments/methods', { withAuthentication: true });
       const paymentMethods: PaymentMethod[] = [];
-      response.data.forEach((method: MerchantPaymentMethod) => {
+      data.forEach((method: MerchantPaymentMethod) => {
         if (['card', 'paypal'].includes(method.method_name.toLowerCase())) {
           paymentMethods.push(this.formatPaymentMethod(method, this.cardPaymentProvider));
         }
@@ -170,14 +177,18 @@ export default class JWPCheckoutService extends CheckoutService {
 
   paymentWithPayPal: PaymentWithPayPal = async (payload) => {
     try {
-      const response = await InPlayer.Payment.getPayPalParams({
-        origin: payload.waitingUrl,
-        accessFeeId: payload.order.id,
-        paymentMethod: 2,
-        voucherCode: payload.couponCode,
-      });
+      const data = await this.apiService.post<GeneratePayPalParameters>(
+        '/external-payments',
+        {
+          origin: payload.waitingUrl,
+          access_fee: payload.order.id,
+          payment_method: 2,
+          voucher_code: payload.couponCode,
+        },
+        { withAuthentication: true },
+      );
 
-      if (response.data?.id) {
+      if (data?.id) {
         return {
           errors: ['Already have an active access'],
           responseData: {
@@ -188,7 +199,7 @@ export default class JWPCheckoutService extends CheckoutService {
       return {
         errors: [],
         responseData: {
-          redirectUrl: response.data.endpoint,
+          redirectUrl: data.endpoint,
         },
       };
     } catch {
@@ -212,15 +223,19 @@ export default class JWPCheckoutService extends CheckoutService {
 
   updateOrder: UpdateOrder = async ({ order, couponCode }) => {
     try {
-      const response = await InPlayer.Voucher.getDiscount({
-        voucherCode: `${couponCode}`,
-        accessFeeId: order.id,
-      });
+      const data = await this.apiService.post<VoucherDiscountPrice>(
+        '/vouchers/discount',
+        {
+          voucher_code: `${couponCode}`,
+          access_fee_id: order.id,
+        },
+        { withAuthentication: true },
+      );
 
-      const discountAmount = order.totalPrice - response.data.amount;
+      const discountAmount = order.totalPrice - data.amount;
       const updatedOrder: Order = {
         ...order,
-        totalPrice: response.data.amount,
+        totalPrice: data.amount,
         priceBreakdown: {
           ...order.priceBreakdown,
           discountAmount,
@@ -229,7 +244,7 @@ export default class JWPCheckoutService extends CheckoutService {
         discount: {
           applied: true,
           type: 'coupon',
-          periods: response.data.discount_duration,
+          periods: data.discount_duration,
         },
       };
 
@@ -252,8 +267,11 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getEntitlements: GetEntitlements = async ({ offerId }) => {
     try {
-      const response = await InPlayer.Asset.checkAccessForAsset(this.parseOfferId(offerId));
-      return this.formatEntitlements(response.data.expires_at, true);
+      const data = await this.apiService.get<GetItemAccessResponse>(`/items/${this.parseOfferId(offerId)}/access`, {
+        withAuthentication: true,
+      });
+
+      return this.formatEntitlements(data.expires_at, true);
     } catch {
       return this.formatEntitlements();
     }
@@ -262,22 +280,22 @@ export default class JWPCheckoutService extends CheckoutService {
   directPostCardPayment = async (cardPaymentPayload: CardPaymentData, order: Order, referrer: string, returnUrl: string) => {
     const payload = {
       number: cardPaymentPayload.cardNumber.replace(/\s/g, ''),
-      cardName: cardPaymentPayload.cardholderName,
-      expMonth: cardPaymentPayload.cardExpMonth || '',
-      expYear: cardPaymentPayload.cardExpYear || '',
+      card_name: cardPaymentPayload.cardholderName,
+      exp_month: cardPaymentPayload.cardExpMonth || '',
+      exp_year: cardPaymentPayload.cardExpYear || '',
       cvv: cardPaymentPayload.cardCVC,
-      accessFee: order.id,
-      paymentMethod: 1,
-      voucherCode: cardPaymentPayload.couponCode,
+      access_fee: order.id,
+      payment_method: 1,
+      voucher_code: cardPaymentPayload.couponCode,
       referrer,
-      returnUrl,
+      return_url: returnUrl,
     };
 
     try {
       if (isSVODOffer(order)) {
-        await InPlayer.Subscription.createSubscription(payload);
+        await this.apiService.post<CommonResponse>('/subscriptions', payload, { withAuthentication: true });
       } else {
-        await InPlayer.Payment.createPayment(payload);
+        await this.apiService.post<CommonResponse>('/payments', payload, { withAuthentication: true });
       }
 
       return true;

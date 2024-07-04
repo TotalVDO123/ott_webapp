@@ -1,28 +1,32 @@
-import InPlayer from '@inplayer-org/inplayer.js';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import defaultAvatar from '@jwp/ott-theme/assets/profiles/default_avatar.png';
 
 import ProfileService from '../ProfileService';
 import StorageService from '../../StorageService';
 import type { CreateProfile, DeleteProfile, EnterProfile, GetProfileDetails, ListProfiles, UpdateProfile } from '../../../../types/profiles';
 
+import JWPAPIService from './base/JWPAPIService';
+import type { ProfilesData } from './base/types';
+
 @injectable()
 export default class JWPProfileService extends ProfileService {
   private readonly storageService;
+  private readonly apiService;
 
-  constructor(storageService: StorageService) {
+  constructor(storageService: StorageService, @inject(JWPAPIService) apiService: JWPAPIService) {
     super();
     this.storageService = storageService;
+    this.apiService = apiService;
   }
 
   listProfiles: ListProfiles = async () => {
     try {
-      const response = await InPlayer.Account.getProfiles();
+      const data = await this.apiService.get<ProfilesData[]>('/v2/accounts/profiles', { withAuthentication: true });
 
       return {
         canManageProfiles: true,
         collection:
-          response.data.map((profile) => ({
+          data.map((profile) => ({
             ...profile,
             avatar_url: profile?.avatar_url || defaultAvatar,
           })) ?? [],
@@ -37,25 +41,20 @@ export default class JWPProfileService extends ProfileService {
   };
 
   createProfile: CreateProfile = async (payload) => {
-    const response = await InPlayer.Account.createProfile(payload.name, payload.adult, payload.avatar_url, payload.pin);
-
-    return response.data;
+    return await this.apiService.post<ProfilesData>('/v2/accounts/profiles', payload, { withAuthentication: true });
   };
 
-  updateProfile: UpdateProfile = async (payload) => {
-    if (!payload.id) {
+  updateProfile: UpdateProfile = async ({ id, ...params }) => {
+    if (!id) {
       throw new Error('Profile id is required.');
     }
 
-    const response = await InPlayer.Account.updateProfile(payload.id, payload.name, payload.avatar_url, payload.adult);
-
-    return response.data;
+    return await this.apiService.put<ProfilesData>(`/v2/accounts/profiles/${id}`, params, { withAuthentication: true });
   };
 
   enterProfile: EnterProfile = async ({ id, pin }) => {
     try {
-      const response = await InPlayer.Account.enterProfile(id, pin);
-      const profile = response.data;
+      const profile = await this.apiService.post<ProfilesData>(`/v2/accounts/profiles/${id}/token`, { pin }, { withAuthentication: true });
 
       // this sets the inplayer_token for the InPlayer SDK
       if (profile) {
@@ -76,9 +75,7 @@ export default class JWPProfileService extends ProfileService {
 
   getProfileDetails: GetProfileDetails = async ({ id }) => {
     try {
-      const response = await InPlayer.Account.getProfileDetails(id);
-
-      return response.data;
+      return await this.apiService.get<ProfilesData>(`/v2/accounts/profiles/${id}`, { withAuthentication: true });
     } catch {
       throw new Error('Unable to get profile details.');
     }
@@ -86,7 +83,7 @@ export default class JWPProfileService extends ProfileService {
 
   deleteProfile: DeleteProfile = async ({ id }) => {
     try {
-      await InPlayer.Account.deleteProfile(id);
+      await this.apiService.remove<ProfilesData>(`/v2/accounts/profiles/${id}`, { withAuthentication: true });
 
       return {
         message: 'Profile deleted successfully',

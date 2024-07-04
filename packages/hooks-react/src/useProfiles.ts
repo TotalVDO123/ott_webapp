@@ -1,4 +1,3 @@
-import type { ProfilesData } from '@inplayer-org/inplayer.js';
 import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from 'react-query';
 import { useTranslation } from 'react-i18next';
 import type { GenericFormErrors } from '@jwp/ott-common/types/form';
@@ -11,6 +10,7 @@ import ProfileController from '@jwp/ott-common/src/controllers/ProfileController
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { logDev } from '@jwp/ott-common/src/utils/common';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import type { ProfilesData } from '@jwp/ott-common/src/services/integrations/jwp/base/types';
 
 export const useSelectProfile = (options?: { onSuccess: () => void; onError: () => void }) => {
   const accountController = getModule(AccountController, false);
