@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import type { GenericFormErrors } from '@jwp/ott-common/types/form';
 import type { CommonAccountResponse } from '@jwp/ott-common/types/account';
 import type { ListProfilesResponse, ProfileDetailsPayload, ProfileFormSubmitError, ProfileFormValues, ProfilePayload } from '@jwp/ott-common/types/profiles';
+import type { ProfilesData } from '@jwp/ott-common/src/services/integrations/jwp/base/types';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useProfileStore } from '@jwp/ott-common/src/stores/ProfileStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import ProfileController from '@jwp/ott-common/src/controllers/ProfileController';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
-import { logDev } from '@jwp/ott-common/src/utils/common';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import type { ProfilesData } from '@jwp/ott-common/src/services/integrations/jwp/base/types';
+import { logError } from '@jwp/ott-common/src/logger';
 
 export const useSelectProfile = (options?: { onSuccess: () => void; onError: () => void }) => {
   const accountController = getModule(AccountController, false);
@@ -25,9 +25,9 @@ export const useSelectProfile = (options?: { onSuccess: () => void; onError: () 
       await accountController?.loadUserData();
       options?.onSuccess?.();
     },
-    onError: () => {
+    onError: (error) => {
       useProfileStore.setState({ selectingProfileAvatar: null });
-      logDev('Unable to enter profile');
+      logError('useProfiles', 'Unable to enter profile', { error });
       options?.onError?.();
     },
   });

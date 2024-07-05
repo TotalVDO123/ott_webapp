@@ -1,5 +1,6 @@
 import { injectable } from '@jwp/ott-common/src/modules/container';
 import StorageService from '@jwp/ott-common/src/services/StorageService';
+import { logError } from '@jwp/ott-common/src/logger';
 
 @injectable()
 export class LocalStorageService extends StorageService {
@@ -19,7 +20,7 @@ export class LocalStorageService extends StorageService {
 
       return value && parse ? JSON.parse(value) : value;
     } catch (error: unknown) {
-      console.error(error);
+      logError('LocalStorageService', 'Failed to parse localStorage entry', { error });
     }
   }
 
@@ -27,7 +28,7 @@ export class LocalStorageService extends StorageService {
     try {
       window.localStorage.setItem(usePrefix ? this.getStorageKey(key) : key, value);
     } catch (error: unknown) {
-      console.error(error);
+      logError('LocalStorageService', 'Failed to store localStorage entry', { error });
     }
   }
 
@@ -35,7 +36,7 @@ export class LocalStorageService extends StorageService {
     try {
       window.localStorage.removeItem(this.getStorageKey(key));
     } catch (error: unknown) {
-      console.error(error);
+      logError('LocalStorageService', 'Failed to remove localStorage entry', { error });
     }
   }
 

@@ -11,6 +11,7 @@ export default defineConfig({
     css: true,
   },
   define: {
+    __debug__: process.env.APP_TEST_DEBUG === '1',
     __mode__: '"test"',
     __dev__: true,
   },

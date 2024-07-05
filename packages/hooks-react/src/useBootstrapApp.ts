@@ -5,6 +5,7 @@ import { getModule } from '@jwp/ott-common/src/modules/container';
 import AppController from '@jwp/ott-common/src/controllers/AppController';
 import type { AppError } from '@jwp/ott-common/src/utils/error';
 import { CACHE_TIME, STALE_TIME } from '@jwp/ott-common/src/constants';
+import { logDebug } from '@jwp/ott-common/src/logger';
 
 const applicationController = getModule(AppController);
 
@@ -26,7 +27,10 @@ export const useBootstrapApp = (url: string, onReady: OnReadyCallback) => {
     {
       refetchInterval: false,
       retry: 1,
-      onSettled: (query) => onReady(query?.config),
+      onSettled: (query) => {
+        logDebug('Bootstrap', 'Initialized application', { ...query });
+        onReady(query?.config);
+      },
       cacheTime: CACHE_TIME,
       staleTime: STALE_TIME,
     },
