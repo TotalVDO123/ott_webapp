@@ -79,10 +79,11 @@ export default class JWPAPIService {
       Object.entries(body)
         .map(([key, value]) =>
           key && (value || value === 0)
-            ? `${key}=${typeof value === 'string' ? encodeURIComponent(value) : value}` ||
-              Object.entries(value)
-                .map(([subkey, subval]) => `${key}[${subkey}]=${encodeURIComponent(subval)}`)
-                .join('&')
+            ? value.toString() === '[object Object]'
+              ? Object.entries(value)
+                  .map(([subkey, subval]) => `${key}[${subkey}]=${encodeURIComponent(subval)}`)
+                  .join('&')
+              : `${key}=${typeof value === 'string' ? encodeURIComponent(value) : value}`
             : '',
         )
         .filter(Boolean)
