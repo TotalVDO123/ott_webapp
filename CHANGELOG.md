@@ -1,3 +1,10 @@
+## [6.4.0](https://github.com/jwplayer/ott-web-app/compare/v6.3.0...v6.4.0) (2024-07-04)
+
+
+### Features
+
+* add log service ([7717a2a](https://github.com/jwplayer/ott-web-app/commit/7717a2a1afed6e379c0fcabb52c1c826f6b47ba1))
+
 ## [6.3.0](https://github.com/jwplayer/ott-web-app/compare/v6.2.0...v6.3.0) (2024-06-24)
 
 
