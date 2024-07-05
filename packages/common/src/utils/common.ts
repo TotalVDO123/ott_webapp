@@ -70,7 +70,7 @@ export function hexToRgb(color: string) {
  * @link {https://stackoverflow.com/a/35970186/1790728}
  * @return {string}
  */
-export function calculateContrastColor(color: string) {
+export function calculateContrastColor(color: string): string {
   const rgb = hexToRgb(color);
 
   if (!rgb) {
@@ -93,16 +93,6 @@ export const IS_TEST_MODE = __mode__ === 'test';
 export const IS_PREVIEW_MODE = __mode__ === 'preview';
 // Production mode
 export const IS_PROD_MODE = __mode__ === 'prod';
-
-export function logDev(message: unknown, ...optionalParams: unknown[]) {
-  if ((IS_DEVELOPMENT_BUILD || IS_PREVIEW_MODE) && !IS_TEST_MODE) {
-    if (optionalParams.length > 0) {
-      console.info(message, optionalParams);
-    } else {
-      console.info(message);
-    }
-  }
-}
 
 export const isContentType = (item: PlaylistItem | Playlist, contentType: string) => item.contentType?.toLowerCase() === contentType.toLowerCase();
 

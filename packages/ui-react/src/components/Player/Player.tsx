@@ -3,7 +3,8 @@ import type { AdSchedule } from '@jwp/ott-common/types/ad-schedule';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { deepCopy } from '@jwp/ott-common/src/utils/collection';
-import { logDev, testId } from '@jwp/ott-common/src/utils/common';
+import { testId } from '@jwp/ott-common/src/utils/common';
+import { logInfo } from '@jwp/ott-common/src/logger';
 import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
 import useOttAnalytics from '@jwp/ott-hooks-react/src/useOttAnalytics';
 import { attachAnalyticsParams } from '@jwp/ott-common/src/utils/analytics';
@@ -155,7 +156,7 @@ const Player: React.FC<Props> = ({
 
       // We already loaded this item
       if (currentItem && currentItem.mediaid === item.mediaid) {
-        logDev('Calling loadPlaylist with the same item, check the dependencies');
+        logInfo('Player', 'Calling loadPlaylist with the same item, check the dependencies');
         return;
       }
 
