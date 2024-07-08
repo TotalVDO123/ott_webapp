@@ -1,5 +1,3 @@
-import type { CommonResponse } from '../services/integrations/jwp/types';
-
 export class ApiError extends Error {
   code: number;
   message: string;
@@ -27,18 +25,4 @@ export const getDataOrThrow = async (response: Response) => {
   }
 
   return data;
-};
-
-export const getCommonResponseData = (response: { data: CommonResponse }) => {
-  const { code, message } = response.data;
-  if (code !== 200) {
-    throw new Error(message);
-  }
-  return {
-    errors: [],
-    responseData: {
-      message,
-      code,
-    },
-  };
 };
