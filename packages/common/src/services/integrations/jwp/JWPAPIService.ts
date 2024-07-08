@@ -47,9 +47,9 @@ export default class JWPAPIService {
   };
 
   isAuthenticated = async () => {
-    const token = await this.getToken();
+    const tokenData = await this.getToken();
 
-    return !!token.token && token.expires > Date.now() / 1000;
+    return !!tokenData.token && tokenData.expires > Date.now() / 1000;
   };
 
   private getBaseUrl = () => (this.sandbox ? 'https://staging-v2.inplayer.com' : 'https://services.inplayer.com');
