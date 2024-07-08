@@ -24,8 +24,6 @@ export default class JWPAPIService {
 
   private sandbox = true;
 
-  siteId = '';
-
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
@@ -115,9 +113,8 @@ export default class JWPAPIService {
     return resParsed;
   };
 
-  setup = (sandbox: boolean, siteId: string) => {
+  setup = (sandbox: boolean) => {
     this.sandbox = sandbox;
-    this.siteId = siteId;
   };
 
   get = <T>(path: string, options?: RequestOptions, searchParams?: Record<string, string | number>) =>

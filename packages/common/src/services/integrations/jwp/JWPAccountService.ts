@@ -154,7 +154,7 @@ export default class JWPAccountService extends AccountService {
     const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
-    this.apiService.setup(this.sandbox, jwpConfig.clientId);
+    this.apiService.setup(this.sandbox);
 
     // calculate access model
     if (jwpConfig.clientId) {
