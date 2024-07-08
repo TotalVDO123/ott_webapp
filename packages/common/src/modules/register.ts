@@ -38,7 +38,7 @@ import CleengAccountService from '../services/integrations/cleeng/CleengAccountS
 import CleengCheckoutService from '../services/integrations/cleeng/CleengCheckoutService';
 import CleengSubscriptionService from '../services/integrations/cleeng/CleengSubscriptionService';
 
-// InPlayer integration
+// JWP integration
 import JWPAPIService from '../services/integrations/jwp/JWPAPIService';
 import JWPAccountService from '../services/integrations/jwp/JWPAccountService';
 import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService';

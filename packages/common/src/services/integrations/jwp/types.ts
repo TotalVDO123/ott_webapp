@@ -1,9 +1,9 @@
-export type InPlayerAuthData = {
+export type JWPAuthData = {
   access_token: string;
   expires?: number;
 };
 
-export type InPlayerError = {
+export type JWPError = {
   response: {
     data: {
       code: number;

@@ -36,7 +36,7 @@ import StorageService from '../../StorageService';
 import { ACCESS_MODEL } from '../../../constants';
 
 import type {
-  InPlayerAuthData,
+  JWPAuthData,
   GetRegisterFieldsResponse,
   RegisterField,
   CreateAccount,
@@ -132,7 +132,7 @@ export default class JWPAccountService extends AccountService {
     };
   };
 
-  private formatAuth(auth: InPlayerAuthData): AuthData {
+  private formatAuth(auth: JWPAuthData): AuthData {
     const { access_token: jwt } = auth;
     return {
       jwt,
