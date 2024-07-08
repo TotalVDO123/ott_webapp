@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify';
 
-import JWPAPIService from './integrations/jwp/base/JWPAPIService';
-import type { SignedMediaResponse } from './integrations/jwp/base/types';
+import type { SignedMediaResponse } from '../../types/inplayer';
+
+import JWPAPIService from './integrations/jwp/JWPAPIService';
 
 @injectable()
 export default class JWPEntitlementService {

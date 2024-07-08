@@ -15,9 +15,6 @@ import type {
 } from '../../../../types/subscription';
 import SubscriptionService from '../SubscriptionService';
 import AccountService from '../AccountService';
-
-import type JWPAccountService from './JWPAccountService';
-import JWPAPIService from './base/JWPAPIService';
 import type {
   GetItemAccessResponse,
   GetSubscriptionsResponse,
@@ -29,7 +26,10 @@ import type {
   Card,
   PaymentHistory,
   InplayerSubscription,
-} from './base/types';
+} from '../../../../types/inplayer';
+
+import type JWPAccountService from './JWPAccountService';
+import JWPAPIService from './JWPAPIService';
 
 interface SubscriptionDetails extends InplayerSubscription {
   item_id?: number;

@@ -30,14 +30,8 @@ import type {
   UpdateCustomer,
 } from '../../../../types/account';
 import type { AccessModel, Config } from '../../../../types/config';
-import type { InPlayerAuthData } from '../../../../types/inplayer';
-import type { SerializedFavorite } from '../../../../types/favorite';
-import type { SerializedWatchHistoryItem } from '../../../../types/watchHistory';
-import AccountService from '../AccountService';
-import StorageService from '../../StorageService';
-import { ACCESS_MODEL } from '../../../constants';
-
 import type {
+  InPlayerAuthData,
   GetRegisterFieldsResponse,
   RegisterField,
   CreateAccount,
@@ -48,8 +42,14 @@ import type {
   FavoritesData,
   GetFavoritesResponse,
   ListSocialURLs,
-} from './base/types';
-import JWPAPIService from './base/JWPAPIService';
+} from '../../../../types/inplayer';
+import type { SerializedFavorite } from '../../../../types/favorite';
+import type { SerializedWatchHistoryItem } from '../../../../types/watchHistory';
+import AccountService from '../AccountService';
+import StorageService from '../../StorageService';
+import { ACCESS_MODEL } from '../../../constants';
+
+import JWPAPIService from './JWPAPIService';
 
 enum InPlayerEnv {
   Development = 'development',

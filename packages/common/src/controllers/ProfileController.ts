@@ -8,7 +8,7 @@ import StorageService from '../services/StorageService';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { EnterProfilePayload, ProfileDetailsPayload, ProfilePayload } from '../../types/profiles';
 import { useProfileStore } from '../stores/ProfileStore';
-import type { ProfilesData } from '../services/integrations/jwp/base/types';
+import type { ProfilesData } from '../../types/inplayer';
 
 const PERSIST_PROFILE = 'profile';
 

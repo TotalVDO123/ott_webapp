@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 
-import StorageService from '../../../StorageService';
+import StorageService from '../../StorageService';
 
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
 const INPLAYER_IOT_KEY = 'inplayer_iot';

@@ -5,9 +5,9 @@ import ProfileService from '../ProfileService';
 import StorageService from '../../StorageService';
 import type { CreateProfile, DeleteProfile, EnterProfile, GetProfileDetails, ListProfiles, UpdateProfile } from '../../../../types/profiles';
 import { logError } from '../../../logger';
+import type { ProfilesData } from '../../../../types/inplayer';
 
-import JWPAPIService from './base/JWPAPIService';
-import type { ProfilesData } from './base/types';
+import JWPAPIService from './JWPAPIService';
 
 @injectable()
 export default class JWPProfileService extends ProfileService {

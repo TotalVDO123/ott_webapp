@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { GenericFormErrors } from '@jwp/ott-common/types/form';
 import type { CommonAccountResponse } from '@jwp/ott-common/types/account';
 import type { ListProfilesResponse, ProfileDetailsPayload, ProfileFormSubmitError, ProfileFormValues, ProfilePayload } from '@jwp/ott-common/types/profiles';
-import type { ProfilesData } from '@jwp/ott-common/src/services/integrations/jwp/base/types';
+import type { ProfilesData } from '@jwp/ott-common/types/inplayer';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useProfileStore } from '@jwp/ott-common/src/stores/ProfileStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
