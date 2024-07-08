@@ -17,15 +17,6 @@ export type CommonResponse = {
   message: string;
 };
 
-export type DefaultCreditCardDataParams = {
-  cardNumber: string;
-  cardName: string;
-  cvc: number;
-  expMonth: number;
-  expYear: number;
-  currency: string;
-};
-
 export type AccountData = {
   id: number;
   email: string;

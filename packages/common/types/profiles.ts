@@ -1,7 +1,21 @@
-import type { ProfilesData } from '../src/services/integrations/jwp/types';
-
 import type { PromiseRequest } from './service';
 import type { CommonAccountResponse } from './account';
+
+export type ProfilesData = {
+  id: string;
+  account_id: string;
+  name: string;
+  avatar_url: string;
+  default: boolean;
+  adult: boolean;
+  pin_required: boolean;
+  created_at: number;
+  updated_at: number;
+  credentials: {
+    access_token: string;
+    expires: number;
+  };
+};
 
 export type Profile = ProfilesData;
 

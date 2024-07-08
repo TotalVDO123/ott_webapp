@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import * as yup from 'yup';
+import type { ProfilesData } from '@jwp/ott-common/types/profiles';
 
 import ProfileService from '../services/integrations/ProfileService';
 import type { IntegrationType } from '../../types/config';
@@ -8,7 +9,6 @@ import StorageService from '../services/StorageService';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { EnterProfilePayload, ProfileDetailsPayload, ProfilePayload } from '../../types/profiles';
 import { useProfileStore } from '../stores/ProfileStore';
-import type { ProfilesData } from '../services/integrations/jwp/types';
 
 const PERSIST_PROFILE = 'profile';
 

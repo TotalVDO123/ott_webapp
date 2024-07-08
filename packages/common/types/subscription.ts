@@ -1,5 +1,3 @@
-import type { ChangeSubscriptionPlanResponse, SetDefaultCardResponse, DefaultCreditCardDataParams } from '../src/services/integrations/jwp/types';
-
 import type { CleengRequest } from './cleeng';
 import type { EnvironmentServiceRequest, PromiseRequest } from './service';
 
@@ -39,6 +37,22 @@ export type PaymentMethodSpecificParam = {
   lastCardFourDigits?: string;
   cardExpirationDate?: string;
   socialSecurityNumber?: string;
+};
+
+type DefaultCreditCardDataParams = {
+  cardNumber: string;
+  cardName: string;
+  cvc: number;
+  expMonth: number;
+  expYear: number;
+  currency: string;
+};
+
+type SetDefaultCardResponse = {
+  number: number;
+  card_name: string;
+  exp_month: string;
+  exp_year: string;
 };
 
 export type Transaction = {
@@ -133,6 +147,10 @@ export type FetchReceiptResponse = Blob | string;
 type ChangeSubscriptionPayload = {
   accessFeeId: string;
   subscriptionId: string;
+};
+
+type ChangeSubscriptionPlanResponse = {
+  message: string;
 };
 
 type GetActivePaymentPayload = {
