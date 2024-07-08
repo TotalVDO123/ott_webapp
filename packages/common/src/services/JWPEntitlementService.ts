@@ -13,9 +13,16 @@ export default class JWPEntitlementService {
 
   getJWPMediaToken = async (configId: string = '', mediaId: string) => {
     try {
-      const data = await this.apiService.get<SignedMediaResponse>(`v2/items/jw-media/token?app_config_id=${configId}&media_id=${mediaId}`, {
-        withAuthentication: true,
-      });
+      const data = await this.apiService.get<SignedMediaResponse>(
+        'v2/items/jw-media/token',
+        {
+          withAuthentication: true,
+        },
+        {
+          app_config_id: configId,
+          media_id: mediaId,
+        },
+      );
 
       return data.token;
     } catch {
