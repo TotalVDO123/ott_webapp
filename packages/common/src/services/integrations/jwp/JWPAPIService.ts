@@ -75,20 +75,21 @@ export default class JWPAPIService {
       }
     }
 
-    const _body =
-      body &&
-      Object.entries(body)
-        .map(([key, value]) =>
-          key && (value || value === 0)
-            ? value.toString() === '[object Object]'
-              ? Object.entries(value)
-                  .map(([subkey, subval]) => `${key}[${subkey}]=${encodeURIComponent(subval)}`)
-                  .join('&')
-              : `${key}=${typeof value === 'string' ? encodeURIComponent(value) : value}`
-            : '',
-        )
-        .filter(Boolean)
-        .join('&');
+    const formData = new URLSearchParams();
+
+    if (body) {
+      Object.entries(body).forEach(([key, value]) => {
+        if (value || value === 0) {
+          if (typeof value === 'object') {
+            Object.entries(value as Record<string, string | number>).forEach(([innerKey, innerValue]) => {
+              formData.append(`${key}[${innerKey}]`, innerValue.toString());
+            });
+          } else {
+            formData.append(key, value.toString());
+          }
+        }
+      });
+    }
 
     const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
@@ -98,7 +99,7 @@ export default class JWPAPIService {
       headers,
       keepalive,
       method,
-      body: _body,
+      body: body && formData.toString(),
     });
 
     const resParsed = await resp[responseType]?.();
