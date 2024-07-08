@@ -3,7 +3,6 @@ import i18next from 'i18next';
 import { injectable } from 'inversify';
 
 import { formatConsentsToRegisterFields } from '../../../utils/collection';
-import { isCommonError } from '../../../utils/api';
 import type {
   AuthData,
   ChangePassword,
@@ -286,7 +285,7 @@ export default class JWPAccountService extends AccountService {
         { withAuthentication: true },
       );
     } catch (error: unknown) {
-      if (isCommonError(error)) {
+      if (JWPAPIService.isCommonError(error)) {
         throw new Error(error.response.data.message);
       }
       throw new Error('Failed to change password');
@@ -358,7 +357,7 @@ export default class JWPAccountService extends AccountService {
         customerConsents: this.parseJson(user?.metadata?.consents as string, []),
       };
     } catch (error: unknown) {
-      if (isCommonError(error)) {
+      if (JWPAPIService.isCommonError(error)) {
         throw new Error(error.response.data.message);
       }
       throw new Error('Failed to create account.');
@@ -454,7 +453,7 @@ export default class JWPAccountService extends AccountService {
         branding_id: 0,
       });
     } catch (error: unknown) {
-      if (isCommonError(error)) {
+      if (JWPAPIService.isCommonError(error)) {
         throw new Error(error.response.data.message);
       }
       throw new Error('Failed to change password.');
@@ -573,7 +572,7 @@ export default class JWPAccountService extends AccountService {
     try {
       return await this.apiService.remove<CommonResponse>('/accounts/erase', { withAuthentication: true }, { password, branding_id: 0 });
     } catch (error: unknown) {
-      if (isCommonError(error)) {
+      if (JWPAPIService.isCommonError(error)) {
         throw new Error(error.response.data.message || 'Failed to delete account');
       }
 

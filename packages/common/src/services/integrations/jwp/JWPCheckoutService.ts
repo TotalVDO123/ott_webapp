@@ -20,7 +20,6 @@ import type {
 } from '../../../../types/checkout';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
-import { isCommonError } from '../../../utils/api';
 
 import type {
   CommonResponse,
@@ -257,7 +256,7 @@ export default class JWPCheckoutService extends CheckoutService {
         },
       };
     } catch (error: unknown) {
-      if (isCommonError(error) && error.response.data.message === 'Voucher not found') {
+      if (JWPAPIService.isCommonError(error) && error.response.data.message === 'Voucher not found') {
         throw new Error('Invalid coupon code');
       }
 

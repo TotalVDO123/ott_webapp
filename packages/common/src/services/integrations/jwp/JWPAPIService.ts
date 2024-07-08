@@ -2,6 +2,8 @@ import { inject, injectable } from 'inversify';
 
 import StorageService from '../../StorageService';
 
+import type { InPlayerError } from './types';
+
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
 const INPLAYER_IOT_KEY = 'inplayer_iot';
 
@@ -23,6 +25,16 @@ export default class JWPAPIService {
   private readonly storageService: StorageService;
 
   private sandbox = true;
+
+  static isCommonError = (error: unknown): error is InPlayerError => {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'response' in error &&
+      typeof (error as InPlayerError).response?.data?.code === 'number' &&
+      typeof (error as InPlayerError).response?.data?.message === 'string'
+    );
+  };
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;

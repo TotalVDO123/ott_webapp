@@ -1,4 +1,4 @@
-import type { InPlayerError, CommonResponse } from '../services/integrations/jwp/types';
+import type { CommonResponse } from '../services/integrations/jwp/types';
 
 export class ApiError extends Error {
   code: number;
@@ -41,14 +41,4 @@ export const getCommonResponseData = (response: { data: CommonResponse }) => {
       code,
     },
   };
-};
-
-export const isCommonError = (error: unknown): error is InPlayerError => {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    typeof (error as InPlayerError).response?.data?.code === 'number' &&
-    typeof (error as InPlayerError).response?.data?.message === 'string'
-  );
 };

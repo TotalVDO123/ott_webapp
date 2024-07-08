@@ -1,7 +1,6 @@
 import i18next from 'i18next';
 import { inject, injectable, named } from 'inversify';
 
-import { isCommonError } from '../../../utils/api';
 import type {
   ChangeSubscription,
   GetActivePayment,
@@ -203,7 +202,7 @@ export default class JWPSubscriptionService extends SubscriptionService {
       }
       return null;
     } catch (error: unknown) {
-      if (isCommonError(error) && error.response.data.code === 402) {
+      if (JWPAPIService.isCommonError(error) && error.response.data.code === 402) {
         return null;
       }
       throw new Error('Unable to fetch customer subscriptions.');
