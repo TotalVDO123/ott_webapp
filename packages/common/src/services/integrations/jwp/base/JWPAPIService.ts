@@ -89,7 +89,7 @@ export default class JWPAPIService {
         .filter(Boolean)
         .join('&');
 
-    const endpoint = /^\//.test(path) ? `${this.getBaseUrl()}${path}` : path;
+    const endpoint = path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`;
 
     const resp = await fetch(endpoint, {
       headers,
