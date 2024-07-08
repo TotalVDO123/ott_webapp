@@ -21,6 +21,7 @@ import type {
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
+
 import type {
   CommonResponse,
   GetAccessFeesResponse,
@@ -29,8 +30,7 @@ import type {
   GeneratePayPalParameters,
   VoucherDiscountPrice,
   GetItemAccessResponse,
-} from '../../../../types/inplayer';
-
+} from './types';
 import JWPAPIService from './JWPAPIService';
 
 @injectable()

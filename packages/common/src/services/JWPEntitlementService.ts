@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 
-import type { SignedMediaResponse } from '../../types/inplayer';
-
+import type { SignedMediaResponse } from './integrations/jwp/types';
 import JWPAPIService from './integrations/jwp/JWPAPIService';
 
 @injectable()

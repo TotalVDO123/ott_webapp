@@ -15,6 +15,7 @@ import type {
 } from '../../../../types/subscription';
 import SubscriptionService from '../SubscriptionService';
 import AccountService from '../AccountService';
+
 import type {
   GetItemAccessResponse,
   GetSubscriptionsResponse,
@@ -26,8 +27,7 @@ import type {
   Card,
   PaymentHistory,
   InplayerSubscription,
-} from '../../../../types/inplayer';
-
+} from './types';
 import type JWPAccountService from './JWPAccountService';
 import JWPAPIService from './JWPAPIService';
 

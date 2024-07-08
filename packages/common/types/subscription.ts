@@ -1,4 +1,5 @@
-import type { ChangeSubscriptionPlanResponse, SetDefaultCardResponse, DefaultCreditCardDataParams } from './inplayer';
+import type { ChangeSubscriptionPlanResponse, SetDefaultCardResponse, DefaultCreditCardDataParams } from '../src/services/integrations/jwp/types';
+
 import type { CleengRequest } from './cleeng';
 import type { EnvironmentServiceRequest, PromiseRequest } from './service';
 

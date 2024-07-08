@@ -1,4 +1,4 @@
-import type { InPlayerError, CommonResponse } from '../../types/inplayer';
+import type { InPlayerError, CommonResponse } from '../services/integrations/jwp/types';
 
 export class ApiError extends Error {
   code: number;

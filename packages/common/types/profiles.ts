@@ -1,4 +1,5 @@
-import type { ProfilesData } from './inplayer';
+import type { ProfilesData } from '../src/services/integrations/jwp/types';
+
 import type { PromiseRequest } from './service';
 import type { CommonAccountResponse } from './account';
 
