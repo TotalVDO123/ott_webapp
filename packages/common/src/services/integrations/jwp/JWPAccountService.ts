@@ -533,9 +533,15 @@ export default class JWPAccountService extends AccountService {
   };
 
   getWatchHistory = async () => {
-    const watchHistoryData = await this.apiService.get<GetWatchHistoryResponse>(`/v2/accounts/media/watch-history?filter=currently_watching`, {
-      withAuthentication: true,
-    });
+    const watchHistoryData = await this.apiService.get<GetWatchHistoryResponse>(
+      '/v2/accounts/media/watch-history',
+      {
+        withAuthentication: true,
+      },
+      {
+        filter: 'currently_watching',
+      },
+    );
 
     return watchHistoryData?.collection?.map(this.formatHistoryItem) || [];
   };
@@ -583,9 +589,15 @@ export default class JWPAccountService extends AccountService {
       }),
     );
 
-    const socialResponse = await this.apiService.get<{ status: number; data: ListSocialURLs }>(`/accounts/social?state=${socialState}`, {
-      includeFullResponse: true,
-    });
+    const socialResponse = await this.apiService.get<{ status: number; data: ListSocialURLs }>(
+      '/accounts/social',
+      {
+        includeFullResponse: true,
+      },
+      {
+        state: socialState,
+      },
+    );
 
     if (socialResponse.status !== 200) {
       throw new Error('Failed to fetch social urls');

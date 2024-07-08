@@ -61,6 +61,7 @@ export default class JWPAPIService {
     method = 'GET',
     body?: Record<string, unknown>,
     { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
+    searchParams?: Record<string, string | number>,
   ) => {
     const headers: Record<string, string> = {
       'Content-Type': CONTENT_TYPES[contentType],
@@ -89,7 +90,9 @@ export default class JWPAPIService {
         .filter(Boolean)
         .join('&');
 
-    const endpoint = path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`;
+    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`}${
+      searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
+    }`;
 
     const resp = await fetch(endpoint, {
       headers,
@@ -116,7 +119,8 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  get = <T>(path: string, options?: RequestOptions) => this.performRequest(path, 'GET', undefined, options) as Promise<T>;
+  get = <T>(path: string, options?: RequestOptions, searchParams?: Record<string, string | number>) =>
+    this.performRequest(path, 'GET', undefined, options, searchParams) as Promise<T>;
 
   patch = <T>(path: string, body?: Record<string, unknown>, options?: RequestOptions) => this.performRequest(path, 'PATCH', body, options) as Promise<T>;
 

@@ -181,10 +181,17 @@ export default class JWPSubscriptionService extends SubscriptionService {
       });
 
       if (hasAccess) {
-        const data = await this.apiService.get<GetSubscriptionsResponse>(`/subscriptions?limit=${15}&page=${0}`, {
-          withAuthentication: true,
-          contentType: 'json',
-        });
+        const data = await this.apiService.get<GetSubscriptionsResponse>(
+          '/subscriptions',
+          {
+            withAuthentication: true,
+            contentType: 'json',
+          },
+          {
+            limit: 15,
+            page: 0,
+          },
+        );
 
         const activeSubscription = data.collection.find((subscription: SubscriptionDetails) => subscription.item_id === assetId);
 
