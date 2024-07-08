@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import InPlayer from '@inplayer-org/inplayer.js';
 import type { Card, GetItemAccessV1, PaymentHistory, SubscriptionDetails as InplayerSubscription } from '@inplayer-org/inplayer.js';
-import { injectable, named } from 'inversify';
+import { injectable } from 'inversify';
 
 import { isCommonError } from '../../../utils/api';
 import type {
@@ -15,10 +15,8 @@ import type {
   UpdateCardDetails,
   UpdateSubscription,
 } from '../../../../types/subscription';
+import type { Config } from '../../../../types/config';
 import SubscriptionService from '../SubscriptionService';
-import AccountService from '../AccountService';
-
-import type JWPAccountService from './JWPAccountService';
 
 interface SubscriptionDetails extends InplayerSubscription {
   item_id?: number;
@@ -37,13 +35,11 @@ interface SubscriptionDetails extends InplayerSubscription {
 
 @injectable()
 export default class JWPSubscriptionService extends SubscriptionService {
-  private readonly accountService: JWPAccountService;
+  private siteId = '';
 
-  constructor(@named('JWP') accountService: AccountService) {
-    super();
-
-    this.accountService = accountService as JWPAccountService;
-  }
+  initialize = async (config: Config) => {
+    this.siteId = config.siteId;
+  };
 
   private formatCardDetails = (
     card: Card & {
@@ -158,11 +154,17 @@ export default class JWPSubscriptionService extends SubscriptionService {
   };
 
   getActiveSubscription: GetActiveSubscription = async () => {
-    const assetId = this.accountService.assetId;
-
-    if (assetId === null) throw new Error("Couldn't fetch active subscription, there is no assetId configured");
-
     try {
+      const siteEntitlements = await InPlayer.Asset.getSiteEntitlements(this.siteId);
+
+      const activePlan = siteEntitlements?.data?.plans?.find((plan) => plan.metadata.access_model === 'svod');
+
+      if (!activePlan) {
+        return null;
+      }
+
+      const assetId = activePlan.original_id;
+
       const hasAccess = await InPlayer.Asset.checkAccessForAsset(assetId);
 
       if (hasAccess) {
@@ -175,11 +177,13 @@ export default class JWPSubscriptionService extends SubscriptionService {
 
         return this.formatGrantedSubscription(hasAccess.data);
       }
+
       return null;
     } catch (error: unknown) {
       if (isCommonError(error) && error.response.data.code === 402) {
         return null;
       }
+
       throw new Error('Unable to fetch customer subscriptions.');
     }
   };

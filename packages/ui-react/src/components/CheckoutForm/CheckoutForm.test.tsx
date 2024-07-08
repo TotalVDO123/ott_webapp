@@ -24,7 +24,7 @@ describe('<CheckoutForm>', () => {
         couponFormError={undefined}
         couponFormSubmitting={false}
         order={order as Order}
-        offer={offer as Offer}
+        offer={offer as unknown as Offer}
         offerType={'svod'}
         submitting={false}
       >

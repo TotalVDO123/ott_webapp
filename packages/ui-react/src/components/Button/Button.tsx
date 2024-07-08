@@ -29,6 +29,7 @@ type Props = {
   busy?: boolean;
   id?: string;
   activeClassname?: string;
+  navLinkState?: unknown;
 } & React.AriaAttributes;
 
 const Button: React.FC<Props> = ({
@@ -47,6 +48,7 @@ const Button: React.FC<Props> = ({
   onClick,
   className,
   activeClassname = '',
+  navLinkState,
   ...rest
 }: Props) => {
   const buttonClassName = (isActive: boolean) =>
@@ -70,7 +72,7 @@ const Button: React.FC<Props> = ({
 
   if (to) {
     return (
-      <NavLink className={({ isActive }) => buttonClassName(isActive)} to={to} {...rest} end>
+      <NavLink className={({ isActive }) => buttonClassName(isActive)} to={to} state={navLinkState} {...rest} end>
         {content}
       </NavLink>
     );

@@ -75,13 +75,19 @@
     "no_pricing_available": "No hay opciones de precios disponibles en este momento.",
     "one_time_only": "Este video",
     "subscription": "Suscripción",
-    "title": "Elige un plan",
+    "title": "Elige tu plan",
     "tvod_access_one": "Acceso de {{count}} {{period}}",
     "tvod_access_many": "Acceso de {{count}} {{period}}",
     "tvod_access_other": "Acceso de {{count}} {{period}}",
     "watch_this_on_platform": "Ver esto en {{siteName}}",
     "yearly": "Anual",
     "yearly_subscription": "Suscripción anual"
+  },
+  "list_plans": {
+    "title": "",
+    "description": "",
+    "go_to_account_settings": "",
+    "or": ""
   },
   "external_payment": {
     "explanation": "Esta suscripción se gestiona a través de {{paymentProvider}}.",

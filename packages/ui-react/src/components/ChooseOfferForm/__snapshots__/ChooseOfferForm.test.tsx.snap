@@ -52,11 +52,11 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
     >
       <div
         aria-labelledby="title-S916977979_NL"
-        class="_offer_f7961f"
+        class="_offer_059dc4"
       >
         <input
           checked=""
-          class="_radio_f7961f"
+          class="_radio_059dc4"
           data-testid="S916977979_NL"
           id="S916977979_NL"
           name="selectedOfferId"
@@ -64,16 +64,16 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
           value="S916977979_NL"
         />
         <div
-          class="_label_f7961f"
+          class="_label_059dc4"
         >
           <label
             for="S916977979_NL"
           >
             <h2
-              class="_offerTitle_f7961f"
+              class="_offerTitle_059dc4"
               id="title-S916977979_NL"
             >
-              choose_offer.monthly
+              Monthly subscription (recurring) to JW OTT Webapp
             </h2>
             <span
               class="hidden"
@@ -82,10 +82,10 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
             </span>
             <hr
               aria-hidden="true"
-              class="_offerDivider_f7961f"
+              class="_offerDivider_059dc4"
             />
             <ul
-              class="_offerBenefits_f7961f"
+              class="_offerBenefits_059dc4"
             >
               <li>
                 <svg
@@ -143,10 +143,10 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
               </li>
             </ul>
             <div
-              class="_fill_f7961f"
+              class="_fill_059dc4"
             />
             <div
-              class="_offerPrice_f7961f"
+              class="_offerPrice_059dc4"
             >
               € 6,99
                
@@ -160,10 +160,10 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
       </div>
       <div
         aria-labelledby="title-S345569153_NL"
-        class="_offer_f7961f"
+        class="_offer_059dc4"
       >
         <input
-          class="_radio_f7961f"
+          class="_radio_059dc4"
           data-testid="S345569153_NL"
           id="S345569153_NL"
           name="selectedOfferId"
@@ -171,16 +171,16 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
           value="S345569153_NL"
         />
         <div
-          class="_label_f7961f"
+          class="_label_059dc4"
         >
           <label
             for="S345569153_NL"
           >
             <h2
-              class="_offerTitle_f7961f"
+              class="_offerTitle_059dc4"
               id="title-S345569153_NL"
             >
-              choose_offer.yearly
+              Annual subscription (recurring) to JW OTT Webapp
             </h2>
             <span
               class="hidden"
@@ -189,10 +189,10 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
             </span>
             <hr
               aria-hidden="true"
-              class="_offerDivider_f7961f"
+              class="_offerDivider_059dc4"
             />
             <ul
-              class="_offerBenefits_f7961f"
+              class="_offerBenefits_059dc4"
             >
               <li>
                 <svg
@@ -250,10 +250,10 @@ exports[`<OffersForm> > renders and matches snapshot 1`] = `
               </li>
             </ul>
             <div
-              class="_fill_f7961f"
+              class="_fill_059dc4"
             />
             <div
-              class="_offerPrice_f7961f"
+              class="_offerPrice_059dc4"
             >
               € 50,00
                
@@ -331,11 +331,11 @@ exports[`<OffersForm> > renders and matches snapshot 2`] = `
     >
       <div
         aria-labelledby="title-R892134629_NL"
-        class="_offer_f7961f"
+        class="_offer_059dc4"
       >
         <input
           checked=""
-          class="_radio_f7961f"
+          class="_radio_059dc4"
           data-testid="R892134629_NL"
           id="R892134629_NL"
           name="selectedOfferId"
@@ -343,13 +343,13 @@ exports[`<OffersForm> > renders and matches snapshot 2`] = `
           value="R892134629_NL"
         />
         <div
-          class="_label_f7961f"
+          class="_label_059dc4"
         >
           <label
             for="R892134629_NL"
           >
             <h2
-              class="_offerTitle_f7961f"
+              class="_offerTitle_059dc4"
               id="title-R892134629_NL"
             >
               One Time - TVOD offer
@@ -361,10 +361,10 @@ exports[`<OffersForm> > renders and matches snapshot 2`] = `
             </span>
             <hr
               aria-hidden="true"
-              class="_offerDivider_f7961f"
+              class="_offerDivider_059dc4"
             />
             <ul
-              class="_offerBenefits_f7961f"
+              class="_offerBenefits_059dc4"
             >
               <li>
                 <svg
@@ -386,10 +386,10 @@ exports[`<OffersForm> > renders and matches snapshot 2`] = `
               </li>
             </ul>
             <div
-              class="_fill_f7961f"
+              class="_fill_059dc4"
             />
             <div
-              class="_offerPrice_f7961f"
+              class="_offerPrice_059dc4"
             >
               € 2,90
                

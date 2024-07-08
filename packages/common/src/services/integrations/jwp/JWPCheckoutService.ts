@@ -1,8 +1,10 @@
-import InPlayer, { type AccessFee, type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
+import InPlayer, { type MerchantPaymentMethod } from '@inplayer-org/inplayer.js';
 import { injectable } from 'inversify';
 
+import type { PlanPrice } from '../../../../../../packages/common/types/jw';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
+  AccessMethod,
   CardPaymentData,
   CreateOrder,
   CreateOrderArgs,
@@ -19,6 +21,7 @@ import type {
   PaymentWithPayPal,
   UpdateOrder,
 } from '../../../../types/checkout';
+import type { Config } from '../../../../types/config';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
 import { isCommonError } from '../../../utils/api';
@@ -26,6 +29,13 @@ import { isCommonError } from '../../../utils/api';
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
   private readonly cardPaymentProvider = 'stripe';
+  siteId = '';
+
+  accessMethod: AccessMethod = 'plan';
+
+  initialize = async (config: Config) => {
+    this.siteId = config.siteId;
+  };
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -50,10 +60,8 @@ export default class JWPCheckoutService extends CheckoutService {
    * Format a (Cleeng like) offer id for the given access fee (pricing option). For JWP, we need the asset id and
    * access fee id in some cases.
    */
-  private formatOfferId(offer: AccessFee) {
-    const ppvOffers = ['ppv', 'ppv_custom'];
-
-    return ppvOffers.includes(offer.access_type.name) ? `C${offer.item_id}_${offer.id}` : `S${offer.item_id}_${offer.id}`;
+  private formatOfferId(offer: PlanPrice & { planOriginalId: number }) {
+    return `${offer.access.type === 'subscription' ? 'S' : 'C'}${offer.planOriginalId}_${offer.id}`;
   }
 
   /**
@@ -74,18 +82,18 @@ export default class JWPCheckoutService extends CheckoutService {
     return offerId;
   }
 
-  private formatOffer = (offer: AccessFee): Offer => {
+  private formatOffer = ({ title, ...offer }: PlanPrice & { title: string; planOriginalId: number }): Offer => {
     return {
-      id: offer.id,
+      id: offer.original_id,
       offerId: this.formatOfferId(offer),
-      offerCurrency: offer.currency,
-      customerPriceInclTax: offer.amount,
-      customerCurrency: offer.currency,
-      offerTitle: offer.description,
+      offerCurrency: offer.metadata.currency,
+      customerPriceInclTax: offer.metadata.amount,
+      customerCurrency: offer.metadata.currency,
+      offerTitle: title,
       active: true,
-      period: offer.access_type.period === 'month' && offer.access_type.quantity === 12 ? 'year' : offer.access_type.period,
-      freePeriods: offer.trial_period ? 1 : 0,
-      planSwitchEnabled: offer.item.plan_switch_enabled ?? false,
+      period: offer.access.period,
+      freePeriods: offer.metadata.trial?.quantity ?? 0,
+      planSwitchEnabled: false,
     } as Offer;
   };
 
@@ -120,20 +128,88 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
+  getPlans = async (searchString: string) => {
+    const response = await InPlayer.Payment.getSitePlans(this.siteId, searchString);
+
+    const plans = (response.data.plans || []).filter((plan) => plan.metadata.access_model === 'svod');
+
+    return plans;
+  };
+
+  getPlanPrices = async (planId: string) => {
+    const response = await InPlayer.Payment.getSitePlanPrices(this.siteId, planId);
+
+    return response.data.prices || [];
+  };
+
+  getPlansWithPriceOffers = async (searchString: string) => {
+    try {
+      const plans = await this.getPlans(searchString);
+
+      const plansWithPrices = await Promise.all(
+        plans.map(async (plan) => {
+          try {
+            const prices = await this.getPlanPrices(plan.id);
+
+            const planProps = { id: plan.id, name: plan.metadata.name };
+
+            if (prices.length) {
+              const offers = prices.map((offer) => this.formatOffer({ ...offer, planOriginalId: plan.original_id, title: plan.metadata.name }));
+
+              return [planProps, offers] as const;
+            }
+
+            return [planProps, [] as Offer[]] as const;
+          } catch {
+            throw new Error();
+          }
+        }),
+      );
+
+      return plansWithPrices.filter(([, offers]) => offers.length > 0);
+    } catch {
+      throw new Error('Failed to get plans');
+    }
+  };
+
+  getAppPlansPriceOffers = async (searchString: string) => {
+    try {
+      const plans = await this.getPlans(searchString);
+
+      const offers = await Promise.all(
+        plans.map(async (plan) => {
+          try {
+            const prices = await this.getPlanPrices(plan.id);
+
+            if (prices.length) {
+              return prices.map((offer) => this.formatOffer({ ...offer, planOriginalId: plan.original_id, title: plan.metadata.name }));
+            }
+
+            return [];
+          } catch {
+            throw new Error();
+          }
+        }),
+      );
+
+      return offers;
+    } catch {
+      throw new Error('Failed to get plans');
+    }
+  };
+
   getOffers: GetOffers = async (payload) => {
-    const offers = await Promise.all(
-      payload.offerIds.map(async (offerId) => {
-        try {
-          const { data } = await InPlayer.Asset.getAssetAccessFees(this.parseOfferId(offerId));
+    if (!payload.offerIds.length) {
+      return [];
+    }
 
-          return data?.map((offer) => this.formatOffer(offer));
-        } catch {
-          throw new Error('Failed to get offers');
-        }
-      }),
-    );
+    try {
+      const offers = await this.getAppPlansPriceOffers(`q=id:(${payload.offerIds.map((planId) => `"${planId}"`).join(' OR ')})`);
 
-    return offers.flat();
+      return offers.flat();
+    } catch {
+      throw new Error('Failed to get offers');
+    }
   };
 
   getPaymentMethods: GetPaymentMethods = async () => {

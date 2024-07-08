@@ -27,5 +27,6 @@
   "total_episodes_one": "{{count}} episode",
   "total_episodes_other": "{{count}} episodes",
   "trailer": "Trailer",
-  "watch_trailer": "Watch the trailer"
+  "watch_trailer": "Watch the trailer",
+  "show_plans": "Show plans"
 }

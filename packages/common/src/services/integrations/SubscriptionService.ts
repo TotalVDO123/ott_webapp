@@ -10,8 +10,11 @@ import type {
   UpdateCardDetails,
   UpdateSubscription,
 } from '../../../types/subscription';
+import type { Config } from '../../../types/config';
 
 export default abstract class SubscriptionService {
+  abstract initialize: (config: Config) => Promise<void>;
+
   abstract getActiveSubscription: GetActiveSubscription;
 
   abstract getAllTransactions: GetAllTransactions;

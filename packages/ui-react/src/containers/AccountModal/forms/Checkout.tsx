@@ -42,7 +42,8 @@ const Checkout = () => {
       onSubmitPaypalPaymentSuccess: ({ redirectUrl }) => {
         window.location.href = redirectUrl;
       },
-      onSubmitStripePaymentSuccess: () => navigate(modalURLFromLocation(location, 'waiting-for-payment'), { replace: true }),
+      onSubmitStripePaymentSuccess: () =>
+        navigate(modalURLFromLocation(location, 'waiting-for-payment', { offerId: selectedOffer?.offerId }), { replace: true }),
     });
 
   const {

@@ -86,6 +86,8 @@ export default class AccountController {
 
     await this.profileController?.loadPersistedProfile();
     await this.accountService.initialize(config, url, this.logout);
+    await this.checkoutService.initialize(config);
+    await this.subscriptionService.initialize(config);
 
     // set the accessModel before restoring the user session
     useConfigStore.setState({ accessModel: this.accountService.accessModel });

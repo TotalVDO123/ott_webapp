@@ -17,6 +17,7 @@ import WaitingForPayment from '../../components/WaitingForPayment/WaitingForPaym
 import UpgradeSubscription from '../../components/UpgradeSubscription/UpgradeSubscription';
 import DeleteAccountPasswordWarning from '../../components/DeleteAccountPasswordWarning/DeleteAccountPasswordWarning';
 import UpdatePaymentMethod from '../UpdatePaymentMethod/UpdatePaymentMethod';
+import ListPlansContainer from '../ListPlansContainer/ListPlansContainer';
 
 import EditCardDetails from './forms/EditCardDetails';
 import EditPassword from './forms/EditPassword';
@@ -61,6 +62,7 @@ export type AccountModals = {
   'payment-method-success': 'payment-method-success';
   'waiting-for-payment': 'waiting-for-payment';
   'finalize-payment': 'finalize-payment';
+  'list-plans': 'list-plans';
 };
 
 const AccountModal = () => {
@@ -159,11 +161,13 @@ const AccountModal = () => {
         return <WaitingForPayment />;
       case 'finalize-payment':
         return <FinalizePayment />;
+      case 'list-plans':
+        return <ListPlansContainer />;
     }
   };
 
-  const shouldShowBanner = !['delete-account', 'delete-account-confirmation', 'edit-card', 'warning-account-deletion'].includes(view ?? '');
-  const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : 'small';
+  const shouldShowBanner = !['delete-account', 'delete-account-confirmation', 'edit-card', 'warning-account-deletion', 'unsubscribe'].includes(view ?? '');
+  const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : ['list-plans'].includes(view ?? '') ? 'medium' : 'small';
 
   return (
     <Dialog size={dialogSize} open={!!viewParam} onClose={closeHandler}>

@@ -1,10 +1,10 @@
 {
   "cancel_subscription": {
-    "explanation": "You will be unsubscribed from your current plan by clicking the unsubscribe button below.",
-    "no_thanks": "No, thanks",
-    "title": "We are sorry to see you go.",
+    "explanation": "Are you sure you want to cancel your subscription? You will still have access to the content until your paid period ends.",
+    "no_thanks": "No, I changed my mind",
+    "title": "Cancel subscription",
     "unknown_error_occurred": "An unknown error occurred, please try again later.",
-    "unsubscribe": "Unsubscribe"
+    "unsubscribe": "Confirm"
   },
   "checkout": {
     "applicable_tax": "Applicable tax ({{taxRate}}%)",
@@ -70,12 +70,18 @@
     "no_pricing_available": "There are no pricing options available at the moment.",
     "one_time_only": "This video",
     "subscription": "Subscription",
-    "title": "Choose plan",
+    "title": "Choose your plan",
     "tvod_access_one": "{{count}} {{period}} access",
     "tvod_access_other": "{{count}} {{period}} access",
     "watch_this_on_platform": "Watch this on {{siteName}}",
     "yearly": "Yearly",
     "yearly_subscription": "Yearly subscription"
+  },
+  "list_plans": {
+    "title": "Change plan to watch",
+    "description": "This video is not available in your current subscription plan. To watch it, please cancel your current subscription and subscribe to one of the following plans.",
+    "go_to_account_settings": "Go to Account settings",
+    "or": "or"
   },
   "external_payment": {
     "explanation": "This subscription is managed via {{paymentProvider}}.",

@@ -4,107 +4,77 @@ import { fireEvent, render } from '@testing-library/react';
 import type { Offer } from '@jwp/ott-common/types/checkout';
 import monthlyOffer from '@jwp/ott-testing/fixtures/monthlyOffer.json';
 import yearlyOffer from '@jwp/ott-testing/fixtures/yearlyOffer.json';
-import tvodOffer from '@jwp/ott-testing/fixtures/tvodOffer.json';
 
-import ChooseOfferForm from './ChooseOfferForm';
+import ChoosePlanForm from './ChoosePlanForm';
 
 const svodOffers = [monthlyOffer, yearlyOffer] as unknown as Offer[];
-const tvodOffers = [tvodOffer] as unknown as Offer[];
 
-describe('<OffersForm>', () => {
+describe('<PlansForm>', () => {
   test('renders and matches snapshot', () => {
     const { container } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S916977979_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={vi.fn()}
+        setValue={vi.fn()}
         onSubmit={vi.fn()}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
 
     expect(container).toMatchSnapshot();
   });
 
-  test('renders and matches snapshot', () => {
-    const { container } = render(
-      <ChooseOfferForm
-        values={{ selectedOfferId: 'R892134629_NL', selectedOfferType: 'tvod' }}
-        errors={{}}
-        onChange={vi.fn()}
-        onSubmit={vi.fn()}
-        submitting={false}
-        offers={tvodOffers}
-        showOfferTypeSwitch
-      />,
-    );
-
-    expect(container).toMatchSnapshot();
-  });
-
-  test('checks the monthly offer correctly', () => {
+  test('checks the monthly plan price correctly', () => {
     const { getByTestId } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S916977979_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={vi.fn()}
+        setValue={vi.fn()}
         onSubmit={vi.fn()}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
 
     expect(getByTestId('S916977979_NL')).toBeChecked();
   });
 
-  test('checks the yearly offer correctly', () => {
+  test('checks the yearly plan price correctly', () => {
     const { getByTestId } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S345569153_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={vi.fn()}
+        setValue={vi.fn()}
         onSubmit={vi.fn()}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
+
+    fireEvent.click(getByTestId('offer-period-year'));
 
     expect(getByTestId('S345569153_NL')).toBeChecked();
-  });
-
-  test('checks the tvod offer correctly', () => {
-    const { getByTestId } = render(
-      <ChooseOfferForm
-        values={{ selectedOfferId: 'R892134629_NL', selectedOfferType: 'tvod' }}
-        errors={{}}
-        onChange={vi.fn()}
-        onSubmit={vi.fn()}
-        submitting={false}
-        offers={tvodOffers}
-        showOfferTypeSwitch
-      />,
-    );
-
-    expect(getByTestId('R892134629_NL')).toBeChecked();
   });
 
   test('calls the onChange callback when changing the offer', () => {
     const onChange = vi.fn();
     const { getByTestId } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S916977979_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={onChange}
+        setValue={vi.fn()}
         onSubmit={vi.fn()}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
+
+    fireEvent.click(getByTestId('offer-period-year'));
 
     fireEvent.click(getByTestId('S345569153_NL'));
 
@@ -114,14 +84,14 @@ describe('<OffersForm>', () => {
   test('calls the onSubmit callback when submitting the form', () => {
     const onSubmit = vi.fn();
     const { getByTestId } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S916977979_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={vi.fn()}
+        setValue={vi.fn()}
         onSubmit={onSubmit}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
 
@@ -132,14 +102,14 @@ describe('<OffersForm>', () => {
 
   test('WCAG 2.2 (AA) compliant', async () => {
     const { container } = render(
-      <ChooseOfferForm
+      <ChoosePlanForm
         values={{ selectedOfferId: 'S916977979_NL', selectedOfferType: 'svod' }}
         errors={{}}
         onChange={vi.fn()}
+        setValue={vi.fn()}
         onSubmit={vi.fn()}
         submitting={false}
         offers={svodOffers}
-        showOfferTypeSwitch
       />,
     );
 

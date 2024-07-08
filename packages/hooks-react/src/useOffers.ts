@@ -10,12 +10,13 @@ const useOffers = () => {
   const checkoutController = getModule(CheckoutController);
   const accountController = getModule(AccountController);
 
-  const { mediaOffers, subscriptionOffers, switchSubscriptionOffers, requestedMediaOffers } = useCheckoutStore(
-    ({ mediaOffers, subscriptionOffers, switchSubscriptionOffers, requestedMediaOffers }) => ({
+  const { mediaOffers, subscriptionOffers, switchSubscriptionOffers, requestedMediaOffers, accessMethod } = useCheckoutStore(
+    ({ mediaOffers, subscriptionOffers, switchSubscriptionOffers, requestedMediaOffers, accessMethod }) => ({
       mediaOffers,
       subscriptionOffers,
       switchSubscriptionOffers,
       requestedMediaOffers,
+      accessMethod,
     }),
     shallow,
   );
@@ -51,6 +52,7 @@ const useOffers = () => {
     switchSubscription,
     hasMultipleOfferTypes,
     defaultOfferType,
+    accessMethod,
   };
 };
 

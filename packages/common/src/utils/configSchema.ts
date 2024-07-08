@@ -34,6 +34,7 @@ const cleengSchema: SchemaOf<Cleeng> = object({
 const jwpSchema: SchemaOf<JWP> = object({
   clientId: string().nullable(),
   assetId: number().nullable(),
+  planId: string().nullable(),
   useSandbox: boolean().default(true),
 });
 

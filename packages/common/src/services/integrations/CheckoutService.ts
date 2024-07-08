@@ -1,4 +1,5 @@
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
   CreateOrder,
   DeletePaymentMethod,
@@ -10,6 +11,7 @@ import type {
   GetInitialAdyenPayment,
   GetOffer,
   GetOffers,
+  GetPlansWithPriceOffers,
   GetOrder,
   GetPaymentMethods,
   GetSubscriptionSwitch,
@@ -20,9 +22,16 @@ import type {
   UpdateOrder,
   UpdatePaymentWithPayPal,
 } from '../../../types/checkout';
+import type { Config } from '../../../types/config';
 
 export default abstract class CheckoutService {
+  abstract initialize: (config: Config) => Promise<void>;
+
+  abstract accessMethod: AccessMethod;
+
   abstract getOffers: GetOffers;
+
+  abstract getPlansWithPriceOffers: GetPlansWithPriceOffers;
 
   abstract createOrder: CreateOrder;
 

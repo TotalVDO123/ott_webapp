@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { AccessModel } from '@jwp/ott-common/types/config';
@@ -6,6 +6,7 @@ import type { Customer } from '@jwp/ott-common/types/account';
 import type { Offer } from '@jwp/ott-common/types/checkout';
 import type { PaymentDetail, Subscription, Transaction } from '@jwp/ott-common/types/subscription';
 import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/formatting';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
 import ExternalLink from '@jwp/ott-theme/assets/icons/external_link.svg?react';
 import PayPal from '@jwp/ott-theme/assets/icons/paypal.svg?react';
@@ -104,6 +105,7 @@ const Payment = ({
   const isGrantedSubscription = activeSubscription?.period === 'granted';
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint === Breakpoint.xs;
+  const accessMethod = useCheckoutStore((state) => state.accessMethod);
 
   const [isChangingOffer, setIsChangingOffer] = useState(false);
 
@@ -126,6 +128,8 @@ const Payment = ({
     }
   }, [selectedOfferId, offers, activeSubscription, setIsUpgradeOffer]);
 
+  const locationStateRef = useRef(location.state);
+
   function onCompleteSubscriptionClick() {
     navigate(modalURLFromLocation(location, 'choose-offer'));
   }
@@ -135,7 +139,7 @@ const Payment = ({
   }
 
   function onCancelSubscriptionClick() {
-    navigate(modalURLFromLocation(location, 'unsubscribe'));
+    navigate(modalURLFromLocation(location, 'unsubscribe'), { state: locationStateRef.current });
   }
 
   function onRenewSubscriptionClick() {
@@ -159,7 +163,8 @@ const Payment = ({
     }
   }
 
-  const showChangeSubscriptionButton = (!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription);
+  const showChangeSubscriptionButton =
+    accessMethod !== 'plan' && ((!isExternalPaymentProvider && offerSwitchesAvailable) || (!isChangingOffer && !canRenewSubscription));
 
   return (
     <>
@@ -194,7 +199,9 @@ const Payment = ({
                     <strong>{getTitle(activeSubscription.period)}</strong> <br />
                     {activeSubscription.status === 'active' && !isGrantedSubscription && !pendingDowngradeOfferId
                       ? t('user:payment.next_billing_date_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })
-                      : t('user:payment.subscription_expires_on', { date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language) })}
+                      : t('user:payment.subscription_expires_on', {
+                          date: formatLocalizedDate(new Date(activeSubscription.expiresAt * 1000), i18n.language),
+                        })}
                     {(pendingOffer || pendingDowngradeOfferId) && activeSubscription.status !== 'cancelled' && (
                       <span className={styles.pendingSwitch}>
                         {t('user:payment.pending_offer_switch', {
@@ -237,10 +244,7 @@ const Payment = ({
                   />
                 )
               )}
-              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') &&
-              !isGrantedSubscription &&
-              !isChangingOffer &&
-              canRenewSubscription ? (
+              {(activeSubscription.status === 'active' || activeSubscription.status === 'active_trial') && !isGrantedSubscription && !isChangingOffer ? (
                 <Button
                   label={t('user:payment.cancel_subscription')}
                   onClick={onCancelSubscriptionClick}

@@ -8,6 +8,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
+import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import Play from '@jwp/ott-theme/assets/icons/play.svg?react';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
@@ -39,8 +40,10 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const watchHistoryItem = useWatchHistoryStore((state) => item && state.getItem(item));
   const videoProgress = watchHistoryItem?.progress;
 
+  useOffers();
+
   // entitlement
-  const setRequestedMediaOffers = useCheckoutStore((s) => s.setRequestedMediaOffers);
+  const { setRequestedMediaOffers, subscriptionOffers, accessMethod } = useCheckoutStore();
   const { isEntitled, mediaOffers } = useEntitlement(item);
   const hasMediaOffers = !!mediaOffers.length;
 
@@ -48,9 +51,10 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (isEntitled) return typeof videoProgress === 'number' ? t('continue_watching') : t('start_watching');
     if (hasMediaOffers) return t('buy');
     if (!isLoggedIn) return t('sign_up_to_start_watching');
+    if (accessMethod === 'plan' && subscriptionOffers.length) return t('show_plans');
 
     return t('complete_your_subscription');
-  }, [isEntitled, isLoggedIn, hasMediaOffers, videoProgress, t]);
+  }, [accessMethod, isEntitled, isLoggedIn, hasMediaOffers, videoProgress, subscriptionOffers, t]);
 
   const handleStartWatchingClick = useCallback(() => {
     if (isEntitled) {
@@ -62,9 +66,12 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     }
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
+    if (accessMethod === 'plan' && subscriptionOffers.length) {
+      return navigate(modalURLFromLocation(location, 'list-plans'));
+    }
 
     return navigate('/u/payments');
-  }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, onClick]);
+  }, [accessMethod, isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, subscriptionOffers, onClick]);
 
   useEffect(() => {
     // set the TVOD mediaOffers in the checkout store

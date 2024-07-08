@@ -32,6 +32,7 @@ export const useConfigStore = createStore<ConfigState>('ConfigStore', () => ({
       jwp: {
         clientId: null,
         assetId: null,
+        planId: null,
         useSandbox: true,
       },
     },

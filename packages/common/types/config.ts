@@ -80,6 +80,7 @@ export type JWP = {
   clientId?: string | null;
   assetId?: number | null;
   useSandbox?: boolean;
+  planId?: string | null;
 };
 export type Features = {
   recommendationsPlaylist?: string | null;

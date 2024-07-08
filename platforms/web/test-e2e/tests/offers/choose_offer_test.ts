@@ -67,8 +67,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
 
     I.click('Complete subscription');
     I.waitForLoaderDone();
-    I.see('Choose plan');
-    I.see('Watch this on JW OTT Web App');
+    I.see('Choose your plan');
 
     await within(props.monthlyOffer.label, () => {
       I.see('Monthly');
