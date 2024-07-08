@@ -25,12 +25,12 @@ import type {
   SetDefaultCardResponse,
   Card,
   PaymentHistory,
-  InplayerSubscription,
+  JWPSubscription,
 } from './types';
 import type JWPAccountService from './JWPAccountService';
 import JWPAPIService from './JWPAPIService';
 
-interface SubscriptionDetails extends InplayerSubscription {
+interface SubscriptionDetails extends JWPSubscription {
   item_id?: number;
   item_title?: string;
   subscription_id?: string;

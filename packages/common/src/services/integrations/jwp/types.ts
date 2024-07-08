@@ -282,7 +282,7 @@ export type ProfilesData = {
   };
 };
 
-export type InplayerSubscription = {
+export type JWPSubscription = {
   cancel_token: string;
   status: string;
   description: string;
@@ -303,7 +303,7 @@ export type GetSubscriptionsResponse = {
   page: number;
   offset: number;
   limit: number;
-  collection: InplayerSubscription[];
+  collection: JWPSubscription[];
 };
 
 export type PaymentHistory = {
