@@ -14,6 +14,7 @@ import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
 import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import { RELATIVE_PATH_USER_ACCOUNT, RELATIVE_PATH_USER_FAVORITES, RELATIVE_PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
 import { useFavoritesStore } from '@jwp/ott-common/src/stores/FavoritesStore';
+import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react';
 
 import AccountComponent from '../../components/Account/Account';
 import Button from '../../components/Button/Button';
@@ -71,6 +72,16 @@ const User = (): JSX.Element => {
         <nav className={styles.leftColumn}>
           <div className={styles.panel}>
             <ul>
+              <li>
+                <Button
+                  to={RELATIVE_PATH_USER_ACCOUNT}
+                  label={t('nav.account')}
+                  variant="text"
+                  startIcon={<Icon icon={AccountCircle} />}
+                  className={styles.button}
+                />
+              </li>
+
               {favoritesList && (
                 <li>
                   <Button
