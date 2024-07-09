@@ -64,7 +64,7 @@ export default class JWPAPIService {
     return !!tokenObject.token && tokenObject.expires > Date.now() / 1000;
   };
 
-  private getBaseUrl = () => (this.sandbox ? 'https://staging-v2.inplayer.com' : 'https://services.inplayer.com');
+  private getBaseUrl = () => (this.sandbox ? 'https://staging-v2.inplayer.com' : 'http://sims.jwplayer.com');
 
   private performRequest = async (
     path: string = '/',
