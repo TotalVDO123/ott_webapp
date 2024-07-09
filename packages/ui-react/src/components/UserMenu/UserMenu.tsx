@@ -33,10 +33,10 @@ const UserMenu = ({ isLoggedIn, favoritesEnabled, open, onClose, onOpen, onLogin
 
   if (!isLoggedIn) {
     return (
-      <div className={styles.buttonContainer}>
+      <>
         <Button onClick={onLoginButtonClick} label={t('sign_in')} aria-haspopup="dialog" />
         <Button variant="contained" color="primary" onClick={onSignUpButtonClick} label={t('sign_up')} aria-haspopup="dialog" />
-      </div>
+      </>
     );
   }
 
