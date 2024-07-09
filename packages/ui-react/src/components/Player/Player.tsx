@@ -174,7 +174,7 @@ const Player: React.FC<Props> = ({
 
       playerRef.current = window.jwplayer(playerElementRef.current) as JWPlayer;
 
-      // Inject user_id and profile_id into the CDN analytics
+      // Inject user_id into the CDN analytics
       // @todo this currently depends on stores
       attachAnalyticsParams(item);
 

@@ -10,7 +10,6 @@ import { mockService } from '@jwp/ott-common/test/mockService';
 import ApiService from '@jwp/ott-common/src/services/ApiService';
 import FavoritesController from '@jwp/ott-common/src/controllers/FavoritesController';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
-import ProfileController from '@jwp/ott-common/src/controllers/ProfileController';
 import { ACCESS_MODEL, DEFAULT_FEATURES } from '@jwp/ott-common/src/constants';
 import { Route, Routes } from 'react-router-dom';
 import React from 'react';
@@ -92,7 +91,6 @@ describe('User Component tests', () => {
       getSubscriptionSwitches: vi.fn(),
       getSubscriptionOfferIds: vi.fn().mockReturnValue([]),
     });
-    mockService(ProfileController, { listProfiles: vi.fn(), isEnabled: vi.fn().mockReturnValue(false) });
 
     useConfigStore.setState({
       accessModel: ACCESS_MODEL.SVOD,

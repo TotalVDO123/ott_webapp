@@ -9,7 +9,6 @@ import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
 import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
-import type { Profile } from '@jwp/ott-common/types/profiles';
 
 import styles from '../UserMenu/UserMenu.module.scss'; // TODO inherit styling
 import MenuButton from '../MenuButton/MenuButton';
@@ -21,7 +20,6 @@ type Props = {
   showPaymentItems: boolean;
   onButtonClick?: () => void;
   titleId?: string;
-  currentProfile?: Profile | null;
   favoritesEnabled?: boolean;
 };
 

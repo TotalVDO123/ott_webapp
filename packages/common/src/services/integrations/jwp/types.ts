@@ -266,22 +266,6 @@ export type GetItemAccessResponse = {
   item: ItemDetails;
 };
 
-export type ProfilesData = {
-  id: string;
-  account_id: string;
-  name: string;
-  avatar_url: string;
-  default: boolean;
-  adult: boolean;
-  pin_required: boolean;
-  created_at: number;
-  updated_at: number;
-  credentials: {
-    access_token: string;
-    expires: number;
-  };
-};
-
 export type JWPSubscription = {
   cancel_token: string;
   status: string;

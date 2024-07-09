@@ -1,5 +1,5 @@
 import type { PlaylistItem } from '../../types/playlist';
-import { RELATIVE_PATH_USER_MY_PROFILE, PATH_MEDIA, PATH_PLAYLIST, PATH_USER_MY_PROFILE, PATH_CONTENT_LIST } from '../paths';
+import { PATH_MEDIA, PATH_PLAYLIST, PATH_CONTENT_LIST } from '../paths';
 import { logWarn } from '../logger';
 
 import { getLegacySeriesPlaylistIdFromEpisodeTags, getSeriesPlaylistIdFromCustomParams } from './media';
@@ -134,12 +134,6 @@ export const liveChannelsURL = (playlistId: string, channelId?: string, play = f
       play: play ? '1' : null,
     },
   );
-};
-
-export const userProfileURL = (profileId: string, nested = false) => {
-  const path = nested ? RELATIVE_PATH_USER_MY_PROFILE : PATH_USER_MY_PROFILE;
-
-  return createPath(path, { id: profileId });
 };
 
 // Legacy URLs
