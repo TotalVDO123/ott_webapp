@@ -28,9 +28,11 @@ const VideoDetailsInline: React.FC<Props> = ({ title, description, primaryMetada
       <TitleComponent className={styles.title}>{title}</TitleComponent>
       <div className={styles.inlinePlayerMetadata}>
         <div className={styles.primaryMetadata}>{primaryMetadata}</div>
-        {trailerButton}
-        {favoriteButton}
-        {shareButton}
+        <div className={styles.buttonBar}>
+          {trailerButton}
+          {favoriteButton}
+          {shareButton}
+        </div>
       </div>
       {isMobile ? (
         <CollapsibleText text={description} className={styles.description} />
