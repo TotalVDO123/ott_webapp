@@ -58,6 +58,7 @@ const Player: React.FC<Props> = ({
   const playerElementRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<JWPlayer>();
   const loadingRef = useRef(false);
+  const backClickRef = useRef(false);
   const [libLoaded, setLibLoaded] = useState(!!window.jwplayer);
   const startTimeRef = useRef(startTime);
 
@@ -88,7 +89,10 @@ const Player: React.FC<Props> = ({
   const handlePlaylistItem = useEventCallback(onPlaylistItem);
   const handlePlaylistItemCallback = useEventCallback(onPlaylistItemCallback);
   const handleNextClick = useEventCallback(onNext);
-  const handleBackClick = useEventCallback(onBackClick);
+  const handleBackClick = useEventCallback(() => {
+    backClickRef.current = true;
+    onBackClick?.();
+  });
   const handleReady = useEventCallback(() => onReady && onReady(playerRef.current));
 
   const attachEvents = useCallback(() => {
@@ -240,13 +244,12 @@ const Player: React.FC<Props> = ({
     return () => {
       if (playerRef.current) {
         // Detaching events before component unmount
-        detachEvents();
-        if (!onBackClick) {
+        if (!backClickRef.current) {
           playerRef.current.remove();
         }
       }
     };
-  }, [detachEvents, onBackClick]);
+  }, [detachEvents, backClickRef]);
 
   return (
     <div className={styles.container} data-testid={testId('player-container')}>
