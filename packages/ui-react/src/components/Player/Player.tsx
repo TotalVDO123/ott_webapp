@@ -30,6 +30,7 @@ type Props = {
   onFirstFrame?: () => void;
   onRemove?: () => void;
   onNext?: () => void;
+  onBackClick?: () => void;
   onPlaylistItem?: () => void;
   onPlaylistItemCallback?: (item: PlaylistItem) => Promise<undefined | PlaylistItem>;
 };
@@ -49,6 +50,7 @@ const Player: React.FC<Props> = ({
   onPlaylistItem,
   onPlaylistItemCallback,
   onNext,
+  onBackClick,
   feedId,
   startTime = 0,
   autostart,
@@ -86,6 +88,7 @@ const Player: React.FC<Props> = ({
   const handlePlaylistItem = useEventCallback(onPlaylistItem);
   const handlePlaylistItemCallback = useEventCallback(onPlaylistItemCallback);
   const handleNextClick = useEventCallback(onNext);
+  const handleBackClick = useEventCallback(onBackClick);
   const handleReady = useEventCallback(() => onReady && onReady(playerRef.current));
 
   const attachEvents = useCallback(() => {
@@ -100,6 +103,7 @@ const Player: React.FC<Props> = ({
     playerRef.current?.on('remove', handleRemove);
     playerRef.current?.on('playlistItem', handlePlaylistItem);
     playerRef.current?.on('nextClick', handleNextClick);
+    playerRef.current?.on('backClick', handleBackClick);
     playerRef.current?.setPlaylistItemCallback(handlePlaylistItemCallback);
   }, [
     handleReady,
@@ -114,6 +118,7 @@ const Player: React.FC<Props> = ({
     handlePlaylistItem,
     handleNextClick,
     handlePlaylistItemCallback,
+    handleBackClick,
   ]);
 
   const detachEvents = useCallback(() => {
@@ -236,10 +241,12 @@ const Player: React.FC<Props> = ({
       if (playerRef.current) {
         // Detaching events before component unmount
         detachEvents();
-        playerRef.current.remove();
+        if (!onBackClick) {
+          playerRef.current.remove();
+        }
       }
     };
-  }, [detachEvents]);
+  }, [detachEvents, onBackClick]);
 
   return (
     <div className={styles.container} data-testid={testId('player-container')}>

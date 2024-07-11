@@ -109,6 +109,7 @@ const Cinema: React.FC<Props> = ({
           onUserActive={handleUserActive}
           onUserInActive={handleUserInactive}
           onNext={handleNext}
+          onBackClick={onClose}
           liveEndDateTime={liveEndDateTime}
           liveFromBeginning={liveFromBeginning}
           liveStartDateTime={liveStartDateTime}
