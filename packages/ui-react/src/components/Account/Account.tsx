@@ -15,6 +15,8 @@ import useToggle from '@jwp/ott-hooks-react/src/useToggle';
 import Visibility from '@jwp/ott-theme/assets/icons/visibility.svg?react';
 import VisibilityOff from '@jwp/ott-theme/assets/icons/visibility_off.svg?react';
 import env from '@jwp/ott-common/src/env';
+// @ts-ignore: package import
+import QRCode from 'qrcode';
 
 import type { FormSectionContentArgs, FormSectionProps } from '../Form/FormSection';
 import Alert from '../Alert/Alert';
@@ -216,6 +218,14 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
     navigate(modalURLFromLocation(location, canChangePasswordWithOldPassword ? 'edit-password' : 'reset-password'));
   };
 
+  const generateQR = (text: string) =>
+    QRCode.toCanvas(text, { errorCorrectionLevel: 'H' }, function (err: Error, canvas: HTMLCanvasElement) {
+      if (err) throw err;
+
+      const qrCodeContainer = document.getElementById('qr-code');
+      qrCodeContainer?.appendChild(canvas);
+    });
+
   return (
     <>
       <h1 className="hideUntilFocus">{t('nav.account')}</h1>
@@ -332,6 +342,26 @@ const Account = ({ panelClassName, panelHeaderClassName, canUpdateEmail = true }
                 type="button"
                 onClick={() => (customer ? editPasswordClickHandler() : null)}
               />
+            ),
+          }),
+          formSection({
+            label: t('Access'),
+            saveButton: t('Access'),
+            content: () => (
+              <div className={styles.customFields} data-testid={testId('custom-reg-fields')}>
+                <div className={styles.textWithButtonContainer}>
+                  <div>
+                    <Button
+                      label={'Generate QR code'}
+                      type="button"
+                      onClick={() => {
+                        generateQR('https://app-preview.jwplayer.com/?app-config=4dacztho');
+                      }}
+                    />
+                  </div>
+                  <div id="qr-code"></div>
+                </div>
+              </div>
             ),
           }),
           formSection({
