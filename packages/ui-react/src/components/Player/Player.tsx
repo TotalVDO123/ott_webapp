@@ -244,9 +244,12 @@ const Player: React.FC<Props> = ({
     return () => {
       if (playerRef.current) {
         // Detaching events before component unmount
-        if (!backClickRef.current) {
-          playerRef.current.remove();
+        detachEvents();
+        if (backClickRef.current) {
+          backClickRef.current = false;
+          return;
         }
+        playerRef.current.remove();
       }
     };
   }, [detachEvents, backClickRef]);
