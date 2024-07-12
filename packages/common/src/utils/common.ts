@@ -1,17 +1,21 @@
 import type { Playlist, PlaylistItem } from '../../types/playlist';
 
 export function debounce<T extends (...args: any[]) => void>(callback: T, wait = 200) {
-  let timeout: NodeJS.Timeout | null;
-  return (...args: unknown[]) => {
+  let timeout: NodeJS.Timeout | undefined;
+  function debounced(...args: unknown[]) {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => callback(...args), wait);
-  };
+  }
+
+  debounced.cancel = () => clearTimeout(timeout);
+  return debounced;
 }
-export function throttle<T extends (...args: any[]) => unknown>(func: T, limit: number): (...args: Parameters<T>) => void {
+
+export function throttle<T extends (...args: any[]) => unknown>(func: T, limit: number) {
   let lastFunc: NodeJS.Timeout | undefined;
   let lastRan: number | undefined;
 
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
+  function throttled(this: ThisParameterType<T>, ...args: Parameters<T>): void {
     const timeSinceLastRan = lastRan ? Date.now() - lastRan : limit;
 
     if (timeSinceLastRan >= limit) {
@@ -29,7 +33,10 @@ export function throttle<T extends (...args: any[]) => unknown>(func: T, limit: 
         lastFunc = undefined;
       }, limit - timeSinceLastRan);
     }
-  };
+  }
+
+  throttled.cancel = () => clearTimeout(lastFunc);
+  return throttled;
 }
 
 export const unicodeToChar = (text: string) => {
