@@ -34,7 +34,7 @@ export default class JWPAPIService {
     this.useSandboxEnv = useSandboxEnv;
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-v2.inplayer.com' : 'http://sims.jwplayer.com');
+  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'http://sims.jwplayer.com');
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
