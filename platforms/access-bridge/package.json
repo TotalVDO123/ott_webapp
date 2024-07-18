@@ -1,0 +1,27 @@
+{
+  "name": "access-bridge",
+  "version": "1.0.0",
+  "main": "out/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && [ -f .env ] && cp .env ./out/.env || true && [ -f .env.local ] && cp .env.local ./out/.env.local || true",
+    "start": "node out/src/main.js",
+    "prestart": "yarn build",
+    "pretest": "yarn build",
+    "test": "node --test",
+    "lint:ts": "tsc --pretty --noEmit -p ./",
+    "clean": "npx jw-fet clean",
+    "format": "npx jw-fet format"
+  },
+  "devDependencies": {
+    "@jwplayer/fet": "^8.5.1",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.10",
+    "eslint-config-jwp": "*",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
