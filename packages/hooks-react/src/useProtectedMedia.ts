@@ -26,6 +26,6 @@ export default function useProtectedMedia(item: PlaylistItem) {
   return {
     ...contentProtectionQuery,
     isGeoBlocked,
-    isLoading: contentProtectionQuery.isLoading && isLoading,
+    isLoading: contentProtectionQuery.isLoading || isLoading,
   };
 }
