@@ -84,7 +84,10 @@ export class Server {
           await methodHandler(req, res, params);
           return;
         } else {
-          return sendErrors(res, new MethodNotAllowedError({ allowedMethods: Object.keys(endpoint) as RequestMethod[] }));
+          return sendErrors(
+            res,
+            new MethodNotAllowedError({ allowedMethods: Object.keys(endpoint) as RequestMethod[] })
+          );
         }
       }
     }
