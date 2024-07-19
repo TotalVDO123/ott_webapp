@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { ServerResponse } from 'node:http';
 import { describe, test } from 'node:test';
 
 import {
@@ -10,8 +9,6 @@ import {
   NotFoundError,
   ParameterInvalidError,
   ParameterMissingError,
-  PassportBridgeError,
-  sendErrors,
 } from '../../src/errors.js';
 
 describe('Error Classes', () => {
