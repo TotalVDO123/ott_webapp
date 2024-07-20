@@ -1,7 +1,7 @@
 import { PLANS_CLIENT } from '../appConfig.js';
 import { BadRequestError, ForbiddenError, NotFoundError, isJWError } from '../errors.js';
 
-type AccessControlPlan = {
+export type AccessControlPlan = {
   id: string;
   exp: number;
 };

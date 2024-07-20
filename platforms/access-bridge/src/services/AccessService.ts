@@ -4,10 +4,7 @@ import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../appConfig.js';
 import { BadRequestError, ForbiddenError, NotFoundError, ParameterInvalidError, isJWError } from '../errors.js';
 import { put } from '../http.js';
 
-type AccessPlan = {
-  id: string;
-  exp: number;
-};
+import { AccessControlPlan } from './PlansService.js';
 
 type AccessTokensResponse = {
   passport: string;
@@ -36,7 +33,7 @@ export class AccessService {
    * @throws ForbiddenError if the request is not properly authenticated.
    * @throws BadRequestError for other validation error scenarios.
    */
-  async generateAccessTokens(siteId: string, email: string, plans: AccessPlan[]): Promise<AccessTokensResponse> {
+  async generateAccessTokens(siteId: string, email: string, plans: AccessControlPlan[]): Promise<AccessTokensResponse> {
     try {
       const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/generate`);
       const payload = {
@@ -105,7 +102,7 @@ export class AccessService {
 
   // URL signer - needed for validating requests on Delivery Gateway
   // More about this: https://docs.jwplayer.com/platform/reference/protect-your-content-with-signed-urls
-  private async generateSignedUrl(path: string) {
+  async generateSignedUrl(path: string, host: string = this.accessControlClient) {
     const now = new Date();
     const token = jwt.sign(
       {
@@ -115,9 +112,9 @@ export class AccessService {
       this.apiSecret,
       {
         noTimestamp: true,
-      },
+      }
     );
 
-    return `${this.accessControlClient}${path}?token=${token}`;
+    return `${host}${path}?token=${token}`;
   }
 }

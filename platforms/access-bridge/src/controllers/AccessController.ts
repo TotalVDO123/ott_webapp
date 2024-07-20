@@ -27,6 +27,7 @@ export class AccessController {
     try {
       if (!isValidSiteId(params.site_id)) {
         sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
+        return;
       }
 
       const accessControlPlans = await this.plansService.getAccessControlPlans(params.site_id);
@@ -39,14 +40,15 @@ export class AccessController {
           exp: 1741153241,
         },
       ];
-      const response = await this.accessService.generateAccessTokens(params.site_id, 'test@email.com', plans);
 
+      const response = await this.accessService.generateAccessTokens(params.site_id, 'test@email.com', plans);
       res.end(JSON.stringify(response));
     } catch (error) {
       if (error instanceof PassportBridgeError) {
         sendErrors(res, error);
         return;
       }
+      console.error('Controller: failed to refresh passport.', error);
       throw error;
     }
   };
@@ -61,17 +63,23 @@ export class AccessController {
     try {
       if (!isValidSiteId(params.site_id)) {
         sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
+        return;
       }
 
       const { refresh_token: refreshToken } = await parseJsonBody<{ refresh_token: string }>(req);
-      const response = await this.accessService.refreshAccessTokens(params.site_id, refreshToken);
+      if (!refreshToken) {
+        sendErrors(res, new ParameterInvalidError({ parameterName: 'refresh_token' }));
+        return;
+      }
 
+      const response = await this.accessService.refreshAccessTokens(params.site_id, refreshToken);
       res.end(JSON.stringify(response));
     } catch (error) {
       if (error instanceof PassportBridgeError) {
         sendErrors(res, error);
         return;
       }
+      console.error('Controller: failed to refresh passport.', error);
       throw error;
     }
   };

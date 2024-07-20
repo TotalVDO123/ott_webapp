@@ -74,6 +74,7 @@ describe('sendErrors', async () => {
       .end();
   });
 
+  // Close the mock server after all test suites have completed
   after(async () => {
     await mockServer.close();
   });
