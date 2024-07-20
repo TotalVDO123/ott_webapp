@@ -48,7 +48,7 @@ export class AccessController {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to refresh passport.', error);
+      console.error('Controller: failed to generate passport.', error);
       throw error;
     }
   };
