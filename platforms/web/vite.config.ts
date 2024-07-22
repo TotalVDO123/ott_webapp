@@ -57,8 +57,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         // This is needed to do decorator transforms for ioc resolution to work for classes
         babel: { plugins: ['babel-plugin-transform-typescript-metadata', ['@babel/plugin-proposal-decorators', { legacy: true }]] },
       }),
-      eslintPlugin({ emitError: mode === 'production' || mode === 'demo' || mode === 'preview' }), // Move linting to pre-build to match dashboard
-      StylelintPlugin(),
+      mode !== 'test' && eslintPlugin({ emitError: mode === 'production' || mode === 'demo' || mode === 'preview' }), // Move linting to pre-build to match dashboard
+      mode !== 'test' && StylelintPlugin(),
       svgr(),
       VitePWA({
         registerType: 'autoUpdate',
@@ -101,6 +101,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       'import.meta.env.APP_VERSION': JSON.stringify(process.env.npm_package_version),
       __mode__: JSON.stringify(mode),
       __dev__: process.env.NODE_ENV !== 'production',
+      __debug__: process.env.APP_TEST_DEBUG === '1',
       'import.meta.env.APP_BODY_FONT': JSON.stringify(bodyFontsString),
       'import.meta.env.APP_BODY_ALT_FONT': JSON.stringify(bodyAltFontsString),
     },

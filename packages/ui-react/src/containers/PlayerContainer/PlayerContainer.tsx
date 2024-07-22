@@ -20,6 +20,7 @@ type Props = {
   onUserActive?: () => void;
   onUserInActive?: () => void;
   onNext?: () => void;
+  onBackClick?: () => void;
   feedId?: string;
   liveStartDateTime?: string | null;
   liveEndDateTime?: string | null;
@@ -37,6 +38,7 @@ const PlayerContainer: React.FC<Props> = ({
   onUserActive,
   onUserInActive,
   onNext,
+  onBackClick,
   liveEndDateTime,
   liveFromBeginning,
   liveStartDateTime,
@@ -88,6 +90,7 @@ const PlayerContainer: React.FC<Props> = ({
       onUserActive={onUserActive}
       onUserInActive={onUserInActive}
       onNext={onNext}
+      onBackClick={onBackClick}
       onPlaylistItemCallback={handlePlaylistItemCallback}
       startTime={startTime}
       autostart={autostart}

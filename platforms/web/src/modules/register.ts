@@ -3,9 +3,12 @@ import { container } from '@jwp/ott-common/src/modules/container';
 import StorageService from '@jwp/ott-common/src/services/StorageService';
 import { GET_CUSTOMER_IP } from '@jwp/ott-common/src/modules/types';
 import type { GetCustomerIP } from '@jwp/ott-common/types/get-customer-ip';
+import LogTransporter from '@jwp/ott-common/src/services/logging/LogTransporter';
+import ConsoleTransporter from '@jwp/ott-common/src/services/logging/ConsoleTransporter';
+import { LogLevel } from '@jwp/ott-common/src/services/logging/LogLevel';
 
-import { LocalStorageService } from '#src/services/LocalStorageService';
 import { getOverrideIP } from '#src/utils/ip';
+import { LocalStorageService } from '#src/services/LocalStorageService';
 
 /**
  * Custom integration override
@@ -30,6 +33,19 @@ container.bind(StorageService).to(LocalStorageService);
 
 // Currently, this is only used for e2e testing to override the customer ip from a browser cookie
 container.bind<GetCustomerIP>(GET_CUSTOMER_IP).toConstantValue(async () => getOverrideIP());
+
+/**
+ * Log transporters
+ *
+ * Add custom log transporters by registering more modules to the LogTransporter type. The custom transporter must
+ * extend the LogTransporter class.
+ *
+ * @example
+ * ```ts
+ * container.bind<LogTransporter>(LogTransporter).toDynamicValue(() => new GoogleGTMTransporter(import.meta.env.DEV ? LogLevel.SILENT : LogLevel.WARN));
+ * ```
+ */
+container.bind<LogTransporter>(LogTransporter).toDynamicValue(() => new ConsoleTransporter(import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.ERROR));
 
 /**
  * UI Component override

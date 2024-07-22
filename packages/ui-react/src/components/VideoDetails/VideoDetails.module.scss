@@ -108,27 +108,20 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+  gap: calc(variables.$base-spacing / 2);
   width: 100%;
 
   > button {
+    flex: 1;
     justify-content: center;
-    
-    &:not(:last-child) {
-      margin-right: 12px;
+
+    &:first-child {
+      flex-basis: 100%;
     }
-    
-    @include responsive.mobile-and-tablet() {
-      flex: 1;
-      margin: 6px 6px 6px 0;
-      
-      &:first-child {
-        flex-basis: 100%;
-        margin: 0 0 6px 0;
-      }
-      &:last-child {
-        margin-right: 0;
-      }
-    }
+  }
+
+  @include responsive.tablet-and-larger() {
+    max-width: 350px;
   }
 }
 

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@adyen/adyen-web": "^5.66.1",
-    "@inplayer-org/inplayer.js": "^3.13.25",
+    "@videodock/tile-slider": "^2.0.0",
     "classnames": "^2.5.1",
     "date-fns": "^2.30.0",
     "dompurify": "^2.5.5",
@@ -46,8 +46,8 @@
     "vi-fetch": "^0.8.0",
     "vite-plugin-svgr": "^4.2.0",
     "vitest": "^1.6.0",
-    "wicg-inert": "^3.1.2",
-    "vitest-axe": "^1.0.0-pre.3"
+    "vitest-axe": "^1.0.0-pre.3",
+    "wicg-inert": "^3.1.2"
   },
   "peerDependencies": {
     "@jwp/ott-common": "*",

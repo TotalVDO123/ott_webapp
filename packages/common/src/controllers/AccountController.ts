@@ -2,7 +2,6 @@ import i18next from 'i18next';
 import { inject, injectable } from 'inversify';
 
 import { DEFAULT_FEATURES } from '../constants';
-import { logDev } from '../utils/common';
 import type { IntegrationType } from '../../types/config';
 import CheckoutService from '../services/integrations/CheckoutService';
 import AccountService, { type AccountServiceFeatures } from '../services/integrations/AccountService';
@@ -22,11 +21,10 @@ import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
 import { useAccountStore } from '../stores/AccountStore';
 import { useConfigStore } from '../stores/ConfigStore';
-import { useProfileStore } from '../stores/ProfileStore';
 import { FormValidationError } from '../errors/FormValidationError';
+import { logError } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
-import ProfileController from './ProfileController';
 import FavoritesController from './FavoritesController';
 
 @injectable()
@@ -34,7 +32,6 @@ export default class AccountController {
   private readonly checkoutService: CheckoutService;
   private readonly accountService: AccountService;
   private readonly subscriptionService: SubscriptionService;
-  private readonly profileController: ProfileController;
   private readonly favoritesController: FavoritesController;
   private readonly watchHistoryController: WatchHistoryController;
   private readonly features: AccountServiceFeatures;
@@ -46,7 +43,6 @@ export default class AccountController {
     @inject(INTEGRATION_TYPE) integrationType: IntegrationType,
     favoritesController: FavoritesController,
     watchHistoryController: WatchHistoryController,
-    profileController: ProfileController,
   ) {
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.accountService = getNamedModule(AccountService, integrationType);
@@ -55,7 +51,6 @@ export default class AccountController {
     // @TODO: Controllers shouldn't be depending on other controllers, but we've agreed to keep this as is for now
     this.favoritesController = favoritesController;
     this.watchHistoryController = watchHistoryController;
-    this.profileController = profileController;
 
     this.features = integrationType ? this.accountService.features : DEFAULT_FEATURES;
   }
@@ -68,7 +63,7 @@ export default class AccountController {
         await this.getAccount();
       }
     } catch (error: unknown) {
-      logDev('Failed to get user', error);
+      logError('AccountController', 'Failed to get user', { error });
 
       // clear the session when the token was invalid
       // don't clear the session when the error is unknown (network hiccup or something similar)
@@ -84,7 +79,6 @@ export default class AccountController {
     useAccountStore.setState({ loading: true });
     const config = useConfigStore.getState().config;
 
-    await this.profileController?.loadPersistedProfile();
     await this.accountService.initialize(config, url, this.logout);
 
     // set the accessModel before restoring the user session
@@ -386,7 +380,12 @@ export default class AccountController {
     return !!responseData?.accessGranted;
   };
 
-  reloadSubscriptions = async ({ delay, retry }: { delay?: number; retry?: number } = { delay: 0, retry: 0 }): Promise<unknown> => {
+  reloadSubscriptions = async (
+    { delay, retry }: { delay?: number; retry?: number } = {
+      delay: 0,
+      retry: 0,
+    },
+  ): Promise<unknown> => {
     useAccountStore.setState({ loading: true });
 
     const { getAccountInfo } = useAccountStore.getState();
@@ -436,7 +435,7 @@ export default class AccountController {
         pendingOffer = offerResponse.responseData;
       }
     } catch (error: unknown) {
-      logDev('Failed to fetch the pending offer', error);
+      logError('AccountController', 'Failed to fetch the pending offer', { error });
     }
 
     // let the app know to refresh the entitlements
@@ -547,13 +546,6 @@ export default class AccountController {
       publisherConsents: null,
       loading: false,
     });
-
-    useProfileStore.setState({
-      profile: null,
-      selectingProfileAvatar: null,
-    });
-
-    this.profileController.unpersistProfile();
 
     await this.favoritesController.restoreFavorites();
     await this.watchHistoryController.restoreWatchHistory();

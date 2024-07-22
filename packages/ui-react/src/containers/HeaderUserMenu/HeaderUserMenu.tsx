@@ -44,11 +44,6 @@ const HeaderUserMenu = () => {
       favoritesEnabled={favoritesEnabled}
       onLoginButtonClick={loginButtonClickHandler}
       onSignUpButtonClick={signUpButtonClickHandler}
-      profilesEnabled={false}
-      profile={null}
-      profiles={[]}
-      profileLoading={false}
-      onSelectProfile={() => {}}
     />
   );
 };

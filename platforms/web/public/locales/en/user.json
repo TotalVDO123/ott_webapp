@@ -77,7 +77,6 @@
     "favorites": "Favorites",
     "logout": "Log out",
     "payments": "Payments",
-    "profile": "Profile",
     "settings": "Settings"
   },
   "payment": {
@@ -123,29 +122,5 @@
     "update_payment_details": "Update payment details",
     "upgrade_plan_success": "You've successfully changed the subscription plan. You can enjoy your additional benefits immediately.",
     "weekly_subscription": "Weekly subscription"
-  },
-  "profile": {
-    "adult": "Adult",
-    "avatar": "Avatar",
-    "content_rating": "Content rating",
-    "delete": "Delete profile",
-    "delete_confirmation": "Are you sure you want to delete your profile? You will lose all you watch history and settings connected to this profile.",
-    "delete_description": "Permanently delete your profile along with all of your watch history and favorites.",
-    "delete_main": "The main profile cannot be deleted because it’s linked to your account's watch history and favorites.",
-    "description": "Profiles allow you to watch content and assemble your own personal collection of favorites.",
-    "edit": "Edit profile",
-    "form_error": "Something went wrong. Please try again later.",
-    "info": "Profile info",
-    "kids": "Kids",
-    "name": "User name",
-    "validation": {
-      "name": {
-        "already_exists": "This profile name is already taken. Please choose another one.",
-        "invalid_characters": "Your profile name can only contain letters",
-        "required": "Please enter a name for your profile.",
-        "too_long": "Please limit your profile name to {{charactersCount}} characters or fewer.",
-        "too_short": "Please enter at least {{charactersCount}} characters."
-      }
-    }
   }
 }

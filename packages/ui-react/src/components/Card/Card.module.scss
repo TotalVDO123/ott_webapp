@@ -29,13 +29,12 @@
 
   &.featured {
     .title {
+      display: inline-block;
       height: variables.$base-line-height;
       padding-right: 8px;
       font-family: var(--body-font-family);
       font-size: 34px;
-      line-height: variables.$base-line-height;
       white-space: nowrap;
-      text-overflow: ellipsis;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75);
 
       @include responsive.mobile-only {
@@ -103,12 +102,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
-
-    &.visible {
-      opacity: 1;
-    }
   }
 }
 
@@ -145,6 +138,7 @@ $aspects: ((1, 1), (2, 1), (2, 3), (4, 3), (5, 3), (16, 9), (9, 16), (9, 13));
 }
 
 .title {
+  display: -webkit-box;
   height: calc(variables.$base-line-height * 2);
   overflow: hidden;
   color: var(--card-color);
@@ -153,7 +147,10 @@ $aspects: ((1, 1), (2, 1), (2, 3), (4, 3), (5, 3), (16, 9), (9, 16), (9, 13));
   font-size: 1em;
   line-height: variables.$base-line-height;
   text-align: left;
+  text-overflow: ellipsis;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 3px 4px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 
   &.loading {
     &::before {
