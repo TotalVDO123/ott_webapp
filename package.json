@@ -34,7 +34,7 @@
     "test": "TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
     "test-watch": "TZ=UTC LC_ALL=en_US.UTF-8 vitest",
     "web": "yarn --cwd platforms/web",
-    "passport-bridge": "yarn --cwd platforms/passport-bridge"
+    "access-bridge": "yarn --cwd platforms/access-bridge"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",
