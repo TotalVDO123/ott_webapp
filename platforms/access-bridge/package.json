@@ -11,12 +11,9 @@
     "prestart": "yarn build",
     "pretest": "yarn build",
     "test": "node --test",
-    "lint:ts": "tsc --pretty --noEmit -p ./",
-    "clean": "npx jw-fet clean",
-    "format": "npx jw-fet format"
+    "lint:ts": "tsc --pretty --noEmit -p ./"
   },
   "devDependencies": {
-    "@jwplayer/fet": "^8.5.1",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.14.10",
     "eslint-config-jwp": "*",

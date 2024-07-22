@@ -26,6 +26,7 @@ export class PlansService {
   /**
    * Retrieves access control plans for a specific site ID.
    * @param siteId The site id (property id) for which to fetch plans.
+   * @param authorization The Bearer token used to authenticate the request.
    * @returns A Promise resolving to an array of AccessControlPlan objects.
    * @throws Error if there is an issue fetching plans or parsing the response.
    */
