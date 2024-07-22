@@ -7,6 +7,6 @@ module.exports = {
   env: {
     node: true, // Enables recognition of Node.js global variables and scoping rules
   },
-  ignorePatterns: ['out'],
+  ignorePatterns: ['build'],
 };
 

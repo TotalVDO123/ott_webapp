@@ -1,11 +1,13 @@
 {
-  "name": "access-bridge",
+  "name": "@jwp/access-bridge",
   "version": "1.0.0",
-  "main": "out/main.js",
+  "main": "build/main.js",
+  "private": true,
+  "author": "JW Player",
   "type": "module",
   "scripts": {
-    "build": "tsc && [ -f .env ] && cp .env ./out/.env || true && [ -f .env.local ] && cp .env.local ./out/.env.local || true",
-    "start": "node out/src/main.js",
+    "build": "tsc && [ -f .env ] && cp .env ./build/.env || true && [ -f .env.local ] && cp .env.local ./build/.env.local || true",
+    "start": "node build/src/main.js",
     "prestart": "yarn build",
     "pretest": "yarn build",
     "test": "node --test",
