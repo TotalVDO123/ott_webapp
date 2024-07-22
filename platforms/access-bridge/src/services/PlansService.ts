@@ -1,5 +1,6 @@
 import { PLANS_CLIENT } from '../appConfig.js';
-import { BadRequestError, ForbiddenError, NotFoundError, isJWError } from '../errors.js';
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
+import { get } from '../http.js';
 
 export type AccessControlPlan = {
   id: string;
@@ -28,30 +29,32 @@ export class PlansService {
    * @returns A Promise resolving to an array of AccessControlPlan objects.
    * @throws Error if there is an issue fetching plans or parsing the response.
    */
-  async getAccessControlPlans(siteId: string): Promise<AccessControlPlan[]> {
+  async getAccessControlPlans(siteId: string, authorization: string): Promise<AccessControlPlan[]> {
     try {
-      const response = await fetch(`${this.plansClient}/v3/sites/${siteId}/entitlements`);
-
-      if (!response.ok) {
-        throw new Error(`Error fetching plans: ${response.statusText}`);
-      }
-
-      const result: PlansResponse = await response.json();
-      if (!result?.access_plan || result.access_plan.length === 0) {
+      const plans = await get<PlansResponse>(`${this.plansClient}/v3/sites/${siteId}/entitlements`, authorization);
+      if (!plans?.access_plan || plans.access_plan.length === 0) {
         return [];
       }
 
-      const accessControlPlans: AccessControlPlan[] = result.access_plan.map((plan) => ({
+      const accessControlPlans: AccessControlPlan[] = plans.access_plan.map((plan) => ({
         id: plan.id,
         exp: plan.exp,
       }));
 
       return accessControlPlans;
     } catch (e) {
+      // @ts-ignore
+      // This will be removed once SIMS team addresses the error format for the case
+      if (e.message.includes('signature is invalid')) {
+        throw new UnauthorizedError({});
+      }
+
       if (isJWError(e)) {
         const error = e.errors[0];
         // Possible error scenarios coming from SIMS
         switch (error.code) {
+          case 'unauthorized':
+            throw new UnauthorizedError({ description: error.description });
           case 'forbidden':
             throw new ForbiddenError({ description: error.description });
           case 'not_found':

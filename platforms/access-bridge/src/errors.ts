@@ -10,6 +10,7 @@ enum ErrorCode {
   BadRequestError = 'bad_request',
   ParameterMissing = 'parameter_missing',
   ParameterInvalid = 'parameter_invalid',
+  Unauthorized = 'unauthorized',
   Forbidden = 'forbidden',
   NotFound = 'not_found',
   MethodNotAllowed = 'method_not_allowed',
@@ -28,12 +29,12 @@ type JWErrorResponse = {
 /**
  * Allowed response status codes.
  */
-export type ErrorStatusCode = 400 | 403 | 404 | 405 | 500;
+export type ErrorStatusCode = 400 | 401 | 403 | 404 | 405 | 500;
 
 /**
  * Base class for errors.
  */
-export abstract class PassportBridgeError {
+export abstract class AccessBridgeError {
   private readonly descriptionOverride: string | null;
 
   protected constructor(description?: string) {
@@ -63,8 +64,8 @@ function createError<T>(
   statusCode: ErrorStatusCode,
   defaultDescriptionFactory: (context: T) => string,
   headersFactory: (context: T) => Iterable<[string, string]> = () => []
-): new (context: T & { description?: string }) => PassportBridgeError {
-  return class extends PassportBridgeError {
+): new (context: T & { description?: string }) => AccessBridgeError {
+  return class extends AccessBridgeError {
     private readonly context: T;
 
     constructor(context: T & { description?: string }) {
@@ -97,7 +98,7 @@ function createError<T>(
  * @param error - The error to send.
  * @param errors - Any other errors to send. Their status code must match error's.
  */
-export function sendErrors(res: ServerResponse, error: PassportBridgeError, ...errors: PassportBridgeError[]) {
+export function sendErrors(res: ServerResponse, error: AccessBridgeError, ...errors: AccessBridgeError[]) {
   // All errors must share the same error code
   const statusCode = error.statusCode;
   if (errors.find((e) => e.statusCode !== statusCode)) {
@@ -149,6 +150,8 @@ export const ForbiddenError = createError(
   403,
   () => 'Access to the requested resource is not allowed.'
 );
+
+export const UnauthorizedError = createError(ErrorCode.Unauthorized, 401, () => 'Missing or invalid auth credentials.');
 
 export const NotFoundError = createError(ErrorCode.NotFound, 404, () => 'The requested resource could not be found.');
 

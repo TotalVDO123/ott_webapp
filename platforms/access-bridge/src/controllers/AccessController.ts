@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { ParameterInvalidError, PassportBridgeError, sendErrors } from '../errors.js';
+import { ParameterInvalidError, AccessBridgeError, sendErrors, UnauthorizedError } from '../errors.js';
 import { AccessService } from '../services/AccessService.js';
 import { PlansService } from '../services/PlansService.js';
 import { isValidSiteId, parseJsonBody } from '../utils.js';
@@ -30,7 +30,14 @@ export class AccessController {
         return;
       }
 
-      const accessControlPlans = await this.plansService.getAccessControlPlans(params.site_id);
+      // Get the authorization header
+      const authorization = req.headers['authorization'];
+      if (!authorization) {
+        sendErrors(res, new UnauthorizedError({}));
+        return;
+      }
+
+      const accessControlPlans = await this.plansService.getAccessControlPlans(params.site_id, authorization);
       console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
       // mocked until data for ac plans is added
@@ -44,7 +51,7 @@ export class AccessController {
       const response = await this.accessService.generateAccessTokens(params.site_id, 'test@email.com', plans);
       res.end(JSON.stringify(response));
     } catch (error) {
-      if (error instanceof PassportBridgeError) {
+      if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
@@ -75,7 +82,7 @@ export class AccessController {
       const response = await this.accessService.refreshAccessTokens(params.site_id, refreshToken);
       res.end(JSON.stringify(response));
     } catch (error) {
-      if (error instanceof PassportBridgeError) {
+      if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }

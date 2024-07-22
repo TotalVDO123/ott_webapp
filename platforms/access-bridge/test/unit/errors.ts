@@ -9,6 +9,7 @@ import {
   NotFoundError,
   ParameterInvalidError,
   ParameterMissingError,
+  UnauthorizedError,
 } from '../../src/errors.js';
 
 describe('Error Classes', () => {
@@ -38,6 +39,13 @@ describe('Error Classes', () => {
     assert.strictEqual(error.code, 'forbidden');
     assert.strictEqual(error.statusCode, 403);
     assert.strictEqual(error.description, 'Access to the requested resource is not allowed.');
+  });
+
+  test('should create UnauthorizedError correctly', () => {
+    const error = new UnauthorizedError({});
+    assert.strictEqual(error.code, 'unauthorized');
+    assert.strictEqual(error.statusCode, 401);
+    assert.strictEqual(error.description, 'Missing or invalid auth credentials.');
   });
 
   test('should create NotFoundError correctly', () => {

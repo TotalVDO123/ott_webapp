@@ -1,7 +1,7 @@
 import { Server as HTTPServer, IncomingMessage, ServerResponse, createServer } from 'http';
 
 import { EndpointHandler } from './endpoints.js';
-import { InternalError, MethodNotAllowedError, NotFoundError, PassportBridgeError, sendErrors } from './errors.js';
+import { InternalError, MethodNotAllowedError, NotFoundError, AccessBridgeError, sendErrors } from './errors.js';
 import { ALLOWED_REQUEST_METHODS, RequestMethod } from './http.js';
 
 export class Server {
@@ -57,7 +57,7 @@ export class Server {
     try {
       await this.validateRequest(req, res);
     } catch (e) {
-      if (e instanceof PassportBridgeError) {
+      if (e instanceof AccessBridgeError) {
         return sendErrors(res, e);
       }
       sendErrors(res, new InternalError({}));

@@ -16,7 +16,7 @@ export async function get<T>(url: string, token?: string): Promise<T> {
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = token;
   }
 
   const response = await fetch(url, {
@@ -40,7 +40,7 @@ export async function post<T, U>(url: string, body: U, token?: string): Promise<
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = token;
   }
 
   const response = await fetch(url, {
@@ -65,7 +65,7 @@ export async function put<T, U>(url: string, body: U, token?: string): Promise<T
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = token;
   }
 
   const response = await fetch(url, {
