@@ -26,32 +26,15 @@
 .inlinePlayerMetadata {
   display: flex;
   align-items: center;
+  gap: variables.$base-spacing;
   margin-bottom: variables.$base-spacing;
   padding-bottom: variables.$base-spacing;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 
-  > button {
-    min-width: fit-content;
-    margin-left: 8px;
-  }
-
   @include responsive.mobile-and-small-tablet() {
     flex-wrap: wrap;
+    padding-bottom: 0;
     border-bottom: 0;
-    > button:nth-last-child(3) {
-      flex: 1 1 100%;
-      margin: 0 0 8px 0;
-    }
-
-    > button:nth-last-child(2) {
-      flex: 0 0 calc(50% - 4px);
-      margin: 0 4px 0 0;
-    }
-
-    > button:nth-last-child(1) {
-      flex: 0 0 calc(50% - 4px);
-      margin: 0 0 0 4px;
-    }
   }
 }
 
@@ -80,16 +63,26 @@ div.title {
   letter-spacing: 0.15px;
 }
 
-.secondaryMetadata {
-  margin-top: 24px;
-  margin-bottom: 8px;
-  font-size: 20px;
-  line-height: variables.$base-line-height;
-  letter-spacing: 0.5px;
+.buttonBar {
+  display: flex;
+  gap: calc(variables.$base-spacing / 2);
+  flex: 1;
 
-  @include responsive.mobile-only() {
-    margin: 4px 0;
-    font-size: 18px;
+  > button {
+    white-space: nowrap;
+  }
+
+  @include responsive.mobile-and-small-tablet() {
+    flex-wrap: wrap;
+
+    > button:nth-last-child(3) {
+      flex-basis: 100%;
+    }
+
+    > button:nth-last-child(2),
+    > button:nth-last-child(1) {
+      flex: 1;
+    }
   }
 }
 

@@ -5,7 +5,7 @@ import type { Playlist, PlaylistItem } from '../../types/playlist';
 import type { EpgChannel } from '../../types/epg';
 import { RELATIVE_PATH_USER_ACCOUNT } from '../paths';
 
-import { createURL, liveChannelsURL, mediaURL, playlistURL, userProfileURL } from './urlFormatting';
+import { createURL, liveChannelsURL, mediaURL, playlistURL } from './urlFormatting';
 
 describe('createUrl', () => {
   test('valid url from a path, query params', () => {
@@ -53,19 +53,9 @@ describe('createPath, mediaURL, playlistURL and liveChannelsURL', () => {
 
     expect(url).toEqual('/p/dGSUzs9o/?channel=channel1&play=1');
   });
-  test('valid live channel path', () => {
-    const url = userProfileURL('testprofile123');
-
-    expect(url).toEqual('/u/my-profile/testprofile123');
-  });
   test('valid nested user path', () => {
     const url = RELATIVE_PATH_USER_ACCOUNT;
 
     expect(url).toEqual('my-account');
-  });
-  test('valid nested user profile path', () => {
-    const url = userProfileURL('testprofile123', true);
-
-    expect(url).toEqual('my-profile/testprofile123');
   });
 });

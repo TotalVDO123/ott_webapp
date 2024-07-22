@@ -14,9 +14,9 @@ export class LocalStorageService extends StorageService {
     return `${this.prefix}.${key}`;
   }
 
-  async getItem(key: string, parse: boolean) {
+  async getItem(key: string, parse: boolean, usePrefix = true) {
     try {
-      const value = window.localStorage.getItem(this.getStorageKey(key));
+      const value = window.localStorage.getItem(usePrefix ? this.getStorageKey(key) : key);
 
       return value && parse ? JSON.parse(value) : value;
     } catch (error: unknown) {

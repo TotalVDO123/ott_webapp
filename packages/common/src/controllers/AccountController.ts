@@ -21,12 +21,10 @@ import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
 import { useAccountStore } from '../stores/AccountStore';
 import { useConfigStore } from '../stores/ConfigStore';
-import { useProfileStore } from '../stores/ProfileStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { logError } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
-import ProfileController from './ProfileController';
 import FavoritesController from './FavoritesController';
 
 @injectable()
@@ -34,7 +32,6 @@ export default class AccountController {
   private readonly checkoutService: CheckoutService;
   private readonly accountService: AccountService;
   private readonly subscriptionService: SubscriptionService;
-  private readonly profileController: ProfileController;
   private readonly favoritesController: FavoritesController;
   private readonly watchHistoryController: WatchHistoryController;
   private readonly features: AccountServiceFeatures;
@@ -46,7 +43,6 @@ export default class AccountController {
     @inject(INTEGRATION_TYPE) integrationType: IntegrationType,
     favoritesController: FavoritesController,
     watchHistoryController: WatchHistoryController,
-    profileController: ProfileController,
   ) {
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.accountService = getNamedModule(AccountService, integrationType);
@@ -55,7 +51,6 @@ export default class AccountController {
     // @TODO: Controllers shouldn't be depending on other controllers, but we've agreed to keep this as is for now
     this.favoritesController = favoritesController;
     this.watchHistoryController = watchHistoryController;
-    this.profileController = profileController;
 
     this.features = integrationType ? this.accountService.features : DEFAULT_FEATURES;
   }
@@ -84,7 +79,6 @@ export default class AccountController {
     useAccountStore.setState({ loading: true });
     const config = useConfigStore.getState().config;
 
-    await this.profileController?.loadPersistedProfile();
     await this.accountService.initialize(config, url, this.logout);
 
     // set the accessModel before restoring the user session
@@ -552,13 +546,6 @@ export default class AccountController {
       publisherConsents: null,
       loading: false,
     });
-
-    useProfileStore.setState({
-      profile: null,
-      selectingProfileAvatar: null,
-    });
-
-    this.profileController.unpersistProfile();
 
     await this.favoritesController.restoreFavorites();
     await this.watchHistoryController.restoreWatchHistory();

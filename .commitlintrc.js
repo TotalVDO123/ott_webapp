@@ -31,6 +31,7 @@ module.exports = {
         'tests',
         'i18n',
         'a11y',
+        'integrations',
       ],
     ],
   },
