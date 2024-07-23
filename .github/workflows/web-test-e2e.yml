@@ -2,12 +2,8 @@ name: Web - Test - End to End
 
 on:
   pull_request:
-    paths-ignore:
-      - 'platforms/access-bridge/**'
   push:
     branches: ['develop', 'release']
-    paths-ignore:
-      - 'platforms/access-bridge/**'
   schedule:
     - cron: '30 3 * * 1-5'
   workflow_dispatch:

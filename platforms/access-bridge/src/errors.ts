@@ -1,5 +1,7 @@
 import { ServerResponse } from 'node:http';
 
+import { JWError, JWErrorResponse } from '@jwp/ott-common/types/errors.js';
+
 import { RequestMethod } from './http.js';
 
 /**
@@ -16,15 +18,6 @@ enum ErrorCode {
   MethodNotAllowed = 'method_not_allowed',
   InternalError = 'internal_error',
 }
-
-type JWError = {
-  code: string;
-  description: string;
-};
-
-type JWErrorResponse = {
-  errors: JWError[];
-};
 
 /**
  * Allowed response status codes.

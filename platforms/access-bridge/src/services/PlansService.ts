@@ -1,17 +1,8 @@
+import { AccessControlPlan, PlansResponse } from '@jwp/ott-common/types/plans.js';
+
 import { PLANS_CLIENT } from '../appConfig.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
-
-export type AccessControlPlan = {
-  id: string;
-  exp: number;
-};
-
-type PlansResponse = {
-  name: string;
-  access_model: 'free' | 'freeauth' | 'svod';
-  access_plan: AccessControlPlan[];
-};
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
