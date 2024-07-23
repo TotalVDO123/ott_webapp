@@ -32,6 +32,7 @@ function requireEnvVar(env: string | undefined, name: string): string {
 
 // Customer secret resonsible for authenticating requests
 export const API_SECRET = requireEnvVar(process.env.API_SECRET, 'API_SECRET');
+export const STRIPE_SECRET = requireEnvVar(process.env.STRIPE_SECRET, 'STRIPE_SECRET');
 
 // BIND_ADDR specifies the network address or IP address on which the server listens for incoming connections.
 // This could be an IP address (e.g., '127.0.0.1' for localhost) or a hostname.
