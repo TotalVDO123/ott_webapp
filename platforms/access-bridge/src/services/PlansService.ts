@@ -37,10 +37,9 @@ export class PlansService {
     } catch (e) {
       // @ts-ignore
       // This will be removed once SIMS team addresses the error format for the case
-      if (e.message.includes('signature is invalid')) {
+      if (e.code === 401) {
         throw new UnauthorizedError({});
       }
-
       if (isJWError(e)) {
         const error = e.errors[0];
         // Possible error scenarios coming from SIMS

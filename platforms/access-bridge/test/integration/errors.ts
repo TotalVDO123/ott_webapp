@@ -17,7 +17,7 @@ describe('sendErrors', async () => {
         },
       },
       '/testMultipleErrors': {
-        POST: async (req: IncomingMessage, res: ServerResponse) => {
+        PUT: async (req: IncomingMessage, res: ServerResponse) => {
           const error1 = new BadRequestError({});
           const error2 = new ParameterMissingError({ parameterName: 'apiKey' });
           sendErrors(res, error1, error2);
@@ -52,7 +52,7 @@ describe('sendErrors', async () => {
 
   await test('should send BadRequestError and ParameterMissingError', (t, done) => {
     const requestOptions = {
-      method: 'POST',
+      method: 'PUT',
       path: '/testMultipleErrors',
     };
 
