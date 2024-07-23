@@ -56,11 +56,11 @@ describe('Error Classes', () => {
   });
 
   test('should create MethodNotAllowedError correctly', () => {
-    const error = new MethodNotAllowedError({ allowedMethods: ['GET', 'POST'] });
+    const error = new MethodNotAllowedError({ allowedMethods: ['GET', 'PUT'] });
     assert.strictEqual(error.code, 'method_not_allowed');
     assert.strictEqual(error.statusCode, 405);
-    assert.strictEqual(error.description, 'The requested resource only supports GET, POST requests.');
-    assert.deepStrictEqual(error.headers, [['Allow', 'GET, POST']]);
+    assert.strictEqual(error.description, 'The requested resource only supports GET, PUT requests.');
+    assert.deepStrictEqual(error.headers, [['Allow', 'GET, PUT']]);
   });
 
   test('should create InternalError correctly', () => {
