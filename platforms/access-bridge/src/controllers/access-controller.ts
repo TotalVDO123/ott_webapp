@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
-import { AccessService } from '../services/AccessService.js';
-import { PlansService } from '../services/PlansService.js';
+import { AccessService } from '../services/access-service.js';
+import { PlansService } from '../services/plans-service.js';
 import { isValidSiteId, parseJsonBody } from '../utils.js';
 
 /**

@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-import { AccessController } from './controllers/AccessController.js';
+import { AccessController } from './controllers/access-controller.js';
 
 export type EndpointHandler = {
   [path: string]: {

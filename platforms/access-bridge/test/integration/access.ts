@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
-import { AccessController } from '../../src/controllers/AccessController.js';
+import { AccessController } from '../../src/controllers/access-controller.js';
 import { MockServer } from '../mockServer.js';
-import { AccessService, RefreshAccessTokensParams } from '../../src/services/AccessService.js';
-import { AccessControlPlansParams, PlansService } from '../../src/services/PlansService.js';
+import { AccessService, RefreshAccessTokensParams } from '../../src/services/access-service.js';
+import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
 import { ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
 
 // Mock AccessService
