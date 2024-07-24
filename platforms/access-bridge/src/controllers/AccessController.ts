@@ -30,10 +30,11 @@ export class AccessController {
         return;
       }
 
-      // Get the authorization header
-      const authorization = req.headers['authorization'];
-
-      const accessControlPlans = await this.plansService.getEntitledAccessControlPlans(params.site_id, authorization);
+      const accessControlPlans = await this.plansService.getAccessControlPlans({
+        siteId: params.site_id,
+        endpointType: 'entitlements',
+        authorization: req.headers['authorization'],
+      });
       console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
       // mocked until data for ac plans is added
@@ -44,8 +45,13 @@ export class AccessController {
         },
       ];
 
-      const response = await this.accessService.generateAccessTokens(params.site_id, 'test@email.com', plans);
-      res.end(JSON.stringify(response));
+      const accessTokens = await this.accessService.generateAccessTokens({
+        siteId: params.site_id,
+        viewerId: 'viewer123',
+        plans,
+      });
+
+      res.end(JSON.stringify(accessTokens));
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
@@ -75,8 +81,9 @@ export class AccessController {
         return;
       }
 
-      const response = await this.accessService.refreshAccessTokens(params.site_id, refreshToken);
-      res.end(JSON.stringify(response));
+      const accessTokens = await this.accessService.refreshAccessTokens({ siteId: params.site_id, refreshToken });
+
+      res.end(JSON.stringify(accessTokens));
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
