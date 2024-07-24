@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { ParameterInvalidError, AccessBridgeError, sendErrors, UnauthorizedError } from '../errors.js';
+import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
 import { AccessService } from '../services/AccessService.js';
 import { PlansService } from '../services/PlansService.js';
 import { isValidSiteId, parseJsonBody } from '../utils.js';
@@ -32,12 +32,8 @@ export class AccessController {
 
       // Get the authorization header
       const authorization = req.headers['authorization'];
-      if (!authorization) {
-        sendErrors(res, new UnauthorizedError({}));
-        return;
-      }
 
-      const accessControlPlans = await this.plansService.getAccessControlPlans(params.site_id, authorization);
+      const accessControlPlans = await this.plansService.getEntitledAccessControlPlans(params.site_id, authorization);
       console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
       // mocked until data for ac plans is added

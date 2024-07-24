@@ -15,13 +15,14 @@ export class PlansService {
   }
 
   /**
-   * Retrieves access control plans for a specific site ID.
+   * Retrieves access control plans that the viewer is entitled for.
+   * If no authorization is provided, only free (if any) plans will be considered.
    * @param siteId The site id (property id) for which to fetch plans.
-   * @param authorization The Bearer token used to authenticate the request.
+   * @param authorization The Bearer token used to authenticate the viewer and their entitlements.
    * @returns A Promise resolving to an array of AccessControlPlan objects.
    * @throws Error if there is an issue fetching plans or parsing the response.
    */
-  async getAccessControlPlans(siteId: string, authorization: string): Promise<AccessControlPlan[]> {
+  async getEntitledAccessControlPlans(siteId: string, authorization: string | undefined): Promise<AccessControlPlan[]> {
     try {
       const plans = await get<PlansResponse>(`${this.plansClient}/v3/sites/${siteId}/entitlements`, authorization);
       if (!plans?.access_plan || plans.access_plan.length === 0) {
