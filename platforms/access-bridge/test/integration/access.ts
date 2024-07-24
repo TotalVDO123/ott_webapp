@@ -23,10 +23,16 @@ class MockAccessService extends AccessService {
 
 // Mock PlansService
 class MockPlansService extends PlansService {
-  async getAccessControlPlans(siteId: string, authorization: string) {
+  async getEntitledAccessControlPlans(siteId: string, authorization: string) {
+    if (!authorization) {
+      // mock the real scenario -> if no auth, only free plans available
+      return [{ id: 'free1234', exp: 1921396650 }];
+    }
+
     if (authorization !== 'Bearer valid-authorization') {
       throw new UnauthorizedError({});
     }
+
     return [{ id: 'plan1234', exp: 1921396650 }];
   }
 }
@@ -51,6 +57,29 @@ describe('AccessController passport generate/refresh tests', async () => {
     };
 
     mockServer = await MockServer.create(endpoints);
+  });
+
+  await test('should generate passport access tokens without authorization', (t, done) => {
+    const requestOptions = {
+      method: 'PUT',
+      path: '/v2/sites/test1234/access/generate', // valid site_id format
+    };
+
+    mockServer
+      .request(requestOptions, (res) => {
+        assert.strictEqual(res.statusCode, 200);
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const responseBody = JSON.parse(body);
+          assert.strictEqual(responseBody.passport, 'mock-passport');
+          assert.strictEqual(responseBody.refresh_token, 'mock-refresh-token');
+          done();
+        });
+      })
+      .end();
   });
 
   await test('should generate passport access tokens', (t, done) => {
