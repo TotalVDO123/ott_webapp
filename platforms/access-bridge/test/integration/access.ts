@@ -3,8 +3,8 @@ import { describe, test, before, after } from 'node:test';
 
 import { AccessController } from '../../src/controllers/AccessController.js';
 import { MockServer } from '../mockServer.js';
-import { AccessService } from '../../src/services/AccessService.js';
-import { PlansService } from '../../src/services/PlansService.js';
+import { AccessService, RefreshAccessTokensParams } from '../../src/services/AccessService.js';
+import { AccessControlPlansParams, PlansService } from '../../src/services/PlansService.js';
 import { ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
 
 // Mock AccessService
@@ -13,7 +13,7 @@ class MockAccessService extends AccessService {
     return { passport: 'mock-passport', refresh_token: 'mock-refresh-token' };
   }
 
-  async refreshAccessTokens(siteId: string, refreshToken: string) {
+  async refreshAccessTokens({ siteId, refreshToken }: RefreshAccessTokensParams) {
     if (refreshToken !== 'valid-refresh-token') {
       throw new ParameterInvalidError({ parameterName: 'refresh_token' });
     }
@@ -23,7 +23,7 @@ class MockAccessService extends AccessService {
 
 // Mock PlansService
 class MockPlansService extends PlansService {
-  async getEntitledAccessControlPlans(siteId: string, authorization: string) {
+  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
     if (!authorization) {
       // mock the real scenario -> if no auth, only free plans available
       return [{ id: 'free1234', exp: 1921396650 }];

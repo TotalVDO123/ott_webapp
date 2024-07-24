@@ -6,6 +6,17 @@ import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../appConfig.js';
 import { BadRequestError, ForbiddenError, NotFoundError, ParameterInvalidError, isJWError } from '../errors.js';
 import { put } from '../http.js';
 
+export interface GenerateAccessTokensParams {
+  siteId: string;
+  viewerId: string;
+  plans: AccessControlPlan[];
+}
+
+export interface RefreshAccessTokensParams {
+  siteId: string;
+  refreshToken: string;
+}
+
 /**
  * AccessService handles interactions with the access management APIs.
  * It provides methods to generate and refresh access tokens.
@@ -28,12 +39,12 @@ export class AccessService {
    * @throws ForbiddenError if the request is not properly authenticated.
    * @throws BadRequestError for other validation error scenarios.
    */
-  async generateAccessTokens(siteId: string, email: string, plans: AccessControlPlan[]): Promise<AccessTokensResponse> {
+  async generateAccessTokens({ siteId, viewerId, plans }: GenerateAccessTokensParams): Promise<AccessTokensResponse> {
     try {
       const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/generate`);
       const payload = {
         subscriber_info: {
-          email,
+          email: viewerId,
           plans,
         },
       };
@@ -65,7 +76,7 @@ export class AccessService {
    * @throws NotFoundError if the requested resource is not found.
    * @throws BadRequestError for other validation error scenarios.
    */
-  async refreshAccessTokens(siteId: string, refreshToken: string): Promise<AccessTokensResponse> {
+  async refreshAccessTokens({ siteId, refreshToken }: RefreshAccessTokensParams): Promise<AccessTokensResponse> {
     try {
       const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/refresh`);
       const payload = {

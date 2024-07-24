@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { PlansService } from '../services/PlansService.js';
 import { StripeService } from '../services/StripeService.js';
-import { ParameterInvalidError, AccessBridgeError, UnauthorizedError, sendErrors } from '../errors.js';
+import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
 import { STRIPE_SECRET } from '../appConfig.js';
 
@@ -31,14 +31,11 @@ export class StripeController {
         return;
       }
 
-      // Get the authorization header
-      const authorization = req.headers['authorization'];
-      if (!authorization) {
-        sendErrors(res, new UnauthorizedError({}));
-        return;
-      }
-
-      const accessControlPlans = await this.plansService.getAccessControlPlans(params.site_id, authorization);
+      const accessControlPlans = await this.plansService.getAccessControlPlans({
+        siteId: params.site_id,
+        endpointType: 'plans',
+        authorization: req.headers['authorization'],
+      });
       console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
       // mocked until data for ac plans is added

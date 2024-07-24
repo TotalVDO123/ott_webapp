@@ -4,6 +4,12 @@ import { PLANS_CLIENT } from '../appConfig.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
 
+export interface AccessControlPlansParams {
+  siteId: string;
+  endpointType: 'plans' | 'entitlements';
+  authorization?: string;
+}
+
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
  */
@@ -15,16 +21,30 @@ export class PlansService {
   }
 
   /**
-   * Retrieves access control plans that the viewer is entitled for.
-   * If no authorization is provided, only free (if any) plans will be considered.
-   * @param siteId The site id (property id) for which to fetch plans.
+   * Retrieves access control plans based on the specified endpoint type.
+   *
+   * Depending on the `endpointType` parameter, this function either:
+   * - Fetches all access control plans created by the customer (when `endpointType` is 'plans'), or
+   * - Fetches access control plans that the viewer is entitled to (when `endpointType` is 'entitlements').
+   *
+   * If no authorization token is provided, only free plans (if any) will be considered.
+   *
+   * @param siteId The site ID (property ID) for which to fetch plans.
+   * @param endpointType Specifies the type of endpoint to call:
+   *  - 'plans': Retrieves all access control plans created by the customer.
+   *  - 'entitlements': Retrieves access control plans that the viewer is entitled to.
    * @param authorization The Bearer token used to authenticate the viewer and their entitlements.
-   * @returns A Promise resolving to an array of AccessControlPlan objects.
+   * This parameter can be undefined if only free plans are to be fetched.
+   * @returns A Promise that resolves to an array of AccessControlPlan objects.
    * @throws Error if there is an issue fetching plans or parsing the response.
    */
-  async getEntitledAccessControlPlans(siteId: string, authorization: string | undefined): Promise<AccessControlPlan[]> {
+  async getAccessControlPlans({
+    siteId,
+    endpointType,
+    authorization,
+  }: AccessControlPlansParams): Promise<AccessControlPlan[]> {
     try {
-      const plans = await get<PlansResponse>(`${this.plansClient}/v3/sites/${siteId}/entitlements`, authorization);
+      const plans = await get<PlansResponse>(`${this.plansClient}/v3/sites/${siteId}/${endpointType}`, authorization);
       if (!plans?.access_plan || plans.access_plan.length === 0) {
         return [];
       }
