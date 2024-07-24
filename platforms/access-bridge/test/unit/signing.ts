@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { describe, test } from 'node:test';
 
-import { AccessService } from '../../src/services/AccessService.js';
+import { AccessService } from '../../src/services/access-service.js';
 
 describe('AccessService generateSignedUrl test', () => {
   const service = new AccessService();

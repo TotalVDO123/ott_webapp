@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-import { AccessController } from './controllers/AccessController.js';
-import { StripeController } from './controllers/StripeController.js';
+import { AccessController } from './controllers/access-controller.js';
+import { ProductsController } from './controllers/products-controller.js';
 
 export type EndpointHandler = {
   [path: string]: {
@@ -10,7 +10,7 @@ export type EndpointHandler = {
 };
 
 const accessController = new AccessController();
-const stripeController = new StripeController();
+const productsController = new ProductsController();
 
 export const endpoints: EndpointHandler = {
   '/v2/sites/:site_id/access/generate': {
@@ -20,6 +20,6 @@ export const endpoints: EndpointHandler = {
     PUT: accessController.refreshPassport,
   },
   '/v2/sites/:site_id/products': {
-    GET: stripeController.getStripeProducts,
+    GET: productsController.getStripeProducts,
   },
 };

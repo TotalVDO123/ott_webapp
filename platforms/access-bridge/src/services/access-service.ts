@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { AccessTokensResponse } from '@jwp/ott-common/types/access.js';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
-import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../appConfig.js';
+import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, ParameterInvalidError, isJWError } from '../errors.js';
 import { put } from '../http.js';
 

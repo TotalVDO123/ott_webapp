@@ -1,15 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { PlansService } from '../services/PlansService.js';
-import { StripeService } from '../services/StripeService.js';
+import { PlansService } from '../services/plans-service.js';
+import { StripeService } from '../services/stripe-service.js';
 import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
-import { STRIPE_SECRET } from '../appConfig.js';
+import { STRIPE_SECRET } from '../app-config.js';
 
 /**
  * Controller class responsible for handling Stripe-related services.
  */
-export class StripeController {
+export class ProductsController {
   private plansService: PlansService;
   private stripeService: StripeService;
 

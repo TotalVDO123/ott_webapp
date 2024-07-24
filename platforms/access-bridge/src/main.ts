@@ -1,4 +1,4 @@
-import { BIND_ADDR, BIND_PORT } from './appConfig.js';
+import { BIND_ADDR, BIND_PORT } from './app-config.js';
 import { endpoints } from './endpoints.js';
 import { Server } from './server.js';
 
