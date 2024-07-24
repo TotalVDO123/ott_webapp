@@ -2,22 +2,23 @@ import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
 import { AccessController } from '../../src/controllers/access-controller.js';
-import { MockServer } from '../mockServer.js';
+import { MockServer } from '../mock-server.js';
 import { AccessService, RefreshAccessTokensParams } from '../../src/services/access-service.js';
 import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
 import { ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
+import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, PLANS, SITE_ID } from '../fixtures.js';
 
 // Mock AccessService
 class MockAccessService extends AccessService {
   async generateAccessTokens() {
-    return { passport: 'mock-passport', refresh_token: 'mock-refresh-token' };
+    return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
   }
 
   async refreshAccessTokens({ siteId, refreshToken }: RefreshAccessTokensParams) {
-    if (refreshToken !== 'valid-refresh-token') {
+    if (refreshToken === ACCESS_TOKENS.REFRESH_TOKEN.INVALID) {
       throw new ParameterInvalidError({ parameterName: 'refresh_token' });
     }
-    return { passport: 'mock-passport', refresh_token: 'mock-refresh-token' };
+    return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
   }
 }
 
@@ -26,14 +27,14 @@ class MockPlansService extends PlansService {
   async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
     if (!authorization) {
       // mock the real scenario -> if no auth, only free plans available
-      return [{ id: 'free1234', exp: 1921396650 }];
+      return PLANS.FREE;
     }
 
-    if (authorization !== 'Bearer valid-authorization') {
+    if (authorization === AUTHORIZATION.INVALID) {
       throw new UnauthorizedError({});
     }
 
-    return [{ id: 'plan1234', exp: 1921396650 }];
+    return PLANS.VALID;
   }
 }
 
@@ -48,10 +49,10 @@ describe('AccessController passport generate/refresh tests', async () => {
     accessController['plansService'] = new MockPlansService();
 
     const endpoints = {
-      '/v2/sites/:site_id/access/generate': {
+      [ENDPOINTS.GENERATE_TOKENS]: {
         PUT: accessController.generatePassport,
       },
-      '/v2/sites/:site_id/access/refresh': {
+      [ENDPOINTS.REFRESH_TOKENS]: {
         PUT: accessController.refreshPassport,
       },
     };
@@ -62,7 +63,7 @@ describe('AccessController passport generate/refresh tests', async () => {
   await test('should generate passport access tokens without authorization', (t, done) => {
     const requestOptions = {
       method: 'PUT',
-      path: '/v2/sites/test1234/access/generate', // valid site_id format
+      path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
     };
 
     mockServer
@@ -74,8 +75,8 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.passport, 'mock-passport');
-          assert.strictEqual(responseBody.refresh_token, 'mock-refresh-token');
+          assert.strictEqual(responseBody.passport, ACCESS_TOKENS.PASSPORT.VALID);
+          assert.strictEqual(responseBody.refresh_token, ACCESS_TOKENS.REFRESH_TOKEN.VALID);
           done();
         });
       })
@@ -85,10 +86,10 @@ describe('AccessController passport generate/refresh tests', async () => {
   await test('should generate passport access tokens', (t, done) => {
     const requestOptions = {
       headers: {
-        Authorization: 'Bearer valid-authorization',
+        Authorization: AUTHORIZATION.VALID,
       },
       method: 'PUT',
-      path: '/v2/sites/test1234/access/generate', // valid site_id format
+      path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
     };
 
     mockServer
@@ -100,8 +101,8 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.passport, 'mock-passport');
-          assert.strictEqual(responseBody.refresh_token, 'mock-refresh-token');
+          assert.strictEqual(responseBody.passport, ACCESS_TOKENS.PASSPORT.VALID);
+          assert.strictEqual(responseBody.refresh_token, ACCESS_TOKENS.REFRESH_TOKEN.VALID);
           done();
         });
       })
@@ -111,10 +112,10 @@ describe('AccessController passport generate/refresh tests', async () => {
   await test('should return UnauthorizedError for invalid authorization token', (t, done) => {
     const requestOptions = {
       headers: {
-        Authorization: 'Bearer invalid-authorization',
+        Authorization: AUTHORIZATION.INVALID,
       },
       method: 'PUT',
-      path: '/v2/sites/test1234/access/generate',
+      path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
     };
 
     mockServer
@@ -136,10 +137,10 @@ describe('AccessController passport generate/refresh tests', async () => {
   await test('should return ParameterInvalidError for invalid site_id', (t, done) => {
     const requestOptions = {
       headers: {
-        Authorization: 'Bearer valid-authorization',
+        Authorization: AUTHORIZATION.VALID,
       },
       method: 'PUT',
-      path: '/v2/sites/invalid_site_id/access/generate', // invalid site_id format
+      path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.INVALID),
     };
 
     mockServer
@@ -160,12 +161,9 @@ describe('AccessController passport generate/refresh tests', async () => {
 
   await test('should refresh passport access tokens', (t, done) => {
     const requestOptions = {
-      headers: {
-        Authorization: 'Bearer valid-authorization',
-      },
       method: 'PUT',
-      path: '/v2/sites/test1234/access/refresh',
-      body: JSON.stringify({ refresh_token: 'valid-refresh-token' }),
+      path: ENDPOINTS.REFRESH_TOKENS.replace(':site_id', SITE_ID.VALID),
+      body: JSON.stringify({ refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID }),
     };
 
     mockServer
@@ -177,8 +175,8 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.passport, 'mock-passport');
-          assert.strictEqual(responseBody.refresh_token, 'mock-refresh-token');
+          assert.strictEqual(responseBody.passport, ACCESS_TOKENS.PASSPORT.VALID);
+          assert.strictEqual(responseBody.refresh_token, ACCESS_TOKENS.REFRESH_TOKEN.VALID);
           done();
         });
       })
@@ -187,12 +185,9 @@ describe('AccessController passport generate/refresh tests', async () => {
 
   await test('should return ParameterInvalidError for invalid refresh token', (t, done) => {
     const requestOptions = {
-      headers: {
-        Authorization: 'Bearer valid-authorization',
-      },
       method: 'PUT',
-      path: '/v2/sites/test1234/access/refresh',
-      body: JSON.stringify({ refresh_token: 'invalid-refresh-token' }),
+      path: ENDPOINTS.REFRESH_TOKENS.replace(':site_id', SITE_ID.VALID),
+      body: JSON.stringify({ refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.INVALID }),
     };
 
     mockServer

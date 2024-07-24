@@ -4,18 +4,19 @@ import { Socket } from 'node:net';
 import { describe, test } from 'node:test';
 
 import { isValidSiteId, parseJsonBody } from '../../src/utils.js';
+import { SITE_ID } from '../fixtures.js';
 
 describe('isValidSiteId', () => {
   test('should return true for valid site IDs', () => {
-    assert.strictEqual(isValidSiteId('abcd1234'), true);
-    assert.strictEqual(isValidSiteId('A1B2C3D4'), true);
+    assert.strictEqual(isValidSiteId(SITE_ID.VALID), true);
+    assert.strictEqual(isValidSiteId(SITE_ID.VALID_UPPER), true);
   });
 
   test('should return false for invalid site IDs', () => {
-    assert.strictEqual(isValidSiteId('abc123'), false); // Less than 8 characters
-    assert.strictEqual(isValidSiteId('abcd12345'), false); // More than 8 characters
-    assert.strictEqual(isValidSiteId('abcd123!'), false); // Special character
-    assert.strictEqual(isValidSiteId(''), false); // Empty string
+    assert.strictEqual(isValidSiteId(SITE_ID.SHORT), false); // Less than 8 characters
+    assert.strictEqual(isValidSiteId(SITE_ID.LONG), false); // More than 8 characters
+    assert.strictEqual(isValidSiteId(SITE_ID.SPECIAL), false); // Special character
+    assert.strictEqual(isValidSiteId(SITE_ID.EMPTY), false); // Empty string
   });
 });
 

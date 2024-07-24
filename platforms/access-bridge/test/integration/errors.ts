@@ -3,7 +3,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import test, { after, before, describe } from 'node:test';
 
 import { BadRequestError, ParameterMissingError, sendErrors } from '../../src/errors.js';
-import { MockServer } from '../mockServer.js';
+import { MockServer } from '../mock-server.js';
 
 describe('sendErrors', async () => {
   let mockServer: MockServer;
