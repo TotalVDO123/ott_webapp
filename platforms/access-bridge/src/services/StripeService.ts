@@ -2,7 +2,8 @@ import Stripe from 'stripe';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
 
-export type ProductsWithMetadata = Stripe.Product & {
+export type StripeProducts = Stripe.Product & {
+  prices: Stripe.Price[];
   metadata: {
     access_plan_id?: string;
   };
@@ -21,12 +22,12 @@ export class StripeService {
   }
 
   /**
-   * Retrieves Stripe products and filters them based on the available access_plan_ids.
+   * Retrieves Stripe products with prices and filters them based on the available access_plan_ids.
    * @param accessPlanIds The array of access plan IDs to filter the products.
    * @returns A Promise resolving to an array of filtered ProductsWithMetadata objects.
    * @throws Error if there is an issue fetching products or parsing the response.
    */
-  async getFilteredProducts(accessPlanIds: string[]): Promise<ProductsWithMetadata[]> {
+  async getStripeProductsWithPrices(accessPlanIds: string[]): Promise<StripeProducts[]> {
     try {
       const products = await this.stripe.products.list();
 
@@ -35,10 +36,24 @@ export class StripeService {
         accessPlanIds.includes(product.metadata.access_plan_id)
       );
 
-      return filteredProducts as ProductsWithMetadata[];
+      if (filteredProducts.length === 0) {
+        return [];
+      }
+
+      // Retrieve prices for each filtered product
+      const productsWithPrices = await Promise.all(
+        filteredProducts.map(async (product) => {
+          const prices = await this.stripe.prices.list({ product: product.id });
+          return {
+            ...product,
+            prices: prices.data,
+          };
+        })
+      );
+
+      return productsWithPrices;
     } catch (e) {
-      console.error('Service: error fetching Stripe products:', e);
-      // Handle specific Stripe errors if needed
+      // Handle specific Stripe errors
       if (e instanceof Stripe.errors.StripeError) {
         switch (e.type) {
           case 'StripeInvalidRequestError':
@@ -51,6 +66,7 @@ export class StripeService {
             throw new BadRequestError({ description: e.message });
         }
       }
+      console.error('Service: error fetching Stripe products:', e);
       throw e;
     }
   }

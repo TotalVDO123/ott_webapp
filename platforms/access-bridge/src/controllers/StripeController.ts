@@ -2,14 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { PlansService } from '../services/PlansService.js';
 import { StripeService } from '../services/StripeService.js';
-import {
-  ParameterInvalidError,
-  AccessBridgeError,
-  UnauthorizedError,
-  BadRequestError,
-  sendErrors,
-  NotFoundError,
-} from '../errors.js';
+import { ParameterInvalidError, AccessBridgeError, UnauthorizedError, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
 import { STRIPE_SECRET } from '../appConfig.js';
 
@@ -31,7 +24,7 @@ export class StripeController {
    * @param res The HTTP response object.
    * @param params The request parameters containing site_id.
    */
-  getFilteredProducts = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
+  getStripeProducts = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
     try {
       if (!isValidSiteId(params.site_id)) {
         sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
@@ -55,22 +48,18 @@ export class StripeController {
           exp: 1741153241,
         },
       ];
+
       const accessPlanIds = plans.map((plan) => plan.id);
+      const products = await this.stripeService.getStripeProductsWithPrices(accessPlanIds);
 
-      if (accessPlanIds.length === 0) {
-        sendErrors(res, new NotFoundError({ description: 'No access plans found for the provided site_id.' }));
-        return;
-      }
-
-      const filteredProducts = await this.stripeService.getFilteredProducts(accessPlanIds);
-      res.end(JSON.stringify(filteredProducts));
+      res.end(JSON.stringify(products));
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to get filtered products.', error);
-      sendErrors(res, new BadRequestError({ description: 'An error occurred while fetching filtered products.' }));
+      console.error('Controller: failed to get Stripe products.', error);
+      throw error;
     }
   };
 }

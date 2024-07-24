@@ -19,7 +19,7 @@ export const endpoints: EndpointHandler = {
   '/v2/sites/:site_id/access/refresh': {
     PUT: accessController.refreshPassport,
   },
-  '/v2/sites/:site_id/plans': {
-    GET: stripeController.getFilteredProducts,
+  '/v2/sites/:site_id/products': {
+    GET: stripeController.getStripeProducts,
   },
 };
