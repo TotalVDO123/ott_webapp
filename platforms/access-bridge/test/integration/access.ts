@@ -159,6 +159,53 @@ describe('AccessController passport generate/refresh tests', async () => {
       .end();
   });
 
+  await test('should return NotFoundError for invalid route', (t, done) => {
+    const requestOptions = {
+      headers: {
+        Authorization: AUTHORIZATION.VALID,
+      },
+      method: 'PUT',
+      path: `${ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.INVALID)}/invalid`,
+    };
+
+    mockServer
+      .request(requestOptions, (res) => {
+        assert.strictEqual(res.statusCode, 404);
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const responseBody = JSON.parse(body);
+          assert.strictEqual(responseBody.errors[0].code, 'not_found');
+          done();
+        });
+      })
+      .end();
+  });
+
+  await test('should return MethodNotAllowed for invalid method provided', (t, done) => {
+    const requestOptions = {
+      method: 'GET',
+      path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
+    };
+
+    mockServer
+      .request(requestOptions, (res) => {
+        assert.strictEqual(res.statusCode, 405);
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const responseBody = JSON.parse(body);
+          assert.strictEqual(responseBody.errors[0].code, 'method_not_allowed');
+          done();
+        });
+      })
+      .end();
+  });
+
   await test('should refresh passport access tokens', (t, done) => {
     const requestOptions = {
       method: 'PUT',

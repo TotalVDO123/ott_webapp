@@ -8,7 +8,7 @@ import { RequestMethod } from './http.js';
  * List of possible error codes based on RFC-JW03-Delivery API
  * https://www.notion.so/jwplayer/RFC-JW03-Delivery-API-fc35c5f5d300445eba4004de970d06b4
  */
-enum ErrorCode {
+export enum ErrorCode {
   BadRequestError = 'bad_request',
   ParameterMissing = 'parameter_missing',
   ParameterInvalid = 'parameter_invalid',

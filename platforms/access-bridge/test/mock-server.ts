@@ -17,14 +17,15 @@ export class MockServer {
   }
 
   static async create(endpoints: EndpointHandler): Promise<MockServer> {
-    const server = new Server('localhost', 3000, endpoints);
+    // Use port 0 to let the OS select an available port
+    const server = new Server('localhost', 0, endpoints);
     const port = await server.listen();
     return new this(server, port);
   }
 
   addRequestOptions(options: http.RequestOptions): http.RequestOptions {
     options.host = 'localhost';
-    options.port = 3000;
+    options.port = this.port;
     return options;
   }
 

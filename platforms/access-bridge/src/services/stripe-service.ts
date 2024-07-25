@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
 
-export type StripeProducts = Stripe.Product & {
+export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
   metadata: {
     access_plan_id?: string;
@@ -27,7 +27,7 @@ export class StripeService {
    * @returns A Promise resolving to an array of filtered ProductsWithMetadata objects.
    * @throws Error if there is an issue fetching products or parsing the response.
    */
-  async getStripeProductsWithPrices(accessPlanIds: string[]): Promise<StripeProducts[]> {
+  async getStripeProductsWithPrices(accessPlanIds: string[]): Promise<StripeProduct[]> {
     try {
       const products = await this.stripe.products.list();
 

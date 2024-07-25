@@ -34,6 +34,7 @@ export class Server {
 
       server.listen(this.port, this.address, () => {
         this.httpServer = server;
+        this.port = (server.address() as { port: number }).port;
         resolve(this.port);
       });
     });
