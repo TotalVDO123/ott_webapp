@@ -2,12 +2,13 @@ import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
 import Stripe from 'stripe';
+import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
 
 import { MockServer } from '../mock-server.js';
 import { StripeService } from '../../src/services/stripe-service.js';
 import { ENDPOINTS, PLANS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT, VALID_PLAN_ID } from '../fixtures.js';
 import { ProductsController } from '../../src/controllers/products-controller.js';
-import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
+import { PlansService } from '../../src/services/plans-service.js';
 import { AccessBridgeError, BadRequestError, ErrorCode, ForbiddenError, UnauthorizedError } from '../../src/errors.js';
 
 // Mock PlansService

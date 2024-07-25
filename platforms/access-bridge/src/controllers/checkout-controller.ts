@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { StripeCheckoutRequestParams } from '@jwp/ott-common/types/stripe.js';
+import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 
 import { StripeService } from '../services/stripe-service.js';
 import { AccessBridgeError, ParameterInvalidError, ParameterMissingError, sendErrors } from '../errors.js';
@@ -38,7 +38,7 @@ export class CheckoutController {
         access_plan_id: accessPlanId,
         price_id: priceId,
         redirect_url: redirectUrl,
-      } = await parseJsonBody<StripeCheckoutRequestParams>(req);
+      } = await parseJsonBody<StripeCheckoutParams>(req);
 
       if (!accessPlanId) {
         sendErrors(res, new ParameterMissingError({ parameterName: 'access_plan_id' }));

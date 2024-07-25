@@ -1,10 +1,13 @@
 import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
+import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
+import { RefreshAccessTokensParams } from '@jwp/ott-common/types/access.js';
+
 import { AccessController } from '../../src/controllers/access-controller.js';
 import { MockServer } from '../mock-server.js';
-import { AccessService, RefreshAccessTokensParams } from '../../src/services/access-service.js';
-import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
+import { AccessService } from '../../src/services/access-service.js';
+import { PlansService } from '../../src/services/plans-service.js';
 import { ErrorCode, ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
 import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, PLANS, SITE_ID } from '../fixtures.js';
 
