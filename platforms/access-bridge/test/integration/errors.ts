@@ -2,7 +2,7 @@ import assert from 'assert';
 import { IncomingMessage, ServerResponse } from 'http';
 import test, { after, before, describe } from 'node:test';
 
-import { BadRequestError, ParameterMissingError, sendErrors } from '../../src/errors.js';
+import { BadRequestError, ErrorCode, ParameterMissingError, sendErrors } from '../../src/errors.js';
 import { MockServer } from '../mock-server.js';
 
 describe('sendErrors', async () => {
@@ -43,7 +43,7 @@ describe('sendErrors', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.deepStrictEqual(responseBody.errors[0].code, 'bad_request');
+          assert.deepStrictEqual(responseBody.errors[0].code, ErrorCode.BadRequestError);
           done();
         });
       })
@@ -66,8 +66,8 @@ describe('sendErrors', async () => {
         res.on('end', () => {
           const responseBody = JSON.parse(body);
           assert.deepStrictEqual(responseBody.errors.length, 2);
-          assert.deepStrictEqual(responseBody.errors[0].code, 'bad_request');
-          assert.deepStrictEqual(responseBody.errors[1].code, 'parameter_missing');
+          assert.deepStrictEqual(responseBody.errors[0].code, ErrorCode.BadRequestError);
+          assert.deepStrictEqual(responseBody.errors[1].code, ErrorCode.ParameterMissing);
           done();
         });
       })

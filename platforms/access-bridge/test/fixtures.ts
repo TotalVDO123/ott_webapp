@@ -1,3 +1,14 @@
+// Utility function to get Unix timestamp
+export const getTimestamp = (daysOffset: number): number => {
+  const now = new Date();
+  now.setDate(now.getDate() + daysOffset);
+  return Math.floor(now.getTime() / 1000);
+};
+
+// Precompute timestamps
+const FUTURE_EXPIRY = getTimestamp(30); // 30 days from now
+const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
+
 // API endpoints constant
 export const ENDPOINTS = {
   GENERATE_TOKENS: '/v2/sites/:site_id/access/generate',
@@ -18,10 +29,10 @@ export const ACCESS_TOKENS = {
 
 // plan variations mock
 export const PLANS = {
-  VALID: [{ id: 'plan1234', exp: 1921396650 }],
-  FREE: [{ id: 'free1234', exp: 1921396650 }],
-  INVALID: [{ id: 'plan123456', exp: 1921396650 }],
-  EXPIRED: [{ id: 'plan123456', exp: 1721820321 }],
+  VALID: [{ id: 'plan1234', exp: FUTURE_EXPIRY }],
+  FREE: [{ id: 'free1234', exp: FUTURE_EXPIRY }],
+  INVALID: [{ id: 'plan123456', exp: FUTURE_EXPIRY }],
+  EXPIRED: [{ id: 'plan123456', exp: PAST_EXPIRY }],
 };
 
 // Valid and invalid site id mock

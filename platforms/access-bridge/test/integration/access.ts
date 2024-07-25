@@ -5,7 +5,7 @@ import { AccessController } from '../../src/controllers/access-controller.js';
 import { MockServer } from '../mock-server.js';
 import { AccessService, RefreshAccessTokensParams } from '../../src/services/access-service.js';
 import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
-import { ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
+import { ErrorCode, ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
 import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, PLANS, SITE_ID } from '../fixtures.js';
 
 // Mock AccessService
@@ -127,7 +127,7 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'unauthorized');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.Unauthorized);
           done();
         });
       })
@@ -152,7 +152,7 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'parameter_invalid');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.ParameterInvalid);
           done();
         });
       })
@@ -199,7 +199,7 @@ describe('AccessController passport generate/refresh tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'parameter_invalid');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.ParameterInvalid);
           done();
         });
       })
