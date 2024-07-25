@@ -24,9 +24,10 @@ export const getSources = ({ item, baseUrl, config, user }: { item: PlaylistItem
 
     const isBCLManifest = isBCLManifestType(sourceUrl, baseUrl, mediaid, ['m3u8', 'mpd']);
     const isVODManifest = isVODManifestType(sourceUrl, baseUrl, mediaid, ['m3u8', 'mpd']);
+    const isDRM = url.searchParams.has('exp') && url.searchParams.has('sig');
 
-    // Use SSAI URL for configs with server side ads
-    if (isVODManifest && hasServerAds) {
+    // Use SSAI URL for configs with server side ads, DRM is not supported
+    if (isVODManifest && hasServerAds && !isDRM) {
       // Only HLS is supported now
       url.href = `${baseUrl}/v2/sites/${siteId}/media/${mediaid}/ssai.m3u8`;
       url.searchParams.set('ad_config_id', adConfig);
