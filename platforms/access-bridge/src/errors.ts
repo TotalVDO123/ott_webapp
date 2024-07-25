@@ -19,6 +19,17 @@ export enum ErrorCode {
   InternalError = 'internal_error',
 }
 
+const ErrorCodeDescription: Record<ErrorCode, string> = {
+  [ErrorCode.BadRequestError]: 'The request was not constructed correctly.',
+  [ErrorCode.ParameterMissing]: 'Required parameter {value} is missing.',
+  [ErrorCode.ParameterInvalid]: 'Parameter {value} is invalid. {reason}.',
+  [ErrorCode.Unauthorized]: 'Missing or invalid auth credentials.',
+  [ErrorCode.Forbidden]: 'Access to the requested resource is not allowed.',
+  [ErrorCode.NotFound]: 'The requested resource could not be found.',
+  [ErrorCode.MethodNotAllowed]: 'The requested resource only supports {value} requests.',
+  [ErrorCode.InternalError]: 'An error was encountered while processing the request. Please try again.',
+};
+
 /**
  * Allowed response status codes.
  */
@@ -85,6 +96,31 @@ function createError<T>(
 }
 
 /**
+ * Retrieves the description for a given error code.
+ *
+ * This function replaces placeholders in the error description with the provided `value` and `reason`.
+ *
+ * @param {ErrorCode} code - The error code for which the description is needed.
+ * @param {string} [value] - An optional value to replace the `{value}` placeholder in the description.
+ * @param {string} [reason] - An optional reason to replace the `{reason}` placeholder in the description.
+ * @returns {string} The description corresponding to the error code, with the `{value}` and `{reason}`
+ * placeholders replaced by the provided arguments if applicable.
+ */
+export function getErrorCodeDescription(code: ErrorCode, value?: string, reason?: string): string {
+  let description = ErrorCodeDescription[code];
+
+  if (description.includes('{value}')) {
+    description = description.replace('{value}', value || '');
+  }
+
+  if (description.includes('{reason}')) {
+    description = description.replace('{reason}', reason || '');
+  }
+
+  return description;
+}
+
+/**
  * Send one or more errors.
  *
  * @param res - The response object to send the error to. This ends the response.
@@ -117,50 +153,42 @@ export function sendErrors(res: ServerResponse, error: AccessBridgeError, ...err
 }
 
 // Define specific errors
-export const BadRequestError = createError(
-  ErrorCode.BadRequestError,
-  400,
-  () => 'The request was not constructed correctly.'
+export const BadRequestError = createError(ErrorCode.BadRequestError, 400, () =>
+  getErrorCodeDescription(ErrorCode.BadRequestError)
 );
 
 export const ParameterMissingError = createError<{ parameterName: string }>(
   ErrorCode.ParameterMissing,
   400,
-  ({ parameterName }) => `Required parameter "${parameterName}" was missing.`
+  ({ parameterName }) => getErrorCodeDescription(ErrorCode.ParameterMissing, parameterName)
 );
 
 export const ParameterInvalidError = createError<{
   parameterName: string;
   reason?: string;
-}>(
-  ErrorCode.ParameterInvalid,
-  400,
-  ({ parameterName, reason }) => `Parameter "${parameterName}" ${reason || 'has an invalid value'}.`
+}>(ErrorCode.ParameterInvalid, 400, ({ parameterName, reason }) =>
+  getErrorCodeDescription(ErrorCode.ParameterInvalid, parameterName, reason)
 );
 
-export const ForbiddenError = createError(
-  ErrorCode.Forbidden,
-  403,
-  () => 'Access to the requested resource is not allowed.'
+export const UnauthorizedError = createError(ErrorCode.Unauthorized, 401, () =>
+  getErrorCodeDescription(ErrorCode.Unauthorized)
 );
 
-export const UnauthorizedError = createError(ErrorCode.Unauthorized, 401, () => 'Missing or invalid auth credentials.');
+export const ForbiddenError = createError(ErrorCode.Forbidden, 403, () => getErrorCodeDescription(ErrorCode.Forbidden));
 
-export const NotFoundError = createError(ErrorCode.NotFound, 404, () => 'The requested resource could not be found.');
+export const NotFoundError = createError(ErrorCode.NotFound, 404, () => getErrorCodeDescription(ErrorCode.NotFound));
 
 export const MethodNotAllowedError = createError<{
   allowedMethods: RequestMethod[];
 }>(
   ErrorCode.MethodNotAllowed,
   405,
-  ({ allowedMethods }) => `The requested resource only supports ${allowedMethods.sort().join(', ')} requests.`,
+  ({ allowedMethods }) => getErrorCodeDescription(ErrorCode.MethodNotAllowed, allowedMethods.sort().join(', ')),
   ({ allowedMethods }) => [['Allow', allowedMethods.sort().join(', ')]]
 );
 
-export const InternalError = createError(
-  ErrorCode.InternalError,
-  500,
-  () => 'An error was encountered while processing the request. Please try again.'
+export const InternalError = createError(ErrorCode.InternalError, 500, () =>
+  getErrorCodeDescription(ErrorCode.InternalError)
 );
 
 // Type guard to check if the error is a JWErrorResponse

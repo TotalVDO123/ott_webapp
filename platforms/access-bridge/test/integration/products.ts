@@ -8,7 +8,7 @@ import { StripeService } from '../../src/services/stripe-service.js';
 import { ENDPOINTS, PLANS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT, VALID_PLAN_ID } from '../fixtures.js';
 import { ProductsController } from '../../src/controllers/products-controller.js';
 import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
-import { AccessBridgeError, BadRequestError, ForbiddenError, UnauthorizedError } from '../../src/errors.js';
+import { AccessBridgeError, BadRequestError, ErrorCode, ForbiddenError, UnauthorizedError } from '../../src/errors.js';
 
 // Mock PlansService
 class MockPlansService extends PlansService {
@@ -143,7 +143,7 @@ describe('ProductsController tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'parameter_invalid');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.ParameterInvalid);
           done();
         });
       })
@@ -165,7 +165,7 @@ describe('ProductsController tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'method_not_allowed');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.MethodNotAllowed);
           done();
         });
       })
@@ -187,7 +187,7 @@ describe('ProductsController tests', async () => {
         });
         res.on('end', () => {
           const responseBody = JSON.parse(body);
-          assert.strictEqual(responseBody.errors[0].code, 'not_found');
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.NotFound);
           done();
         });
       })
