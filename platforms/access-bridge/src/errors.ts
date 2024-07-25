@@ -22,7 +22,7 @@ export enum ErrorCode {
 const ErrorCodeDescription: Record<ErrorCode, string> = {
   [ErrorCode.BadRequestError]: 'The request was not constructed correctly.',
   [ErrorCode.ParameterMissing]: 'Required parameter {value} is missing.',
-  [ErrorCode.ParameterInvalid]: 'Parameter {value} is invalid. {reason}.',
+  [ErrorCode.ParameterInvalid]: 'Parameter {value} is invalid.{reason}',
   [ErrorCode.Unauthorized]: 'Missing or invalid auth credentials.',
   [ErrorCode.Forbidden]: 'Access to the requested resource is not allowed.',
   [ErrorCode.NotFound]: 'The requested resource could not be found.',
@@ -114,7 +114,7 @@ export function getErrorCodeDescription(code: ErrorCode, value?: string, reason?
   }
 
   if (description.includes('{reason}')) {
-    description = description.replace('{reason}', reason || '');
+    description = description.replace('{reason}', reason ? ` ${reason}.` : '');
   }
 
   return description;

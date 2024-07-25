@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 
 import { AccessController } from './controllers/access-controller.js';
 import { ProductsController } from './controllers/products-controller.js';
+import { CheckoutController } from './controllers/checkout-controller.js';
 
 export type EndpointHandler = {
   [path: string]: {
@@ -11,6 +12,7 @@ export type EndpointHandler = {
 
 const accessController = new AccessController();
 const productsController = new ProductsController();
+const checkoutController = new CheckoutController();
 
 export const endpoints: EndpointHandler = {
   '/v2/sites/:site_id/access/generate': {
@@ -21,5 +23,8 @@ export const endpoints: EndpointHandler = {
   },
   '/v2/sites/:site_id/products': {
     GET: productsController.getStripeProducts,
+  },
+  '/v2/sites/:site_id/checkout': {
+    POST: checkoutController.initiateCheckout,
   },
 };

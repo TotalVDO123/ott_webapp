@@ -4,11 +4,11 @@ import { PLANS_CLIENT } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
 
-export interface AccessControlPlansParams {
+export type AccessControlPlansParams = {
   siteId: string;
   endpointType: 'plans' | 'entitlements';
   authorization?: string;
-}
+};
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.

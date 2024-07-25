@@ -2,6 +2,11 @@ import Stripe from 'stripe';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
 
+type CreateCheckoutSessionParams = {
+  priceId: string;
+  redirectUrl: string;
+};
+
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
   metadata: {
@@ -52,6 +57,47 @@ export class StripeService {
       );
 
       return productsWithPrices;
+    } catch (e) {
+      // Handle specific Stripe errors
+      if (e instanceof Stripe.errors.StripeError) {
+        switch (e.type) {
+          case 'StripeInvalidRequestError':
+            throw new BadRequestError({ description: e.message });
+          case 'StripeAuthenticationError':
+            throw new UnauthorizedError({ description: e.message });
+          case 'StripePermissionError':
+            throw new ForbiddenError({ description: e.message });
+          default:
+            throw new BadRequestError({ description: e.message });
+        }
+      }
+      console.error('Service: error fetching Stripe products:', e);
+      throw e;
+    }
+  }
+
+  /**
+   * Creates a Stripe Checkout session based on the provided price ID.
+   * @param priceId The price ID to use for creating the checkout session.
+   * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
+   * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
+   */
+  async createCheckoutSession({ priceId, redirectUrl }: CreateCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: 'subscription',
+        success_url: redirectUrl,
+        cancel_url: redirectUrl,
+      });
+
+      return session;
     } catch (e) {
       // Handle specific Stripe errors
       if (e instanceof Stripe.errors.StripeError) {
