@@ -1,21 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { AccessTokensResponse } from '@jwp/ott-common/types/access.js';
-import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
+import {
+  AccessTokensResponse,
+  GenerateAccessTokensParams,
+  RefreshAccessTokensParams,
+} from '@jwp/ott-common/types/access.js';
 
 import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, ParameterInvalidError, isJWError } from '../errors.js';
 import { put } from '../http.js';
-
-export interface GenerateAccessTokensParams {
-  siteId: string;
-  viewerId: string;
-  plans: AccessControlPlan[];
-}
-
-export interface RefreshAccessTokensParams {
-  siteId: string;
-  refreshToken: string;
-}
 
 /**
  * AccessService handles interactions with the access management APIs.
