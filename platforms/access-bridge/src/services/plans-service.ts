@@ -1,14 +1,8 @@
-import { AccessControlPlan, PlansResponse } from '@jwp/ott-common/types/plans.js';
+import { AccessControlPlan, AccessControlPlansParams, PlansResponse } from '@jwp/ott-common/types/plans.js';
 
 import { PLANS_CLIENT } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
-
-export interface AccessControlPlansParams {
-  siteId: string;
-  endpointType: 'plans' | 'entitlements';
-  authorization?: string;
-}
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
