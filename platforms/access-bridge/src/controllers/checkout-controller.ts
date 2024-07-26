@@ -5,7 +5,7 @@ import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 import { StripeService } from '../services/stripe-service.js';
 import { AccessBridgeError, ParameterInvalidError, ParameterMissingError, sendErrors } from '../errors.js';
 import { STRIPE_SECRET } from '../app-config.js';
-import { isValidSiteId, parseJsonBody } from '../utils.js';
+import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
 import { PlansService } from '../services/plans-service.js';
 
 /**
@@ -34,24 +34,13 @@ export class CheckoutController {
         return;
       }
 
-      const {
-        access_plan_id: accessPlanId,
-        price_id: priceId,
-        redirect_url: redirectUrl,
-      } = await parseJsonBody<StripeCheckoutParams>(req);
+      const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
 
-      if (!accessPlanId) {
-        sendErrors(res, new ParameterMissingError({ parameterName: 'access_plan_id' }));
-        return;
-      }
-
-      if (!priceId) {
-        sendErrors(res, new ParameterMissingError({ parameterName: 'price_id' }));
-        return;
-      }
-
-      if (!redirectUrl) {
-        sendErrors(res, new ParameterMissingError({ parameterName: 'redirect_url' }));
+      // Validate required params
+      const requiredParams: (keyof StripeCheckoutParams)[] = ['access_plan_id', 'price_id', 'mode', 'redirect_url'];
+      const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
+      if (missingRequiredParams.length > 0) {
+        sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));
         return;
       }
 
@@ -63,30 +52,23 @@ export class CheckoutController {
 
       console.info(accessControlPlans, ' plans'); // Missing nededed data - requires SIMS team to update the API
 
-      // Mocked until data for ac plans is added
-      const plans = [
-        {
-          id: 'PqX8Lsf9',
-          exp: 1741153241,
-        },
-      ];
+      // TODO: This will be uncommented once the SIMS API is updated so the validation can be proper.
+      // // Validate if the provided access_plan_id exists in customer's plans.
+      // const accessPlanIds = accessControlPlans.map((plan) => plan.id);
+      // if (!accessPlanIds.includes(checkoutParams.access_plan_id)) {
+      //   sendErrors(res, new ParameterInvalidError({ parameterName: 'access_plan_id' }));
+      //   return;
+      // }
 
-      // Validate that the provided access_plan_id exists in customer's plans.
-      const accessPlanIds = plans.map((plan) => plan.id);
-      if (!accessPlanIds.includes(accessPlanId)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'access_plan_id' }));
-        return;
-      }
+      const checkoutSession = await this.stripeService.createCheckoutSession(checkoutParams);
 
-      const session = await this.stripeService.createCheckoutSession({ priceId, redirectUrl });
-
-      res.end(JSON.stringify({ url: session.url }));
+      res.end(JSON.stringify({ url: checkoutSession.url }));
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to get Stripe products.', error);
+      console.error('Controller: failed to create checkout session.', error);
       throw error;
     }
   };

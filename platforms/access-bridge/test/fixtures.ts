@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   GENERATE_TOKENS: '/v2/sites/:site_id/access/generate',
   REFRESH_TOKENS: '/v2/sites/:site_id/access/refresh',
   PRODUCTS: '/v2/sites/:site_id/products',
+  CHECKOUT: '/v2/sites/:site_id/checkout',
 };
 
 // mock data for access tokens
@@ -152,3 +153,6 @@ export const STRIPE_ERRORS = [
     statusCode: 400,
   },
 ];
+
+// mock of stripe checkout session url
+export const STRIPE_CHECKOUT_SESSION_URL = 'https://example.com';

@@ -1,11 +1,7 @@
 import Stripe from 'stripe';
+import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
-
-type CreateCheckoutSessionParams = {
-  priceId: string;
-  redirectUrl: string;
-};
 
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
@@ -82,19 +78,19 @@ export class StripeService {
    * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
    * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
    */
-  async createCheckoutSession({ priceId, redirectUrl }: CreateCheckoutSessionParams): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession(params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
     try {
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
           {
-            price: priceId,
+            price: params.price_id,
             quantity: 1,
           },
         ],
-        mode: 'subscription',
-        success_url: redirectUrl,
-        cancel_url: redirectUrl,
+        mode: params.mode,
+        success_url: params.redirect_url,
+        cancel_url: params.redirect_url,
       });
 
       return session;

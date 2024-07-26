@@ -5,6 +5,7 @@ import { describe, test } from 'node:test';
 
 import { isValidSiteId, parseJsonBody } from '../../src/utils.js';
 import { SITE_ID } from '../fixtures.js';
+import { AccessBridgeError, ErrorCode } from '../../src/errors.js';
 
 describe('isValidSiteId', () => {
   test('should return true for valid site IDs', () => {
@@ -47,10 +48,10 @@ describe('parseJsonBody', () => {
       await parseJsonBody(req);
       assert.fail('Expected error not thrown');
     } catch (error) {
-      if (error instanceof Error) {
-        assert.strictEqual(error.message, 'Invalid JSON');
+      if (error instanceof AccessBridgeError) {
+        assert.strictEqual(error.code, ErrorCode.BadRequestError);
       } else {
-        assert.fail(`Expected error to be an instance of Error, got ${typeof error}`);
+        assert.fail(`Expected error to be an instance of AccessBridgeError, got ${typeof error}`);
       }
     }
   });
