@@ -18,6 +18,7 @@ import {
   PLANS,
   STRIPE_PRICE,
   STRIPE_ERRORS,
+  AUTHORIZATION,
 } from '../fixtures.js';
 
 // Mock PlansService
@@ -93,6 +94,9 @@ describe('CheckoutController tests', async () => {
     });
 
     const requestOptions = {
+      headers: {
+        Authorization: AUTHORIZATION.VALID,
+      },
       method: 'POST',
       path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
       body: requestBody,
@@ -114,6 +118,56 @@ describe('CheckoutController tests', async () => {
       .end();
   });
 
+  await test('should return UnauthorizedError for missing authorization token', (t, done) => {
+    const requestOptions = {
+      headers: {
+        Authorization: AUTHORIZATION.MISSING,
+      },
+      method: 'POST',
+      path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
+    };
+
+    mockServer
+      .request(requestOptions, (res) => {
+        assert.strictEqual(res.statusCode, 401);
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const responseBody = JSON.parse(body);
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.Unauthorized);
+          done();
+        });
+      })
+      .end();
+  });
+
+  await test('should return ParameterInvalidError for invalid site_id', (t, done) => {
+    const requestOptions = {
+      headers: {
+        Authorization: AUTHORIZATION.VALID,
+      },
+      method: 'POST',
+      path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.INVALID),
+    };
+
+    mockServer
+      .request(requestOptions, (res) => {
+        assert.strictEqual(res.statusCode, 400);
+        let body = '';
+        res.on('data', (chunk) => {
+          body += chunk;
+        });
+        res.on('end', () => {
+          const responseBody = JSON.parse(body);
+          assert.strictEqual(responseBody.errors[0].code, ErrorCode.ParameterInvalid);
+          done();
+        });
+      })
+      .end();
+  });
+
   await test('should handle missing required parameters', (t, done) => {
     mockStripeService.setMockBehavior('default');
 
@@ -125,6 +179,9 @@ describe('CheckoutController tests', async () => {
     });
 
     const requestOptions = {
+      headers: {
+        Authorization: AUTHORIZATION.VALID,
+      },
       method: 'POST',
       path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
       body: requestBody,
@@ -146,39 +203,6 @@ describe('CheckoutController tests', async () => {
       .end();
   });
 
-  // // Will be uncommented once SIMS API is updated to include the access_plan_ids for validation
-  //   await test('should return ParameterInvalidError for invalid access_plan_id', (t, done) => {
-  //     mockStripeService.setMockBehavior('default');
-
-  //     const requestBody = JSON.stringify({
-  //       access_plan_id: PLANS.INVALID[0].id,
-  //       price_id: STRIPE_PRICE.id,
-  //       mode: 'payment',
-  //       redirect_url: 'http://example.com',
-  //     });
-
-  //     const requestOptions = {
-  //       method: 'POST',
-  //       path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
-  //       body: requestBody,
-  //     };
-
-  //     mockServer
-  //       .request(requestOptions, (res) => {
-  //         assert.strictEqual(res.statusCode, 400);
-  //         let body = '';
-  //         res.on('data', (chunk) => {
-  //           body += chunk;
-  //         });
-  //         res.on('end', () => {
-  //           const responseBody = JSON.parse(body);
-  //           assert.strictEqual(responseBody.errors[0].code, ErrorCode.ParameterInvalid);
-  //           done();
-  //         });
-  //       })
-  //       .end();
-  //   });
-
   // Iterate over each STRIPE_ERRORS case
   STRIPE_ERRORS.forEach(({ error, expectedCode, statusCode }) => {
     test(`should handle ${error.type} correctly`, (t, done) => {
@@ -192,6 +216,9 @@ describe('CheckoutController tests', async () => {
       });
 
       const requestOptions = {
+        headers: {
+          Authorization: AUTHORIZATION.VALID,
+        },
         method: 'POST',
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: requestBody,

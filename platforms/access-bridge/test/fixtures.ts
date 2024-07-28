@@ -58,6 +58,7 @@ export const SITE_ID = {
 export const AUTHORIZATION = {
   VALID: 'Bearer valid-authorization',
   INVALID: 'Bearer invalid-authorization',
+  MISSING: '',
 };
 
 // Stripe price mock

@@ -3,7 +3,13 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 
 import { StripeService } from '../services/stripe-service.js';
-import { AccessBridgeError, ParameterInvalidError, ParameterMissingError, sendErrors } from '../errors.js';
+import {
+  AccessBridgeError,
+  ParameterInvalidError,
+  ParameterMissingError,
+  sendErrors,
+  UnauthorizedError,
+} from '../errors.js';
 import { STRIPE_SECRET } from '../app-config.js';
 import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
 import { PlansService } from '../services/plans-service.js';
@@ -34,6 +40,12 @@ export class CheckoutController {
         return;
       }
 
+      const authorization = req.headers['authorization'];
+      if (!authorization) {
+        sendErrors(res, new UnauthorizedError({}));
+        return;
+      }
+
       const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
 
       // Validate required params
@@ -47,7 +59,7 @@ export class CheckoutController {
       const accessControlPlans = await this.plansService.getAccessControlPlans({
         siteId: params.site_id,
         endpointType: 'plans',
-        authorization: req.headers['authorization'],
+        authorization,
       });
 
       console.info(accessControlPlans, ' plans'); // Missing nededed data - requires SIMS team to update the API
