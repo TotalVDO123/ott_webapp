@@ -73,7 +73,7 @@ export class CheckoutController {
       //   return;
       // }
 
-      const checkoutSession = await this.stripeService.createCheckoutSession(viewer.email, checkoutParams);
+      const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
 
       res.end(JSON.stringify({ url: checkoutSession.url }));
     } catch (error) {

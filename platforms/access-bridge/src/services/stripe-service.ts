@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
+import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
 
@@ -74,12 +75,12 @@ export class StripeService {
 
   /**
    * Creates a Stripe Checkout session based on the provided price ID.
-   * @param email Email address from the auth token used for creating the checkout session.
+   * @param viewer Email address and viewer id from the auth token used for creating the checkout session.
    * @param params Stripe checkout params to use for creating the checkout session.
    * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
    * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
    */
-  async createCheckoutSession(email: string, params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession(viewer: Viewer, params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
     try {
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -89,7 +90,10 @@ export class StripeService {
             quantity: 1,
           },
         ],
-        customer_email: email,
+        metadata: {
+          viewer_id: viewer.id,
+        },
+        customer_email: viewer.email,
         mode: params.mode,
         success_url: params.redirect_url,
         cancel_url: params.redirect_url,

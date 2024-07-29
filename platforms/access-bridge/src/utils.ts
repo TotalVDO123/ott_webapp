@@ -1,6 +1,7 @@
 import { IncomingMessage } from 'node:http';
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import { BadRequestError } from './errors.js';
 
@@ -49,11 +50,6 @@ export const validateBodyParams = <T>(params: Partial<T>, requiredParams: (keyof
   );
 
   return missingParams;
-};
-
-type Viewer = {
-  id: number;
-  email: string;
 };
 
 /**

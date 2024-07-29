@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 import Stripe from 'stripe';
+import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import {
   AccessBridgeError,
@@ -15,8 +16,8 @@ import {
 } from '../../../src/errors.js';
 import { PlansService } from '../../../src/services/plans-service.js';
 import { StripeService } from '../../../src/services/stripe-service.js';
-import { isValidSiteId, parseJsonBody, validateBodyParams } from '../../../src/utils.js';
-import { PLANS, STRIPE_CHECKOUT_SESSION_URL, AUTHORIZATION, SITE_ID } from '../../fixtures.js';
+import { isValidSiteId, parseBearerToken, parseJsonBody, validateBodyParams } from '../../../src/utils.js';
+import { PLANS, STRIPE_CHECKOUT_SESSION_URL, SITE_ID, AUTHORIZATION } from '../../fixtures.js';
 
 // Mock PlansService
 class MockPlansService extends PlansService {
@@ -51,7 +52,7 @@ class MockStripeService extends StripeService {
     }
   }
 
-  async createCheckoutSession(email: string, params: StripeCheckoutParams) {
+  async createCheckoutSession(viewer: Viewer, params: StripeCheckoutParams) {
     if (this.mockBehavior === 'error' && this.mockError) {
       throw this.mockError;
     }
@@ -77,7 +78,11 @@ export class MockCheckoutController {
     }
 
     const authorization = req.headers['authorization'];
-    if (authorization === AUTHORIZATION.MISSING || authorization === AUTHORIZATION.INVALID) {
+    const viewer =
+      authorization === AUTHORIZATION.VALID
+        ? { id: 12345, email: 'dummy@email.com' }
+        : parseBearerToken(AUTHORIZATION.INVALID);
+    if (!viewer?.id || !viewer?.email) {
       sendErrors(res, new UnauthorizedError({}));
       return;
     }
@@ -104,7 +109,7 @@ export class MockCheckoutController {
         return;
       }
 
-      const checkoutSession = await this.stripeService.createCheckoutSession('dummy@email.com', checkoutParams);
+      const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
 
       res.end(JSON.stringify({ url: checkoutSession.url }));
     } catch (error) {
