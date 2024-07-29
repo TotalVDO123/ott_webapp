@@ -3,21 +3,50 @@ import { IncomingMessage } from 'node:http';
 import { Socket } from 'node:net';
 import { describe, test } from 'node:test';
 
-import { isValidSiteId, parseJsonBody } from '../../src/utils.js';
+import jwt from 'jsonwebtoken';
+
+import { isValidSiteId, parseBearerToken, parseJsonBody } from '../../src/utils.js';
 import { SITE_ID } from '../fixtures.js';
 import { AccessBridgeError, ErrorCode } from '../../src/errors.js';
 
-describe('isValidSiteId', () => {
-  test('should return true for valid site IDs', () => {
-    assert.strictEqual(isValidSiteId(SITE_ID.VALID), true);
-    assert.strictEqual(isValidSiteId(SITE_ID.VALID_UPPER), true);
+// Mock secret and token creation
+const secret = 'your-secret-key';
+const validToken = jwt.sign({ aid: 123, sub: 'test@example.com' }, secret);
+const invalidToken = jwt.sign({ uid: 123 }, secret); // Missing 'aid' and 'sub'
+const malformedToken = 'malformed.token.structure';
+
+// Helper function to create a bearer token
+const createBearerToken = (token: string) => `Bearer ${token}`;
+
+describe('parseBearerToken', () => {
+  test('should parse valid bearer token', () => {
+    const result = parseBearerToken(createBearerToken(validToken));
+    assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
   });
 
-  test('should return false for invalid site IDs', () => {
-    assert.strictEqual(isValidSiteId(SITE_ID.SHORT), false); // Less than 8 characters
-    assert.strictEqual(isValidSiteId(SITE_ID.LONG), false); // More than 8 characters
-    assert.strictEqual(isValidSiteId(SITE_ID.SPECIAL), false); // Special character
-    assert.strictEqual(isValidSiteId(SITE_ID.EMPTY), false); // Empty string
+  test('should parse token with no Bearer prefix', () => {
+    const result = parseBearerToken(validToken); // No 'Bearer ' prefix
+    assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
+  });
+
+  test('should return null for token missing required fields', () => {
+    const result = parseBearerToken(createBearerToken(invalidToken));
+    assert.strictEqual(result, null);
+  });
+
+  test('should return null for malformed token', () => {
+    const result = parseBearerToken(createBearerToken(malformedToken));
+    assert.strictEqual(result, null);
+  });
+
+  test('should return null for empty token', () => {
+    const result = parseBearerToken('');
+    assert.strictEqual(result, null);
+  });
+
+  test('should return null for undefined token', () => {
+    const result = parseBearerToken(undefined as unknown as string);
+    assert.strictEqual(result, null);
   });
 });
 
@@ -74,5 +103,19 @@ describe('parseJsonBody', () => {
         assert.fail(`Expected error to be an instance of Error, got ${typeof error}`);
       }
     }
+  });
+});
+
+describe('isValidSiteId', () => {
+  test('should return true for valid site IDs', () => {
+    assert.strictEqual(isValidSiteId(SITE_ID.VALID), true);
+    assert.strictEqual(isValidSiteId(SITE_ID.VALID_UPPER), true);
+  });
+
+  test('should return false for invalid site IDs', () => {
+    assert.strictEqual(isValidSiteId(SITE_ID.SHORT), false); // Less than 8 characters
+    assert.strictEqual(isValidSiteId(SITE_ID.LONG), false); // More than 8 characters
+    assert.strictEqual(isValidSiteId(SITE_ID.SPECIAL), false); // Special character
+    assert.strictEqual(isValidSiteId(SITE_ID.EMPTY), false); // Empty string
   });
 });

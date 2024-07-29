@@ -74,11 +74,12 @@ export class StripeService {
 
   /**
    * Creates a Stripe Checkout session based on the provided price ID.
-   * @param priceId The price ID to use for creating the checkout session.
+   * @param email Email address from the auth token used for creating the checkout session.
+   * @param params Stripe checkout params to use for creating the checkout session.
    * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
    * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
    */
-  async createCheckoutSession(params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession(email: string, params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
     try {
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -88,6 +89,7 @@ export class StripeService {
             quantity: 1,
           },
         ],
+        customer_email: email,
         mode: params.mode,
         success_url: params.redirect_url,
         cancel_url: params.redirect_url,

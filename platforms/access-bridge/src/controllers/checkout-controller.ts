@@ -11,7 +11,7 @@ import {
   UnauthorizedError,
 } from '../errors.js';
 import { STRIPE_SECRET } from '../app-config.js';
-import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
+import { isValidSiteId, parseBearerToken, parseJsonBody, validateBodyParams } from '../utils.js';
 import { PlansService } from '../services/plans-service.js';
 
 /**
@@ -41,7 +41,8 @@ export class CheckoutController {
       }
 
       const authorization = req.headers['authorization'];
-      if (!authorization) {
+      const viewer = authorization ? parseBearerToken(authorization) : null;
+      if (!viewer?.id || !viewer?.email) {
         sendErrors(res, new UnauthorizedError({}));
         return;
       }
@@ -72,7 +73,7 @@ export class CheckoutController {
       //   return;
       // }
 
-      const checkoutSession = await this.stripeService.createCheckoutSession(checkoutParams);
+      const checkoutSession = await this.stripeService.createCheckoutSession(viewer.email, checkoutParams);
 
       res.end(JSON.stringify({ url: checkoutSession.url }));
     } catch (error) {

@@ -1,79 +1,26 @@
 import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
-import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
-import Stripe from 'stripe';
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
-
 import { MockServer } from '../mock-server.js';
-import { CheckoutController } from '../../src/controllers/checkout-controller.js';
-import { StripeService } from '../../src/services/stripe-service.js';
-import { PlansService } from '../../src/services/plans-service.js';
-import { AccessBridgeError, BadRequestError, ErrorCode, ForbiddenError, UnauthorizedError } from '../../src/errors.js';
+import { ErrorCode } from '../../src/errors.js';
 import {
   STRIPE_CHECKOUT_SESSION_URL,
   VALID_PLAN_ID,
   SITE_ID,
   ENDPOINTS,
-  PLANS,
   STRIPE_PRICE,
   STRIPE_ERRORS,
   AUTHORIZATION,
 } from '../fixtures.js';
 
-// Mock PlansService
-class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
-    return PLANS.VALID;
-  }
-}
-
-// Mock StripeService
-class MockStripeService extends StripeService {
-  private mockBehavior: 'default' | 'error' = 'default';
-  private mockError: AccessBridgeError | null = null;
-
-  // Method to set the mock behavior
-  setMockBehavior(behavior: 'default' | 'error', error?: Stripe.errors.StripeError) {
-    this.mockBehavior = behavior;
-
-    if (behavior === 'error' && error instanceof Stripe.errors.StripeError) {
-      switch (error.type) {
-        case 'StripeInvalidRequestError':
-          this.mockError = new BadRequestError({});
-          break;
-        case 'StripeAuthenticationError':
-          this.mockError = new UnauthorizedError({});
-          break;
-        case 'StripePermissionError':
-          this.mockError = new ForbiddenError({});
-          break;
-        default:
-          this.mockError = new BadRequestError({});
-      }
-    }
-  }
-
-  async createCheckoutSession(params: StripeCheckoutParams) {
-    if (this.mockBehavior === 'error' && this.mockError) {
-      throw this.mockError;
-    }
-
-    return { url: STRIPE_CHECKOUT_SESSION_URL } as Stripe.Checkout.Session;
-  }
-}
+import { MockCheckoutController } from './mocks/checkout.js';
 
 describe('CheckoutController tests', async () => {
   let mockServer: MockServer;
-  let checkoutController: CheckoutController;
-  let mockStripeService: MockStripeService;
+  let checkoutController: MockCheckoutController;
 
   before(async () => {
-    // Initialize the controller and inject the mock services
-    checkoutController = new CheckoutController();
-    mockStripeService = new MockStripeService('mock-api-key');
-    checkoutController['stripeService'] = mockStripeService;
-    checkoutController['plansService'] = new MockPlansService();
+    checkoutController = new MockCheckoutController();
 
     const endpoints = {
       [ENDPOINTS.CHECKOUT]: {
@@ -85,7 +32,7 @@ describe('CheckoutController tests', async () => {
   });
 
   await test('should initiate checkout session successfully', (t, done) => {
-    mockStripeService.setMockBehavior('default');
+    checkoutController['stripeService'].setMockBehavior('default');
     const requestBody = JSON.stringify({
       access_plan_id: VALID_PLAN_ID,
       price_id: STRIPE_PRICE.id,
@@ -119,6 +66,8 @@ describe('CheckoutController tests', async () => {
   });
 
   await test('should return UnauthorizedError for missing authorization token', (t, done) => {
+    checkoutController['stripeService'].setMockBehavior('default');
+
     const requestOptions = {
       headers: {
         Authorization: AUTHORIZATION.MISSING,
@@ -144,6 +93,8 @@ describe('CheckoutController tests', async () => {
   });
 
   await test('should return ParameterInvalidError for invalid site_id', (t, done) => {
+    checkoutController['stripeService'].setMockBehavior('default');
+
     const requestOptions = {
       headers: {
         Authorization: AUTHORIZATION.VALID,
@@ -169,7 +120,7 @@ describe('CheckoutController tests', async () => {
   });
 
   await test('should handle missing required parameters', (t, done) => {
-    mockStripeService.setMockBehavior('default');
+    checkoutController['stripeService'].setMockBehavior('default');
 
     const requestBody = JSON.stringify({
       access_plan_id: VALID_PLAN_ID,
@@ -206,7 +157,7 @@ describe('CheckoutController tests', async () => {
   // Iterate over each STRIPE_ERRORS case
   STRIPE_ERRORS.forEach(({ error, expectedCode, statusCode }) => {
     test(`should handle ${error.type} correctly`, (t, done) => {
-      mockStripeService.setMockBehavior('error', error);
+      checkoutController['stripeService'].setMockBehavior('error', error);
 
       const requestBody = JSON.stringify({
         access_plan_id: VALID_PLAN_ID,
