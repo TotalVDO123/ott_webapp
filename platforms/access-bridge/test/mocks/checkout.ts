@@ -13,11 +13,12 @@ import {
   sendErrors,
   ParameterInvalidError,
   ParameterMissingError,
-} from '../../../src/errors.js';
-import { PlansService } from '../../../src/services/plans-service.js';
-import { StripeService } from '../../../src/services/stripe-service.js';
-import { isValidSiteId, parseBearerToken, parseJsonBody, validateBodyParams } from '../../../src/utils.js';
-import { PLANS, STRIPE_CHECKOUT_SESSION_URL, SITE_ID, AUTHORIZATION } from '../../fixtures.js';
+  NotFoundError,
+} from '../../src/errors.js';
+import { PlansService } from '../../src/services/plans-service.js';
+import { StripeService } from '../../src/services/stripe-service.js';
+import { isValidSiteId, parseAuthToken, parseJsonBody, validateBodyParams } from '../../src/utils.js';
+import { PLANS, STRIPE_CHECKOUT_SESSION_URL, SITE_ID, AUTHORIZATION } from '../fixtures.js';
 
 // Mock PlansService
 class MockPlansService extends PlansService {
@@ -81,7 +82,7 @@ export class MockCheckoutController {
     const viewer =
       authorization === AUTHORIZATION.VALID
         ? { id: 12345, email: 'dummy@email.com' }
-        : parseBearerToken(AUTHORIZATION.INVALID);
+        : parseAuthToken(AUTHORIZATION.INVALID);
     if (!viewer?.id || !viewer?.email) {
       sendErrors(res, new UnauthorizedError({}));
       return;
@@ -89,7 +90,7 @@ export class MockCheckoutController {
 
     const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
     // Validate required params
-    const requiredParams: (keyof StripeCheckoutParams)[] = ['access_plan_id', 'price_id', 'mode', 'redirect_url'];
+    const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
     const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
     if (missingRequiredParams.length > 0) {
       sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));
@@ -103,10 +104,9 @@ export class MockCheckoutController {
         authorization,
       });
 
-      const accessPlanIds = accessControlPlans.map((plan) => plan.id);
-      if (!accessPlanIds.includes(checkoutParams.access_plan_id)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'access_plan_id' }));
-        return;
+      const externalProductIds = accessControlPlans.map((plan) => plan.external_providers?.stripe);
+      if (!externalProductIds.length) {
+        sendErrors(res, new NotFoundError({ description: 'No purchasable products are available for this customer.' }));
       }
 
       const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);

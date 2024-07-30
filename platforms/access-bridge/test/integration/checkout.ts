@@ -12,8 +12,7 @@ import {
   STRIPE_ERRORS,
   AUTHORIZATION,
 } from '../fixtures.js';
-
-import { MockCheckoutController } from './mocks/checkout.js';
+import { MockCheckoutController } from '../mocks/checkout.js';
 
 describe('CheckoutController tests', async () => {
   let mockServer: MockServer;

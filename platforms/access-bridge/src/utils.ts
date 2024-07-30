@@ -54,11 +54,10 @@ export const validateBodyParams = <T>(params: Partial<T>, requiredParams: (keyof
 
 /**
  * Parses a bearer token to extract the viewer's ID and email.
- *
- * @param token - The bearer token to be parsed.
+ * @param token - The JWT token to be parsed.
  * @returns An object containing the viewer's ID and email, or null if the token is invalid or missing required fields.
  */
-export function parseBearerToken(token: string): Viewer | null {
+export function parseAuthToken(token: string): Viewer | null {
   try {
     const strippedToken = token.startsWith('Bearer ') ? token.slice(7) : token;
     const decoded = jwt.decode(strippedToken) as JwtPayload;

@@ -22,7 +22,7 @@ export const endpoints: EndpointHandler = {
     PUT: accessController.refreshPassport,
   },
   '/v2/sites/:site_id/products': {
-    GET: productsController.getStripeProducts,
+    GET: productsController.getProducts,
   },
   '/v2/sites/:site_id/checkout': {
     POST: checkoutController.initiateCheckout,

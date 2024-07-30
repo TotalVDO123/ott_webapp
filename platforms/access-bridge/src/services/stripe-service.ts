@@ -24,19 +24,20 @@ export class StripeService {
   }
 
   /**
-   * Retrieves Stripe products with prices and filters them based on the available access_plan_ids.
-   * @param accessPlanIds The array of access plan IDs to filter the products.
+   * Retrieves Stripe products with prices and filters them based on the provided productIds.
+   * @param productIds The array of product IDs to filter the products.
    * @returns A Promise resolving to an array of filtered ProductsWithMetadata objects.
    * @throws Error if there is an issue fetching products or parsing the response.
    */
-  async getStripeProductsWithPrices(accessPlanIds: string[]): Promise<StripeProduct[]> {
+  async getProductsWithPrices(productIds: string[]): Promise<StripeProduct[]> {
     try {
-      const products = await this.stripe.products.list();
+      if (!productIds.length) {
+        return [];
+      }
 
-      // Filter products based on the access plan IDs
-      const filteredProducts = products.data.filter((product) =>
-        accessPlanIds.includes(product.metadata.access_plan_id)
-      );
+      // Fetch all products (pagination might be necessary for large datasets)
+      const allProducts = await this.stripe.products.list();
+      const filteredProducts = allProducts.data.filter((product) => productIds.includes(product.id));
 
       if (filteredProducts.length === 0) {
         return [];
@@ -45,11 +46,19 @@ export class StripeService {
       // Retrieve prices for each filtered product
       const productsWithPrices = await Promise.all(
         filteredProducts.map(async (product) => {
-          const prices = await this.stripe.prices.list({ product: product.id });
-          return {
-            ...product,
-            prices: prices.data,
-          };
+          try {
+            const prices = await this.stripe.prices.list({ product: product.id });
+            return {
+              ...product,
+              prices: prices.data,
+            };
+          } catch (priceError) {
+            console.error(`Failed to fetch prices for product ${product.id}:`, priceError);
+            return {
+              ...product,
+              prices: [], // Return an empty array if price retrieval fails
+            };
+          }
         })
       );
 

@@ -5,7 +5,7 @@ import { describe, test } from 'node:test';
 
 import jwt from 'jsonwebtoken';
 
-import { isValidSiteId, parseBearerToken, parseJsonBody } from '../../src/utils.js';
+import { isValidSiteId, parseAuthToken, parseJsonBody } from '../../src/utils.js';
 import { SITE_ID } from '../fixtures.js';
 import { AccessBridgeError, ErrorCode } from '../../src/errors.js';
 
@@ -18,34 +18,34 @@ const malformedToken = 'malformed.token.structure';
 // Helper function to create a bearer token
 const createBearerToken = (token: string) => `Bearer ${token}`;
 
-describe('parseBearerToken', () => {
+describe('parseAuthToken', () => {
   test('should parse valid bearer token', () => {
-    const result = parseBearerToken(createBearerToken(validToken));
+    const result = parseAuthToken(createBearerToken(validToken));
     assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
   });
 
   test('should parse token with no Bearer prefix', () => {
-    const result = parseBearerToken(validToken); // No 'Bearer ' prefix
+    const result = parseAuthToken(validToken); // No 'Bearer ' prefix
     assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
   });
 
   test('should return null for token missing required fields', () => {
-    const result = parseBearerToken(createBearerToken(invalidToken));
+    const result = parseAuthToken(createBearerToken(invalidToken));
     assert.strictEqual(result, null);
   });
 
   test('should return null for malformed token', () => {
-    const result = parseBearerToken(createBearerToken(malformedToken));
+    const result = parseAuthToken(createBearerToken(malformedToken));
     assert.strictEqual(result, null);
   });
 
   test('should return null for empty token', () => {
-    const result = parseBearerToken('');
+    const result = parseAuthToken('');
     assert.strictEqual(result, null);
   });
 
   test('should return null for undefined token', () => {
-    const result = parseBearerToken(undefined as unknown as string);
+    const result = parseAuthToken(undefined as unknown as string);
     assert.strictEqual(result, null);
   });
 });

@@ -38,15 +38,35 @@ export class PlansService {
     authorization,
   }: AccessControlPlansParams): Promise<AccessControlPlan[]> {
     try {
-      const plans = await get<PlansResponse>(`${this.plansClient}/v3/sites/${siteId}/${endpointType}`, authorization);
-      if (!plans?.access_plan || plans.access_plan.length === 0) {
+      const response = await get<PlansResponse>(
+        `${this.plansClient}/v3/sites/${siteId}/${endpointType}`,
+        authorization
+      );
+
+      if (!response?.plans) {
         return [];
       }
 
-      const accessControlPlans: AccessControlPlan[] = plans.access_plan.map((plan) => ({
-        id: plan.id,
-        exp: plan.exp,
-      }));
+      const accessControlPlans: AccessControlPlan[] = response.plans
+        .map((plan) => {
+          const id = plan?.access_plan?.id;
+          const exp = plan?.access_plan?.exp;
+
+          if (!id || !exp) {
+            return null;
+          }
+
+          return {
+            id,
+            exp,
+            external_providers: {
+              stripe: plan.metadata?.external_providers?.stripe,
+              google: plan.metadata?.external_providers?.google,
+              apple: plan.metadata?.external_providers?.apple,
+            },
+          };
+        })
+        .filter(Boolean) as AccessControlPlan[]; // Filter out null values
 
       return accessControlPlans;
     } catch (e) {
