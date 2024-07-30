@@ -1,61 +1,11 @@
 import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
-import Stripe from 'stripe';
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
-
 import { MockServer } from '../mock-server.js';
-import { StripeService } from '../../src/services/stripe-service.js';
-import { ENDPOINTS, PLANS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT, VALID_PLAN_ID } from '../fixtures.js';
+import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT, VALID_PLAN_ID } from '../fixtures.js';
 import { ProductsController } from '../../src/controllers/products-controller.js';
-import { PlansService } from '../../src/services/plans-service.js';
-import { AccessBridgeError, BadRequestError, ErrorCode, ForbiddenError, UnauthorizedError } from '../../src/errors.js';
-
-// Mock PlansService
-class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
-    return PLANS.VALID;
-  }
-}
-
-// Mock StripeService
-class MockStripeService extends StripeService {
-  private mockBehavior: 'default' | 'empty' | 'error' = 'default';
-  private mockError: AccessBridgeError | null = null;
-
-  // Method to set the mock behavior
-  setMockBehavior(behavior: 'default' | 'empty' | 'error', error?: Stripe.errors.StripeError) {
-    this.mockBehavior = behavior;
-
-    if (behavior === 'error' && error instanceof Stripe.errors.StripeError) {
-      switch (error.type) {
-        case 'StripeInvalidRequestError':
-          this.mockError = new BadRequestError({});
-          break;
-        case 'StripeAuthenticationError':
-          this.mockError = new UnauthorizedError({});
-          break;
-        case 'StripePermissionError':
-          this.mockError = new ForbiddenError({});
-          break;
-        default:
-          this.mockError = new BadRequestError({});
-      }
-    }
-  }
-
-  async getStripeProductsWithPrices(accessPlanIds: string[]) {
-    if (this.mockBehavior === 'error' && this.mockError) {
-      throw this.mockError;
-    }
-
-    if (this.mockBehavior === 'empty') {
-      return [];
-    }
-
-    return [STRIPE_PRODUCT];
-  }
-}
+import { ErrorCode } from '../../src/errors.js';
+import { MockPlansService, MockStripeService } from '../mocks/products.js';
 
 describe('ProductsController tests', async () => {
   let mockServer: MockServer;
@@ -71,7 +21,7 @@ describe('ProductsController tests', async () => {
 
     const endpoints = {
       [ENDPOINTS.PRODUCTS]: {
-        GET: productsController.getStripeProducts,
+        GET: productsController.getProducts,
       },
     };
 

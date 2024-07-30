@@ -15,3 +15,8 @@ export type AccessTokensResponse = {
   passport: string;
   refresh_token: string;
 };
+
+export type Viewer = {
+  id: number;
+  email: string;
+};

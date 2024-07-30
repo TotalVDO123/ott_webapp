@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
 import { StripeProduct } from '../src/services/stripe-service.js';
 import { ErrorCode } from '../src/errors.js';
@@ -33,13 +34,19 @@ export const ACCESS_TOKENS = {
   },
 };
 
-// plan variations mock
 export const VALID_PLAN_ID = 'plan1234';
+
+// plan variations mock
+const createMockPlan = (id: string, exp: number): AccessControlPlan => ({
+  id,
+  exp,
+  external_providers: { stripe: 'dummy123' },
+});
 export const PLANS = {
-  VALID: [{ id: VALID_PLAN_ID, exp: FUTURE_EXPIRY }],
-  FREE: [{ id: 'free1234', exp: FUTURE_EXPIRY }],
-  INVALID: [{ id: 'plan123456', exp: FUTURE_EXPIRY }],
-  EXPIRED: [{ id: 'plan123456', exp: PAST_EXPIRY }],
+  VALID: [createMockPlan('plan1234', FUTURE_EXPIRY)],
+  FREE: [createMockPlan('free1234', FUTURE_EXPIRY)],
+  INVALID: [createMockPlan('plan123456', FUTURE_EXPIRY)],
+  EXPIRED: [createMockPlan('plan123456', PAST_EXPIRY)],
 };
 
 // Valid and invalid site id mock

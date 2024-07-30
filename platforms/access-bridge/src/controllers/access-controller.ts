@@ -1,9 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
+import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
+
 import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
 import { AccessService } from '../services/access-service.js';
 import { PlansService } from '../services/plans-service.js';
-import { isValidSiteId, parseJsonBody } from '../utils.js';
+import { isValidSiteId, parseAuthToken, parseJsonBody } from '../utils.js';
 
 /**
  * Controller class responsible for handling access-related services.
@@ -30,24 +32,23 @@ export class AccessController {
         return;
       }
 
+      const authorization = req.headers['authorization'];
       const accessControlPlans = await this.plansService.getAccessControlPlans({
         siteId: params.site_id,
         endpointType: 'entitlements',
-        authorization: req.headers['authorization'],
+        authorization,
       });
-      console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
-      // mocked until data for ac plans is added
-      const plans = [
-        {
-          id: 'PqX8Lsf9',
-          exp: 1741153241,
-        },
-      ];
+      // map to exclude the external_providers since it's not needed in the passport data
+      const plans: AccessControlPlan[] = accessControlPlans.map(({ id, exp }) => ({ id, exp }));
 
+      const viewer = authorization ? parseAuthToken(authorization) : null;
+      // Generate access tokens for the given site and plans.
+      // If the viewer is identified from the token, use their ID.
+      // Otherwise, use a default placeholder ID 'viewer'.
       const accessTokens = await this.accessService.generateAccessTokens({
         siteId: params.site_id,
-        viewerId: 'viewer123',
+        viewerId: viewer?.id.toString() ?? 'viewer',
         plans,
       });
 

@@ -19,12 +19,12 @@ export class ProductsController {
   }
 
   /**
-   * Service handler for fetching and filtering Stripe products based on access plan IDs.
+   * Service handler for fetching and filtering products based on external provider IDs.
    * @param req The HTTP request object.
    * @param res The HTTP response object.
    * @param params The request parameters containing site_id.
    */
-  getStripeProducts = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
+  getProducts = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
     try {
       if (!isValidSiteId(params.site_id)) {
         sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
@@ -36,18 +36,18 @@ export class ProductsController {
         endpointType: 'plans',
         authorization: req.headers['authorization'],
       });
-      console.info(accessControlPlans, ' plans'); // missing nededed data - requires SIMS team to update the API
 
-      // mocked until data for ac plans is added
-      const plans = [
-        {
-          id: 'PqX8Lsf9',
-          exp: 1741153241,
-        },
-      ];
+      const externalProviderIds: string[] = accessControlPlans
+        .map((plan) => plan.external_providers?.stripe)
+        .filter((id): id is string => id !== undefined);
 
-      const accessPlanIds = plans.map((plan) => plan.id);
-      const products = await this.stripeService.getStripeProductsWithPrices(accessPlanIds);
+      // This is just for testing purpose until SIMS API is updated to include external ids
+      // Uncomment if you want to recieve real Stripe data instead of empty array
+      // if (!externalProviderIds.length) {
+      //   externalProviderIds = ['prod_QRUHbH7wK5HHPr'];
+      // }
+
+      const products = await this.stripeService.getProductsWithPrices(externalProviderIds);
 
       res.end(JSON.stringify(products));
     } catch (error) {
