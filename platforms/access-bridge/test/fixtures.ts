@@ -1,3 +1,5 @@
+import { AccessControlPlan } from '@jwp/ott-common/types/plans';
+
 // Utility function to get Unix timestamp
 export const getTimestamp = (daysOffset: number): number => {
   const now = new Date();
@@ -28,11 +30,16 @@ export const ACCESS_TOKENS = {
 };
 
 // plan variations mock
+const createMockPlan = (id: string, exp: number): AccessControlPlan => ({
+  id,
+  exp,
+  external_providers: { stripe: 'dummy123' },
+});
 export const PLANS = {
-  VALID: [{ id: 'plan1234', exp: FUTURE_EXPIRY }],
-  FREE: [{ id: 'free1234', exp: FUTURE_EXPIRY }],
-  INVALID: [{ id: 'plan123456', exp: FUTURE_EXPIRY }],
-  EXPIRED: [{ id: 'plan123456', exp: PAST_EXPIRY }],
+  VALID: [createMockPlan('plan1234', FUTURE_EXPIRY)],
+  FREE: [createMockPlan('free1234', FUTURE_EXPIRY)],
+  INVALID: [createMockPlan('plan123456', FUTURE_EXPIRY)],
+  EXPIRED: [createMockPlan('plan123456', PAST_EXPIRY)],
 };
 
 // Valid and invalid site id mock
