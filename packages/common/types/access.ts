@@ -17,6 +17,6 @@ export type AccessTokensResponse = {
 };
 
 export type Viewer = {
-  id: number;
+  id: string;
   email: string;
 };

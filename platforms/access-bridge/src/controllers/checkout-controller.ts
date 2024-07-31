@@ -5,26 +5,25 @@ import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 import { StripeService } from '../services/stripe-service.js';
 import {
   AccessBridgeError,
-  NotFoundError,
   ParameterInvalidError,
   ParameterMissingError,
   sendErrors,
   UnauthorizedError,
 } from '../errors.js';
 import { STRIPE_SECRET } from '../app-config.js';
-import { isValidSiteId, parseAuthToken, parseJsonBody, validateBodyParams } from '../utils.js';
-import { PlansService } from '../services/plans-service.js';
+import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
+import { AccountService } from '../services/account-service.js';
 
 /**
  * Controller class responsible for handling Stripe Checkout sessions.
  */
 export class CheckoutController {
+  private accountService: AccountService;
   private stripeService: StripeService;
-  private plansService: PlansService;
 
   constructor() {
+    this.accountService = new AccountService();
     this.stripeService = new StripeService(STRIPE_SECRET);
-    this.plansService = new PlansService();
   }
 
   /**
@@ -42,8 +41,7 @@ export class CheckoutController {
       }
 
       const authorization = req.headers['authorization'];
-      const viewer = authorization ? parseAuthToken(authorization) : null;
-      if (!viewer?.id || !viewer?.email) {
+      if (!authorization) {
         sendErrors(res, new UnauthorizedError({}));
         return;
       }
@@ -58,20 +56,7 @@ export class CheckoutController {
         return;
       }
 
-      const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId: params.site_id,
-        endpointType: 'plans',
-        authorization,
-      });
-
-      const externalProductIds = accessControlPlans.map((plan) => plan.external_providers?.stripe);
-      // Use the commented one if you want to test the checkout session
-      // This will be removed once SIMS API is updated to include external providers
-      // const externalProductIds = ['prod_QRUHbH7wK5HHPr'];
-      if (!externalProductIds.length) {
-        sendErrors(res, new NotFoundError({ description: 'No purchasable products are available for this customer.' }));
-      }
-
+      const viewer = await this.accountService.getAccount({ authorization });
       const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
 
       res.end(JSON.stringify({ url: checkoutSession.url }));

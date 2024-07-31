@@ -44,4 +44,4 @@ export const BIND_PORT = parseInt(requireEnvVar(process.env.BIND_PORT, 'BIND_POR
 
 // Client URLs
 export const ACCESS_CONTROL_CLIENT = requireEnvVar(process.env.ACCESS_CONTROL_CLIENT, 'ACCESS_CONTROL_CLIENT');
-export const PLANS_CLIENT = requireEnvVar(process.env.PLANS_CLIENT, 'PLANS_CLIENT');
+export const SIMS_CLIENT = requireEnvVar(process.env.SIMS_CLIENT, 'SIMS_CLIENT');

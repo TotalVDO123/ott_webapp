@@ -1,6 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 import Stripe from 'stripe';
 import { Viewer } from '@jwp/ott-common/types/access.js';
@@ -13,17 +12,20 @@ import {
   sendErrors,
   ParameterInvalidError,
   ParameterMissingError,
-  NotFoundError,
 } from '../../src/errors.js';
-import { PlansService } from '../../src/services/plans-service.js';
 import { StripeService } from '../../src/services/stripe-service.js';
-import { isValidSiteId, parseAuthToken, parseJsonBody, validateBodyParams } from '../../src/utils.js';
-import { PLANS, STRIPE_CHECKOUT_SESSION_URL, SITE_ID, AUTHORIZATION } from '../fixtures.js';
+import { isValidSiteId, parseJsonBody, validateBodyParams } from '../../src/utils.js';
+import { STRIPE_CHECKOUT_SESSION_URL, AUTHORIZATION, VIEWER } from '../fixtures.js';
+import { AccountService } from '../../src/services/account-service.js';
 
-// Mock PlansService
-class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
-    return PLANS.VALID;
+// Mock AccountService
+class MockAccountService extends AccountService {
+  async getAccount({ authorization }: { authorization: string }) {
+    if (authorization === AUTHORIZATION.INVALID) {
+      throw new UnauthorizedError({});
+    }
+
+    return VIEWER;
   }
 }
 
@@ -64,51 +66,38 @@ class MockStripeService extends StripeService {
 
 // Mock Controller
 export class MockCheckoutController {
+  private accountService: MockAccountService;
   private stripeService: MockStripeService;
-  private plansService: MockPlansService;
 
   constructor() {
+    this.accountService = new MockAccountService();
     this.stripeService = new MockStripeService('mock-api-key');
-    this.plansService = new MockPlansService();
   }
 
   initiateCheckout = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
-    if (!isValidSiteId(params.site_id)) {
-      sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
-      return;
-    }
-
-    const authorization = req.headers['authorization'];
-    const viewer =
-      authorization === AUTHORIZATION.VALID
-        ? { id: 12345, email: 'dummy@email.com' }
-        : parseAuthToken(AUTHORIZATION.INVALID);
-    if (!viewer?.id || !viewer?.email) {
-      sendErrors(res, new UnauthorizedError({}));
-      return;
-    }
-
-    const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
-    // Validate required params
-    const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
-    const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
-    if (missingRequiredParams.length > 0) {
-      sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));
-      return;
-    }
-
     try {
-      const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId: SITE_ID.VALID,
-        endpointType: 'plans',
-        authorization,
-      });
-
-      const externalProductIds = accessControlPlans.map((plan) => plan.external_providers?.stripe);
-      if (!externalProductIds.length) {
-        sendErrors(res, new NotFoundError({ description: 'No purchasable products are available for this customer.' }));
+      if (!isValidSiteId(params.site_id)) {
+        sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
+        return;
       }
 
+      const authorization = req.headers['authorization'];
+      if (!authorization || authorization === AUTHORIZATION.INVALID) {
+        sendErrors(res, new UnauthorizedError({}));
+        return;
+      }
+
+      const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
+
+      // Validate required params
+      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
+      const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
+      if (missingRequiredParams.length > 0) {
+        sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));
+        return;
+      }
+
+      const viewer = await this.accountService.getAccount({ authorization });
       const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
 
       res.end(JSON.stringify({ url: checkoutSession.url }));
