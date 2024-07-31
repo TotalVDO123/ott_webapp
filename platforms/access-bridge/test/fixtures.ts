@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
+import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import { StripeProduct } from '../src/services/stripe-service.js';
 import { ErrorCode } from '../src/errors.js';
@@ -35,6 +36,10 @@ export const ACCESS_TOKENS = {
 };
 
 export const VALID_PLAN_ID = 'plan1234';
+export const VIEWER: Viewer = {
+  id: '123456',
+  email: 'dummy@test.com',
+};
 
 // plan variations mock
 const createMockPlan = (id: string, exp: number): AccessControlPlan => ({

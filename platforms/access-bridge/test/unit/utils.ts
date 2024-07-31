@@ -3,52 +3,9 @@ import { IncomingMessage } from 'node:http';
 import { Socket } from 'node:net';
 import { describe, test } from 'node:test';
 
-import jwt from 'jsonwebtoken';
-
 import { SITE_ID } from '../fixtures.js';
-import { isValidSiteId, parseAuthToken, parseJsonBody } from '../../src/utils.js';
+import { isValidSiteId, parseJsonBody } from '../../src/utils.js';
 import { AccessBridgeError, ErrorCode } from '../../src/errors.js';
-
-// Mock secret and token creation
-const secret = 'your-secret-key';
-const validToken = jwt.sign({ aid: 123, sub: 'test@example.com' }, secret);
-const invalidToken = jwt.sign({ uid: 123 }, secret); // Missing 'aid' and 'sub'
-const malformedToken = 'malformed.token.structure';
-
-// Helper function to create a bearer token
-const createBearerToken = (token: string) => `Bearer ${token}`;
-
-describe('parseAuthToken', () => {
-  test('should parse valid bearer token', () => {
-    const result = parseAuthToken(createBearerToken(validToken));
-    assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
-  });
-
-  test('should parse token with no Bearer prefix', () => {
-    const result = parseAuthToken(validToken); // No 'Bearer ' prefix
-    assert.deepStrictEqual(result, { id: 123, email: 'test@example.com' });
-  });
-
-  test('should return null for token missing required fields', () => {
-    const result = parseAuthToken(createBearerToken(invalidToken));
-    assert.strictEqual(result, null);
-  });
-
-  test('should return null for malformed token', () => {
-    const result = parseAuthToken(createBearerToken(malformedToken));
-    assert.strictEqual(result, null);
-  });
-
-  test('should return null for empty token', () => {
-    const result = parseAuthToken('');
-    assert.strictEqual(result, null);
-  });
-
-  test('should return null for undefined token', () => {
-    const result = parseAuthToken(undefined as unknown as string);
-    assert.strictEqual(result, null);
-  });
-});
 
 describe('isValidSiteId', () => {
   test('should return true for valid site IDs', () => {
