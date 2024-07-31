@@ -4,9 +4,6 @@ import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js
 
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
-  metadata: {
-    access_plan_id?: string;
-  };
 };
 
 /**

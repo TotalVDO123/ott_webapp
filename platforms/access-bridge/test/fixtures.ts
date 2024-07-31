@@ -109,9 +109,7 @@ export const STRIPE_PRODUCT: StripeProduct = {
   images: ['https://example.com/image1.png'],
   livemode: false,
   marketing_features: [{ name: 'Test' }, { name: 'Mock' }],
-  metadata: {
-    access_plan_id: VALID_PLAN_ID,
-  },
+  metadata: {},
   name: 'Sample Product',
   package_dimensions: null,
   shippable: true,
