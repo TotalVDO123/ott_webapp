@@ -1,3 +1,4 @@
+import { Viewer } from '@jwp/ott-common/types/access';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans';
 
 // Utility function to get Unix timestamp
@@ -27,6 +28,11 @@ export const ACCESS_TOKENS = {
     VALID: 'valid-refresh-token',
     INVALID: 'invalid-refresh-token',
   },
+};
+
+export const VIEWER: Viewer = {
+  id: '123456',
+  email: 'dummy@test.com',
 };
 
 // plan variations mock

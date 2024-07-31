@@ -1,6 +1,6 @@
 import { AccessControlPlan, AccessControlPlansParams, PlansResponse } from '@jwp/ott-common/types/plans.js';
 
-import { PLANS_CLIENT } from '../app-config.js';
+import { SIMS_CLIENT } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
 
@@ -8,10 +8,10 @@ import { get } from '../http.js';
  * Service class responsible for interacting with the Plans API that handles access control plans.
  */
 export class PlansService {
-  private plansClient: string;
+  private simsClient: string;
 
   constructor() {
-    this.plansClient = PLANS_CLIENT;
+    this.simsClient = SIMS_CLIENT;
   }
 
   /**
@@ -38,10 +38,7 @@ export class PlansService {
     authorization,
   }: AccessControlPlansParams): Promise<AccessControlPlan[]> {
     try {
-      const response = await get<PlansResponse>(
-        `${this.plansClient}/v3/sites/${siteId}/${endpointType}`,
-        authorization
-      );
+      const response = await get<PlansResponse>(`${this.simsClient}/v3/sites/${siteId}/${endpointType}`, authorization);
 
       if (!response?.plans) {
         return [];

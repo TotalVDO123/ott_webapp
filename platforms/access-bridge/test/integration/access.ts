@@ -5,17 +5,14 @@ import { AccessController } from '../../src/controllers/access-controller.js';
 import { MockServer } from '../mock-server.js';
 import { ErrorCode } from '../../src/errors.js';
 import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, SITE_ID } from '../fixtures.js';
-import { MockAccessService, MockPlansService } from '../mocks/access.js';
+import { MockAccessController } from '../mocks/access.js';
 
 describe('AccessController passport generate/refresh tests', async () => {
   let mockServer: MockServer;
   let accessController: AccessController;
 
   before(async () => {
-    // Mock the controller's dependencies
-    accessController = new AccessController();
-    accessController['accessService'] = new MockAccessService();
-    accessController['plansService'] = new MockPlansService();
+    accessController = new MockAccessController();
 
     const endpoints = {
       [ENDPOINTS.GENERATE_TOKENS]: {
@@ -52,7 +49,7 @@ describe('AccessController passport generate/refresh tests', async () => {
       .end();
   });
 
-  await test('should generate passport access tokens', (t, done) => {
+  await test('should generate passport access tokens with valid authorization', (t, done) => {
     const requestOptions = {
       headers: {
         Authorization: AUTHORIZATION.VALID,
@@ -78,7 +75,7 @@ describe('AccessController passport generate/refresh tests', async () => {
       .end();
   });
 
-  await test('should return UnauthorizedError for invalid authorization token', (t, done) => {
+  await test('should return UnauthorizedError for invalid authorization', (t, done) => {
     const requestOptions = {
       headers: {
         Authorization: AUTHORIZATION.INVALID,

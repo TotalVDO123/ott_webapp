@@ -1,20 +1,24 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
+import { Viewer } from '@jwp/ott-common/types/access.js';
 
-import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
+import { ParameterInvalidError, AccessBridgeError, sendErrors, UnauthorizedError } from '../errors.js';
 import { AccessService } from '../services/access-service.js';
 import { PlansService } from '../services/plans-service.js';
-import { isValidSiteId, parseAuthToken, parseJsonBody } from '../utils.js';
+import { isValidSiteId, parseJsonBody } from '../utils.js';
+import { AccountService } from '../services/account-service.js';
 
 /**
  * Controller class responsible for handling access-related services.
  */
 export class AccessController {
+  private accountService: AccountService;
   private accessService: AccessService;
   private plansService: PlansService;
 
   constructor() {
+    this.accountService = new AccountService();
     this.accessService = new AccessService();
     this.plansService = new PlansService();
   }
@@ -32,7 +36,18 @@ export class AccessController {
         return;
       }
 
+      // unauthorized is default for viewers without an authorization token
+      let viewer: Viewer = { id: 'unauthorized', email: '' };
+
       const authorization = req.headers['authorization'];
+      if (authorization) {
+        viewer = await this.accountService.getAccount({ authorization });
+        if (!viewer.id || !viewer.email) {
+          sendErrors(res, new UnauthorizedError({}));
+          return;
+        }
+      }
+
       const accessControlPlans = await this.plansService.getAccessControlPlans({
         siteId: params.site_id,
         endpointType: 'entitlements',
@@ -42,13 +57,10 @@ export class AccessController {
       // map to exclude the external_providers since it's not needed in the passport data
       const plans: AccessControlPlan[] = accessControlPlans.map(({ id, exp }) => ({ id, exp }));
 
-      const viewer = authorization ? parseAuthToken(authorization) : null;
-      // Generate access tokens for the given site and plans.
-      // If the viewer is identified from the token, use their ID.
-      // Otherwise, use a default placeholder ID 'viewer'.
+      // Generate access tokens for the given site, viewer and plans.
       const accessTokens = await this.accessService.generateAccessTokens({
         siteId: params.site_id,
-        viewerId: viewer?.id.toString() ?? 'viewer',
+        viewerId: viewer.id,
         plans,
       });
 
