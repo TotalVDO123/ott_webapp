@@ -1,5 +1,5 @@
-import { Viewer } from '@jwp/ott-common/types/access';
-import { AccessControlPlan } from '@jwp/ott-common/types/plans';
+import { Viewer } from '@jwp/ott-common/types/access.js';
+import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
 // Utility function to get Unix timestamp
 export const getTimestamp = (daysOffset: number): number => {
