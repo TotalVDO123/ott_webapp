@@ -11,21 +11,20 @@ Here’s how you can set them up:
 Create a `.env.local` file in the root of this project and add the following variables:
 
 - API_SECRET=customer_v1_secret
+- STRIPE_SECRET=your_stripe_sk
 - BIND_ADDR=localhost
 - BIND_PORT=3000
 - ACCESS_CONTROL_CLIENT=https://cdn-dev.jwplayer.com
 - PLANS_CLIENT=https://daily-sims.jwplayer.com
 
-Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual values from your JW Dashboard.  
-You can also copy and paste the contents of `.env.example` into `.env.local`.
+Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual value from your JW Dashboard.  
+You can also copy and paste the contents of `.env.example` into `.env.local` and just ajust the API_SECRET and STRIPE_SECRET.
 
 ## Getting started
 
 - Run `yarn` to install dependencies
 - Navigate to the platform directory `cd platforms/access-bridge`
 - Run tests through `yarn test`
-- Format the code through `yarn format` (or automatically do it via git hooks)
-- Lint through `yarn lint` (eslint, prettier, stylelint and tsc checks)
 - Run `yarn start` to start the server
 
 ## Exposed endpoints
@@ -60,6 +59,33 @@ You can also copy and paste the contents of `.env.example` into `.env.local`.
     "passport": "encrypted_passport",
     "refresh_token": "random_string"
   }
+  ```
+
+#### URL: `/v2/sites/{site_id}/products`
+
+- **Method:** GET
+- **Authorization:** None
+- **Summary:** Lists all the corresponding stripe products with prices that are connected to the SIMS plans.
+- **Response:** Stripe.Product type
+  ```json
+  [
+    {
+      // ...
+      "id": "prod_QRUHbH7wK5HHPr",
+      "default_price": "price_1PabInA9TD3ZjIM6EEnKSR7U",
+      // ...
+      "prices": [
+        {
+          // ...
+          "id": "price_1PabInA9TD3ZjIM6EEnKSR7U",
+          "currency": "usd",
+          "unit_amount": 15000
+          // ...
+        }
+      ]
+    }
+    // ...
+  ]
   ```
 
 ## Developer guidelines

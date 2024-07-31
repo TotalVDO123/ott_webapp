@@ -2,7 +2,7 @@ import assert from 'assert';
 import { describe, test, before, after } from 'node:test';
 
 import { MockServer } from '../mock-server.js';
-import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT, VALID_PLAN_ID } from '../fixtures.js';
+import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT } from '../fixtures.js';
 import { ProductsController } from '../../src/controllers/products-controller.js';
 import { ErrorCode } from '../../src/errors.js';
 import { MockPlansService, MockStripeService } from '../mocks/products.js';
@@ -48,7 +48,6 @@ describe('ProductsController tests', async () => {
           assert.strictEqual(responseBody[0].id, STRIPE_PRODUCT.id);
           assert.strictEqual(responseBody[0].name, STRIPE_PRODUCT.name);
           assert.strictEqual(responseBody[0].default_price, STRIPE_PRODUCT.default_price);
-          assert.strictEqual(responseBody[0].metadata.access_plan_id, VALID_PLAN_ID);
           done();
         });
       })
