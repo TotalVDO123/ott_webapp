@@ -17,15 +17,13 @@ Create a `.env.local` file in the root of this project and add the following var
 - PLANS_CLIENT=https://daily-sims.jwplayer.com
 
 Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual values from your JW Dashboard.  
-You can also copy and paste the contents of `.env.example` into `.env.local`.
+You can also copy and paste the contents of `.env.example` into `.env.local` and just ajust the API_SECRET.
 
 ## Getting started
 
 - Run `yarn` to install dependencies
 - Navigate to the platform directory `cd platforms/access-bridge`
 - Run tests through `yarn test`
-- Format the code through `yarn format` (or automatically do it via git hooks)
-- Lint through `yarn lint` (eslint, prettier, stylelint and tsc checks)
 - Run `yarn start` to start the server
 
 ## Exposed endpoints

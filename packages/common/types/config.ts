@@ -1,6 +1,6 @@
 import type { PLAYLIST_TYPE } from '../src/constants';
 
-import type { AdScheduleUrls } from './ad-schedule';
+import type { AdScheduleUrls, AdDeliveryMethod } from './ad-schedule';
 
 /**
  * Set config setup changes in both config.services.ts and config.d.ts
@@ -11,6 +11,8 @@ export type Config = {
   description: string;
   analyticsToken?: string | null;
   adSchedule?: string | null;
+  adConfig?: string | null;
+  adDeliveryMethod?: AdDeliveryMethod;
   adScheduleUrls?: AdScheduleUrls;
   integrations: {
     cleeng?: Cleeng;

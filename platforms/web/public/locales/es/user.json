@@ -7,7 +7,6 @@
     "cancel": "Cancelar",
     "confirm_password": "Confirmar contraseña",
     "continue": "Continuar",
-    "delete": "Eliminar",
     "delete_account": {
       "body": "Elimine permanentemente su cuenta y todo su contenido.",
       "error": "Ocurrió un error al eliminar su cuenta. Inténtalo de nuevo.",

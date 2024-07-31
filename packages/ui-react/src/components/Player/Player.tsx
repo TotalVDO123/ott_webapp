@@ -7,7 +7,7 @@ import { testId } from '@jwp/ott-common/src/utils/common';
 import { logInfo } from '@jwp/ott-common/src/logger';
 import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
 import useOttAnalytics from '@jwp/ott-hooks-react/src/useOttAnalytics';
-import { attachAnalyticsParams } from '@jwp/ott-common/src/utils/analytics';
+import { useMediaSources } from '@jwp/ott-hooks-react/src/useMediaSources';
 import env from '@jwp/ott-common/src/env';
 
 import type { JWPlayer } from '../../../types/jwplayer';
@@ -62,6 +62,7 @@ const Player: React.FC<Props> = ({
   const backClickRef = useRef(false);
   const [libLoaded, setLibLoaded] = useState(!!window.jwplayer);
   const startTimeRef = useRef(startTime);
+  const sources = useMediaSources({ item, baseUrl: env.APP_API_BASE_URL });
 
   const setPlayer = useOttAnalytics(item, feedId);
 
@@ -183,10 +184,6 @@ const Player: React.FC<Props> = ({
 
       playerRef.current = window.jwplayer(playerElementRef.current) as JWPlayer;
 
-      // Inject user_id into the CDN analytics
-      // @todo this currently depends on stores
-      attachAnalyticsParams(item);
-
       // Player options are untyped
       const playerOptions: { [key: string]: unknown } = {
         advertising: {
@@ -209,7 +206,7 @@ const Player: React.FC<Props> = ({
         mute: false,
         playbackRateControls: true,
         pipIcon: 'disabled',
-        playlist: [deepCopy({ ...item, starttime: startTimeRef.current, feedid: feedId })],
+        playlist: [deepCopy({ ...item, starttime: startTimeRef.current, feedid: feedId, sources })],
         repeat: false,
         cast: {},
         stretching: 'uniform',
@@ -239,7 +236,7 @@ const Player: React.FC<Props> = ({
     if (libLoaded) {
       initializePlayer();
     }
-  }, [libLoaded, item, detachEvents, attachEvents, playerId, setPlayer, autostart, adsData, playerLicenseKey, feedId]);
+  }, [libLoaded, item, detachEvents, attachEvents, playerId, setPlayer, autostart, adsData, playerLicenseKey, sources, feedId]);
 
   useEffect(() => {
     return () => {
