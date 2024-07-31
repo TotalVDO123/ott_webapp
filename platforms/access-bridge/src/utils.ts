@@ -1,8 +1,5 @@
 import { IncomingMessage } from 'node:http';
 
-import { Viewer } from '@jwp/ott-common/types/access.js';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-
 import { BadRequestError } from './errors.js';
 
 export function isValidSiteId(siteId: string): boolean {
@@ -36,28 +33,3 @@ export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
     });
   });
 };
-
-/**
- * Parses a bearer token to extract the viewer's ID and email.
- *
- * @param token - The JWT token to be parsed.
- * @returns An object containing the viewer's ID and email, or null if the token is invalid or missing required fields.
- */
-export function parseAuthToken(token: string): Viewer | null {
-  try {
-    const strippedToken = token.startsWith('Bearer ') ? token.slice(7) : token;
-    const decoded = jwt.decode(strippedToken) as JwtPayload;
-
-    // Check if the decoded token has the required fields
-    if (decoded && typeof decoded === 'object' && 'aid' in decoded && 'sub' in decoded) {
-      const { aid, sub } = decoded;
-      return { id: aid, email: sub } as Viewer;
-    } else {
-      console.error('Token does not contain the required fields');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return null;
-  }
-}
