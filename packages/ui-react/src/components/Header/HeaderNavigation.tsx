@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import classNames from 'classnames';
 
 import Button from '../Button/Button';
 
@@ -11,7 +12,7 @@ type NavItem = {
 
 const scrollOffset = 100;
 
-const HeaderNavigation = ({ navItems }: { navItems: NavItem[] }) => {
+const HeaderNavigation = ({ className, navItems }: { className?: string; navItems: NavItem[] }) => {
   const navRef = useRef<HTMLElement>(null);
 
   const focusHandler = (event: React.FocusEvent) => {
@@ -30,7 +31,7 @@ const HeaderNavigation = ({ navItems }: { navItems: NavItem[] }) => {
   };
 
   return (
-    <nav className={styles.nav} ref={navRef}>
+    <nav className={classNames(styles.nav, className)} ref={navRef}>
       <ul onFocus={focusHandler}>
         {navItems.map((item, index) => (
           <li key={index}>

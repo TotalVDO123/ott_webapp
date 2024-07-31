@@ -1,3 +1,23 @@
+## [6.5.0](https://github.com/jwplayer/ott-web-app/compare/v6.4.0...v6.5.0) (2024-07-25)
+
+
+### Features
+
+* add backClick event support for player ([f29f6dc](https://github.com/jwplayer/ott-web-app/commit/f29f6dcd244f95568b5b2ba1437bc7e39dd0febc))
+* add ellipsis to card title ([ab6b2a8](https://github.com/jwplayer/ott-web-app/commit/ab6b2a83d947b163c5a10d8a1701823ee2fcd266))
+* implement tile-slider dependency ([d58f1cb](https://github.com/jwplayer/ott-web-app/commit/d58f1cb73696c8f2f64b4bb8d9fcdeec8ffc34b8))
+* **integrations:** replace InPlayer SDK with direct API calls to JwPlayer SIMS domain ([#578](https://github.com/jwplayer/ott-web-app/issues/578)) ([0a87a46](https://github.com/jwplayer/ott-web-app/commit/0a87a46af6f0ec4a0e77006ef1fba7b98bcc5cbd))
+* **menu:** support more items in header navigation ([15bbce0](https://github.com/jwplayer/ott-web-app/commit/15bbce0fcc1ffdaf8adb8539150701a43f3cb1d9))
+* **profiles:** remove all remaining dead code assotiated with profiles ([892f41b](https://github.com/jwplayer/ott-web-app/commit/892f41b5d73f7aaccd2ded141407f35209ed7926))
+* **project:** add cancel functions for debounce and throttle utils ([3fd9add](https://github.com/jwplayer/ott-web-app/commit/3fd9add7ec93563fc4ac778090c326263dfde244))
+* **project:** add ssai ads for vod ([#583](https://github.com/jwplayer/ott-web-app/issues/583)) ([d3a4750](https://github.com/jwplayer/ott-web-app/commit/d3a4750af29c2cc460e390120ca457620d43bfdb))
+
+
+### Bug Fixes
+
+* **videodetail:** buttons wrapping ([4b6f524](https://github.com/jwplayer/ott-web-app/commit/4b6f52412c9fff5aa9a1ac997f62b97b95ecf7bc))
+* wait for geo status and cache it's value ([6e4d263](https://github.com/jwplayer/ott-web-app/commit/6e4d2634d8a78e731ea39a9689720db8e8be38ef))
+
 ## [6.4.0](https://github.com/jwplayer/ott-web-app/compare/v6.3.0...v6.4.0) (2024-07-04)
 
 

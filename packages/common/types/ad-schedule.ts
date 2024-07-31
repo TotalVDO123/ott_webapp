@@ -8,3 +8,5 @@ export type AdScheduleUrls = {
   json?: string | null;
   xml?: string | null;
 };
+
+export type AdDeliveryMethod = 'csai' | 'ssai';
