@@ -3,6 +3,7 @@ import { AccessControlPlan, AccessControlPlansParams, PlansResponse } from '@jwp
 import { SIMS_CLIENT } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
+import logger from '../logger.js';
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
@@ -86,7 +87,7 @@ export class PlansService {
             throw new BadRequestError({ description: error.description });
         }
       }
-      console.error('Service: error fetching access control plans:', e);
+      logger.error('Service: error fetching access control plans:', e);
       throw e;
     }
   }

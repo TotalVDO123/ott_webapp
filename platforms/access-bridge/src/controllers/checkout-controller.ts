@@ -13,6 +13,7 @@ import {
 import { STRIPE_SECRET } from '../app-config.js';
 import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
 import { AccountService } from '../services/account-service.js';
+import logger from '../logger.js';
 
 /**
  * Controller class responsible for handling Stripe Checkout sessions.
@@ -62,10 +63,12 @@ export class CheckoutController {
       res.end(JSON.stringify({ url: checkoutSession.url }));
     } catch (error) {
       if (error instanceof AccessBridgeError) {
+        logger.error('Controller: failed to create checkout session.', error);
+
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to create checkout session.', error);
+      logger.error('Controller: failed to create checkout session.', error);
       throw error;
     }
   };

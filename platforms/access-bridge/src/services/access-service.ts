@@ -8,6 +8,7 @@ import {
 import { ACCESS_CONTROL_CLIENT, API_SECRET } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, ParameterInvalidError, isJWError } from '../errors.js';
 import { put } from '../http.js';
+import logger from '../logger.js';
 
 /**
  * AccessService handles interactions with the access management APIs.
@@ -53,7 +54,7 @@ export class AccessService {
             throw new BadRequestError({ description: error.description });
         }
       }
-      console.error('Service: error generating access tokens:', e);
+      logger.error('Service: error generating access tokens:', e);
       throw e;
     }
   }
@@ -93,7 +94,7 @@ export class AccessService {
             throw new BadRequestError({ description: error.description });
         }
       }
-      console.error('Service: error refreshing access tokens:', e);
+      logger.error('Service: error refreshing access tokens:', e);
       throw e;
     }
   }

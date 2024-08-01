@@ -5,6 +5,7 @@ import { StripeService } from '../services/stripe-service.js';
 import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
 import { STRIPE_SECRET } from '../app-config.js';
+import logger from '../logger.js';
 
 /**
  * Controller class responsible for handling Stripe-related services.
@@ -55,7 +56,7 @@ export class ProductsController {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to get Stripe products.', error);
+      logger.error('Controller: failed to get Stripe products.', error);
       throw error;
     }
   };

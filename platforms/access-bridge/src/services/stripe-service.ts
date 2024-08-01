@@ -3,6 +3,7 @@ import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
+import logger from '../logger.js';
 
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
@@ -74,7 +75,7 @@ export class StripeService {
             throw new BadRequestError({ description: e.message });
         }
       }
-      console.error('Service: error fetching Stripe products:', e);
+      logger.error('Service: error fetching Stripe products:', e);
       throw e;
     }
   }
@@ -120,7 +121,7 @@ export class StripeService {
             throw new BadRequestError({ description: e.message });
         }
       }
-      console.error('Service: error fetching Stripe products:', e);
+      logger.error('Service: error fetching Stripe products:', e);
       throw e;
     }
   }

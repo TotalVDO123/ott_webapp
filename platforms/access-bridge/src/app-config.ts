@@ -45,3 +45,6 @@ export const BIND_PORT = parseInt(requireEnvVar(process.env.BIND_PORT, 'BIND_POR
 // Client URLs
 export const ACCESS_CONTROL_CLIENT = requireEnvVar(process.env.ACCESS_CONTROL_CLIENT, 'ACCESS_CONTROL_CLIENT');
 export const SIMS_CLIENT = requireEnvVar(process.env.SIMS_CLIENT, 'SIMS_CLIENT');
+
+// Optional environment variables
+export const SENTRY_DSN = process.env.SENTRY_DSN;

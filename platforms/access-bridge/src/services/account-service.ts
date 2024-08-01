@@ -3,6 +3,7 @@ import { Viewer } from '@jwp/ott-common/types/access.js';
 import { SIMS_CLIENT } from '../app-config.js';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
 import { get } from '../http.js';
+import logger from '../logger.js';
 
 type AccountResponse = {
   id: number;
@@ -56,7 +57,7 @@ export class AccountService {
             throw new BadRequestError({ description: error.description });
         }
       }
-      console.error('Service: error fetching account information:', e);
+      logger.error('Service: error fetching account information:', e);
       throw e;
     }
   }

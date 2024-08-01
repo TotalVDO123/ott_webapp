@@ -8,6 +8,7 @@ import { AccessService } from '../services/access-service.js';
 import { PlansService } from '../services/plans-service.js';
 import { isValidSiteId, parseJsonBody } from '../utils.js';
 import { AccountService } from '../services/account-service.js';
+import logger from '../logger.js';
 
 /**
  * Controller class responsible for handling access-related services.
@@ -70,7 +71,7 @@ export class AccessController {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to generate passport.', error);
+      logger.error('Controller: failed to generate passport.', error);
       throw error;
     }
   };
@@ -102,7 +103,7 @@ export class AccessController {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to refresh passport.', error);
+      logger.error('Controller: failed to refresh passport.', error);
       throw error;
     }
   };

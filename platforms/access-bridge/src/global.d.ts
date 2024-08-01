@@ -7,6 +7,7 @@ declare global {
       BIND_PORT: string;
       ACCESS_CONTROL_CLIENT: string;
       SIMS_CLIENT: string;
+      SENTRY_DSN: string;
       // Add more custom environment variables as needed
     }
   }

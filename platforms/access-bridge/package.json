@@ -5,6 +5,9 @@
   "private": true,
   "author": "JW Player",
   "type": "module",
+  "engines": {
+    "node": ">=20.14.0"
+  },
   "scripts": {
     "build": "tsc && [ -f .env ] && cp .env ./build/.env || true && [ -f .env.local ] && cp .env.local ./build/.env.local || true",
     "start": "node build/src/main.js",
@@ -20,9 +23,10 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@jwp/ott-common": "*",
+    "@sentry/node": "^8.21.0",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
-    "stripe": "^16.2.0",
-    "@jwp/ott-common": "*"
+    "stripe": "^16.2.0"
   }
 }
