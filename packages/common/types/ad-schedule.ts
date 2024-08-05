@@ -1,5 +1,4 @@
-export type AdSchedule = {
-  adscheduleid?: string;
+export type AdConfig = {
   client: string;
   schedule: string;
 };
@@ -11,21 +10,21 @@ export type AdScheduleUrls = {
 
 export type AdDeliveryMethod = 'csai' | 'ssai';
 
-type DeliverySchedule = {
+type Schedule = {
   tag: string[];
   type: 'linear' | 'nonlinear';
   offset: 'pre' | 'post' | string; // seconds, timestamp, percentage
   skipoffset?: number;
 };
 
-type DeliveryRules = {
+type Rules = {
   startOnSeek: 'pre' | 'none' | 'mid';
   timeBetweenAds: number;
   startOn?: number;
   frequency?: number;
 };
 
-type DeliveryBids = {
+type Bids = {
   settings: {
     bidTimeout: number;
     floorPriceCents: number;
@@ -57,10 +56,10 @@ type DeliveryBids = {
   };
 };
 
-export type DeliveryAdSchedule = {
-  rules: DeliveryRules;
-  schedule: DeliverySchedule[];
-  bids: DeliveryBids;
+export type AdSchedule = {
+  rules: Rules;
+  schedule: Schedule[];
+  bids: Bids;
   client: 'vast' | 'googima';
   vpaidmode?: 'enabled' | 'disabled' | 'insecure';
   adscheduleid: string;
