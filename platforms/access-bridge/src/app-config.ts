@@ -45,3 +45,6 @@ export const BIND_PORT = parseInt(requireEnvVar(process.env.BIND_PORT, 'BIND_POR
 // Client URLs
 export const ACCESS_CONTROL_CLIENT = requireEnvVar(process.env.ACCESS_CONTROL_CLIENT, 'ACCESS_CONTROL_CLIENT');
 export const SIMS_CLIENT = requireEnvVar(process.env.SIMS_CLIENT, 'SIMS_CLIENT');
+
+// Add MIDDLEWARE_BASE_URL to the environment variables
+export const MIDDLEWARE_BASE_URL = requireEnvVar(process.env.MIDDLEWARE_BASE_URL, 'MIDDLEWARE_BASE_URL');

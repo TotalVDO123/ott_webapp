@@ -8,7 +8,7 @@ import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react'
 import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
-import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS, PATH_MANAGE_SUBSCRIPTIONS } from '@jwp/ott-common/src/paths';
 
 import styles from '../UserMenu/UserMenu.module.scss'; // TODO inherit styling
 import MenuButton from '../MenuButton/MenuButton';
@@ -78,6 +78,16 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
+        <li>
+          <MenuButton
+            small={small}
+            onClick={onButtonClick}
+            to={PATH_MANAGE_SUBSCRIPTIONS}
+            label="Manage subscriptions"
+            startIcon={<Icon icon={BalanceWallet} />}
+            tabIndex={tabIndex}
+          />
+        </li>
         <li className={classNames(styles.divider, { [styles.small]: small })}>
           <MenuButton small={small} onClick={onLogout} label={t('nav.logout')} startIcon={<Icon icon={Exit} />} tabIndex={tabIndex} />
         </li>
