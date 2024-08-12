@@ -18,7 +18,7 @@ export class BillingPortalController {
   }
 
   /**
-   * Service handler for redirecting to the Stripe Billing Portal.
+   * Service handler for providing the Stripe Billing Portal URL.
    * @param req The HTTP request object.
    * @param res The HTTP response object.
    * @param params The request parameters containing site_id.
@@ -48,9 +48,9 @@ export class BillingPortalController {
       // Generate a billing portal session
       const sessionUrl = await this.stripeService.createBillingPortalSession(customerId);
 
-      // Redirect to the Stripe Billing Portal
-      res.writeHead(302, { Location: sessionUrl });
-      res.end();
+      // Return the billing portal URL in the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: sessionUrl }));
     } catch (error) {
       // Ensure the error is properly typed before sending it
       if (error instanceof ParameterInvalidError || error instanceof UnauthorizedError) {
