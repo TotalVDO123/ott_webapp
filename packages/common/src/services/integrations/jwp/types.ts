@@ -345,3 +345,31 @@ export type SetDefaultCardResponse = {
   exp_month: string;
   exp_year: string;
 };
+
+type StripeProductId = `prod_${string}`;
+type StripePriceId = `price_${string}`;
+
+export type StripePrice = {
+  id: StripePriceId;
+  currency: string;
+  unit_amount: number;
+  object: 'price';
+  product: StripeProductId;
+  recurring: {
+    interval: 'year' | 'month';
+    trial_period_days: number | null;
+  };
+  active: boolean;
+  type: 'recurring';
+};
+
+export type StripeProduct = {
+  id: StripeProductId;
+  name: string;
+  description: string;
+  metadata: {
+    access_plan_id: string;
+  };
+  object: 'product';
+  prices: StripePrice[];
+};

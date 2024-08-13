@@ -46,6 +46,8 @@ export type Offer = {
 
 export type OfferType = 'svod' | 'tvod';
 
+export type AccessMethod = 'offer' | 'plan';
+
 export type ChooseOfferFormData = {
   selectedOfferType?: OfferType;
   selectedOfferId?: string;
@@ -364,6 +366,7 @@ export type FinalizeAdyenPaymentDetailsPayload = Omit<FinalizeAdyenPaymentPayloa
 export type FinalizeAdyenPaymentDetailsResponse = PaymentDetail;
 
 export type GetOffers = PromiseRequest<GetOffersPayload, Offer[]>;
+export type ChooseOffer = PromiseRequest<Offer, void>;
 export type GetOffer = EnvironmentServiceRequest<GetOfferPayload, Offer>;
 export type CreateOrder = EnvironmentServiceRequest<CreateOrderArgs, CreateOrderResponse>;
 export type GetOrder = EnvironmentServiceRequest<GetOrderPayload, GetOrderResponse>;

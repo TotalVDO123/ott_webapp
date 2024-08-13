@@ -18,6 +18,7 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
+  fromSimsClient?: boolean;
 };
 
 @injectable()
@@ -25,16 +26,28 @@ export default class JWPAPIService {
   private readonly storageService: StorageService;
 
   private useSandboxEnv = true;
+  private siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
 
-  setup = (useSandboxEnv: boolean) => {
+  setup = (useSandboxEnv: boolean, siteId: string) => {
     this.useSandboxEnv = useSandboxEnv;
+    this.siteId = siteId; // 'a1NXSCNM';
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'http://sims.jwplayer.com');
+  private getBaseUrl = (fromSimsClient = false) => {
+    if (fromSimsClient) {
+      return `http://localhost:3000/v2/sites/${this.siteId}`;
+    }
+
+    if (this.useSandboxEnv) {
+      return 'https://daily-sims.jwplayer.com';
+    }
+
+    return 'http://sims.jwplayer.com';
+  };
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -64,7 +77,14 @@ export default class JWPAPIService {
     path: string = '/',
     method = 'GET',
     body?: Record<string, unknown>,
-    { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
+    {
+      contentType = 'form',
+      responseType = 'json',
+      withAuthentication = false,
+      keepalive,
+      includeFullResponse = false,
+      fromSimsClient = false,
+    }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
     const headers: Record<string, string> = {
@@ -95,7 +115,7 @@ export default class JWPAPIService {
       });
     }
 
-    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`}${
+    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient)}${path}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 

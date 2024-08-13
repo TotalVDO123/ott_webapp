@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import i18next from 'i18next';
 
 import type {
+  AccessMethod,
   AddAdyenPaymentDetailsResponse,
   AdyenPaymentSession,
   CardPaymentData,
@@ -45,7 +46,7 @@ export default class CheckoutController {
   initialiseOffers = async () => {
     const requestedMediaOffers = useCheckoutStore.getState().requestedMediaOffers;
     const mediaOffers = requestedMediaOffers ? await this.getOffers({ offerIds: requestedMediaOffers.map(({ offerId }) => offerId) }) : [];
-    useCheckoutStore.setState({ mediaOffers });
+    useCheckoutStore.setState({ mediaOffers, accessMethod: this.getAccessMethod() });
 
     if (!useCheckoutStore.getState().subscriptionOffers.length && this.accountService.svodOfferIds) {
       const subscriptionOffers = await this.getOffers({ offerIds: this.accountService.svodOfferIds });
@@ -63,6 +64,8 @@ export default class CheckoutController {
 
   chooseOffer = async (selectedOffer: Offer) => {
     useCheckoutStore.setState({ selectedOffer });
+
+    return this.checkoutService.chooseOffer(selectedOffer);
   };
 
   initialiseOrder = async (offer: Offer): Promise<void> => {
@@ -354,5 +357,9 @@ export default class CheckoutController {
 
   getEntitlements: GetEntitlements = (payload) => {
     return this.checkoutService.getEntitlements(payload);
+  };
+
+  getAccessMethod = (): AccessMethod => {
+    return this.checkoutService.accessMethod;
   };
 }

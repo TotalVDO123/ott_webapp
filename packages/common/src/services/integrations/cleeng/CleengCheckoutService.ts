@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
   CreateOrder,
   CreateOrderPayload,
@@ -35,6 +36,8 @@ export default class CleengCheckoutService extends CheckoutService {
   private readonly cleengService: CleengService;
   private readonly getCustomerIP: GetCustomerIP;
 
+  accessMethod: AccessMethod = 'offer';
+
   constructor(cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
     super();
     this.cleengService = cleengService;
@@ -54,6 +57,8 @@ export default class CleengCheckoutService extends CheckoutService {
       }),
     );
   };
+
+  chooseOffer = async () => {};
 
   getOffer: GetOffer = async (payload) => {
     const customerIP = await this.getCustomerIP();

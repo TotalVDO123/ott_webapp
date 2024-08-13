@@ -1,5 +1,7 @@
 import type {
+  AccessMethod,
   AddAdyenPaymentDetails,
+  ChooseOffer,
   CreateOrder,
   DeletePaymentMethod,
   FinalizeAdyenPaymentDetails,
@@ -22,6 +24,8 @@ import type {
 } from '../../../types/checkout';
 
 export default abstract class CheckoutService {
+  abstract accessMethod: AccessMethod;
+
   abstract getOffers: GetOffers;
 
   abstract createOrder: CreateOrder;
@@ -37,6 +41,8 @@ export default abstract class CheckoutService {
   abstract getEntitlements: GetEntitlements;
 
   abstract directPostCardPayment: GetDirectPostCardPayment;
+
+  abstract chooseOffer: ChooseOffer;
 
   abstract getOffer?: GetOffer;
 

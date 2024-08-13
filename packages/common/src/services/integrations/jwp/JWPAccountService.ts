@@ -65,7 +65,7 @@ export default class JWPAccountService extends AccountService {
 
   private clientId = '';
 
-  accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
+  accessModel: AccessModel = ACCESS_MODEL.SVOD;
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
@@ -150,10 +150,10 @@ export default class JWPAccountService extends AccountService {
     // set environment
     this.sandbox = !!jwpConfig.useSandbox;
 
-    const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
+    const env: string = this.sandbox ? InPlayerEnv.Daily : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
-    this.apiService.setup(this.sandbox);
+    this.apiService.setup(this.sandbox, config.siteId);
 
     // calculate access model
     if (jwpConfig.clientId) {

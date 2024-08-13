@@ -37,15 +37,15 @@ export class ProductsController {
         authorization: req.headers['authorization'],
       });
 
-      const externalProviderIds: string[] = accessControlPlans
+      let externalProviderIds: string[] = accessControlPlans
         .map((plan) => plan.external_providers?.stripe)
         .filter((id): id is string => id !== undefined);
 
       // This is just for testing purpose until SIMS API is updated to include external ids
       // Uncomment if you want to recieve real Stripe data instead of empty array
-      // if (!externalProviderIds.length) {
-      //   externalProviderIds = ['prod_QRUHbH7wK5HHPr'];
-      // }
+      if (!externalProviderIds.length) {
+        externalProviderIds = ['prod_QRUHbH7wK5HHPr'];
+      }
 
       const products = await this.stripeService.getProductsWithPrices(externalProviderIds);
 

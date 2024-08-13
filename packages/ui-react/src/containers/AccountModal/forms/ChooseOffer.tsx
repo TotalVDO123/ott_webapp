@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { mixed, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import type { ChooseOfferFormData, OfferType } from '@jwp/ott-common/types/checkout';
+import type { ChooseOfferFormData, Offer, OfferType } from '@jwp/ott-common/types/checkout';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 
 import ChooseOfferForm from '../../../components/ChooseOfferForm/ChooseOfferForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
+import ChoosePlanForm from '../../../components/ChoosePlanForm/ChoosePlanForm';
 import useQueryParam from '../../../hooks/useQueryParam';
 
 const ChooseOffer = () => {
@@ -18,6 +20,7 @@ const ChooseOffer = () => {
   const { t } = useTranslation('account');
   const isSwitch = useQueryParam('u') === 'upgrade-subscription';
   const isPendingOffer = useAccountStore(({ pendingOffer }) => ({ isPendingOffer: !!pendingOffer }));
+  const accessMethod = useCheckoutStore((state) => state.accessMethod);
 
   const { isLoading, mediaOffers, subscriptionOffers, switchSubscriptionOffers, defaultOfferType, hasMultipleOfferTypes, chooseOffer, switchSubscription } =
     useOffers();
@@ -57,6 +60,8 @@ const ChooseOffer = () => {
 
   const visibleOffers = values.selectedOfferType === 'tvod' ? mediaOffers : isSwitch ? switchSubscriptionOffers : subscriptionOffers;
 
+  const offersRef = useRef<Offer[]>([]);
+
   useEffect(() => {
     if (isLoading || !visibleOffers.length) return;
 
@@ -71,12 +76,31 @@ const ChooseOffer = () => {
     setValue('selectedOfferType', defaultOfferType);
   }, [isLoading, defaultOfferType, setValue]);
 
+  useLayoutEffect(() => {
+    offersRef.current = defaultOfferType === 'tvod' ? mediaOffers : isSwitch ? switchSubscriptionOffers : subscriptionOffers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultOfferType]);
+
   // loading state
   if (isLoading) {
     return (
       <div style={{ height: 300 }}>
         <LoadingOverlay inline />
       </div>
+    );
+  }
+
+  if (accessMethod === 'plan') {
+    return (
+      <ChoosePlanForm
+        values={values}
+        errors={errors}
+        onChange={handleChange}
+        setValue={setValue}
+        onSubmit={handleSubmit}
+        offers={visibleOffers}
+        submitting={submitting}
+      />
     );
   }
 

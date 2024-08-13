@@ -21,6 +21,7 @@ export class Server {
     return new Promise((resolve, reject) => {
       const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
         try {
           await this.handleRequest(req, res);
         } catch (e) {
