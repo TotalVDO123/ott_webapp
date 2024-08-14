@@ -4,6 +4,8 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
 import { useLocation, useNavigate } from 'react-router';
+import AccountController from '@jwp/ott-common/src/controllers/AccountController';
+import { getModule } from '@jwp/ott-common/src/modules/container';
 
 import UserMenu from '../../components/UserMenu/UserMenu';
 import useBreakpoint, { Breakpoint } from '../../hooks/useBreakpoint';
@@ -13,6 +15,8 @@ const HeaderUserMenu = () => {
   const breakpoint = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
+  const accountController = getModule(AccountController);
+  const { canSeeSubscription } = accountController.getFeatures();
 
   const userMenuOpen = useUIStore((state) => state.userMenuOpen);
   const {
@@ -44,6 +48,7 @@ const HeaderUserMenu = () => {
       favoritesEnabled={favoritesEnabled}
       onLoginButtonClick={loginButtonClickHandler}
       onSignUpButtonClick={signUpButtonClickHandler}
+      canSeeSubscription={canSeeSubscription}
     />
   );
 };

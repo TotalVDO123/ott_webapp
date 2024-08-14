@@ -79,6 +79,7 @@ export const DEFAULT_FEATURES = {
   hasSocialURLs: false,
   hasNotifications: false,
   watchListSizeLimit: MAX_WATCHLIST_ITEMS_COUNT,
+  canSeeSubscription: false,
 };
 
 export const EPG_TYPE = {

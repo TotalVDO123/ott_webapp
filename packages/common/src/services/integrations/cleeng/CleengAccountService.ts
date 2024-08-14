@@ -73,6 +73,7 @@ export default class CleengAccountService extends AccountService {
       hasNotifications: false,
       // The 'externalData' attribute of Cleeng can contain max 4000 characters
       watchListSizeLimit: 48,
+      canSeeSubscription: false,
     });
 
     this.cleengService = cleengService;

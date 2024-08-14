@@ -19,9 +19,10 @@ type Props = {
   onSignUpButtonClick: () => void;
   isLoggedIn: boolean;
   favoritesEnabled: boolean;
+  canSeeSubscription: boolean;
 };
 
-const UserMenu = ({ isLoggedIn, favoritesEnabled, open, onClose, onOpen, onLoginButtonClick, onSignUpButtonClick }: Props) => {
+const UserMenu = ({ isLoggedIn, favoritesEnabled, open, onClose, onOpen, onLoginButtonClick, onSignUpButtonClick, canSeeSubscription }: Props) => {
   const { t } = useTranslation('menu');
 
   if (!isLoggedIn) {
@@ -48,7 +49,14 @@ const UserMenu = ({ isLoggedIn, favoritesEnabled, open, onClose, onOpen, onLogin
       <Popover className={styles.popover} isOpen={open} onClose={onClose}>
         <Panel id="menu_panel">
           <div onFocus={onOpen} onBlur={onClose}>
-            <UserMenuNav focusable={open} onButtonClick={onClose} showPaymentItems={true} favoritesEnabled={favoritesEnabled} small />
+            <UserMenuNav
+              focusable={open}
+              onButtonClick={onClose}
+              showPaymentItems={true}
+              favoritesEnabled={favoritesEnabled}
+              small
+              canSeeSubscription={canSeeSubscription}
+            />
           </div>
         </Panel>
       </Popover>

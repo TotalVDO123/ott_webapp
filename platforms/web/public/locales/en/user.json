@@ -76,6 +76,7 @@
     "favorites": "Favorites",
     "logout": "Log out",
     "payments": "Payments",
+    "subscription": "Subscription",
     "settings": "Settings"
   },
   "payment": {
@@ -120,6 +121,7 @@
     "subscription_expires_on": "This plan will expire on {{date}}",
     "update_payment_details": "Update payment details",
     "upgrade_plan_success": "You've successfully changed the subscription plan. You can enjoy your additional benefits immediately.",
-    "weekly_subscription": "Weekly subscription"
+    "weekly_subscription": "Weekly subscription",
+    "stripe_subscription_text": "This subscription is managed by Stripe. To update your subscription or billing details, click the button below to access Stripe’s Customer Portal."
   }
 }

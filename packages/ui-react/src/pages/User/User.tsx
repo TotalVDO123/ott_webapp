@@ -13,7 +13,12 @@ import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react'
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
 import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
-import { RELATIVE_PATH_USER_ACCOUNT, RELATIVE_PATH_USER_FAVORITES, RELATIVE_PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import {
+  RELATIVE_PATH_USER_ACCOUNT,
+  RELATIVE_PATH_USER_FAVORITES,
+  RELATIVE_PATH_USER_PAYMENTS,
+  RELATIVE_PATH_USER_SUBSCRIPTION,
+} from '@jwp/ott-common/src/paths';
 import { useFavoritesStore } from '@jwp/ott-common/src/stores/FavoritesStore';
 
 import AccountComponent from '../../components/Account/Account';
@@ -23,6 +28,7 @@ import Favorites from '../../components/Favorites/Favorites';
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay';
 import PaymentContainer from '../../containers/PaymentContainer/PaymentContainer';
 import Icon from '../../components/Icon/Icon';
+import Subscription from '../../components/Subscription/Subscription';
 
 import styles from './User.module.scss';
 
@@ -44,7 +50,7 @@ const User = (): JSX.Element => {
 
   const isLargeScreen = breakpoint > Breakpoint.md;
   const { user: customer, subscription, loading } = useAccountStore();
-  const { canUpdateEmail } = accountController.getFeatures();
+  const { canUpdateEmail, canSeeSubscription } = accountController.getFeatures();
   const favorites = useFavoritesStore((state) => state.getPlaylist());
 
   const onLogout = useCallback(async () => {
@@ -94,7 +100,7 @@ const User = (): JSX.Element => {
                 </li>
               )}
 
-              {accessModel !== ACCESS_MODEL.AVOD && (
+              {accessModel !== ACCESS_MODEL.AVOD && !canSeeSubscription && (
                 <li>
                   <Button
                     to={RELATIVE_PATH_USER_PAYMENTS}
@@ -105,7 +111,17 @@ const User = (): JSX.Element => {
                   />
                 </li>
               )}
-
+              {canSeeSubscription && (
+                <li>
+                  <Button
+                    to={RELATIVE_PATH_USER_SUBSCRIPTION}
+                    label={t('nav.subscription')}
+                    variant="text"
+                    startIcon={<Icon icon={BalanceWallet} />}
+                    className={styles.button}
+                  />
+                </li>
+              )}
               <li className={styles.logoutLi}>
                 <Button onClick={onLogout} label={t('nav.logout')} variant="text" startIcon={<Icon icon={Exit} />} className={styles.button} />
               </li>
@@ -148,6 +164,7 @@ const User = (): JSX.Element => {
             path={RELATIVE_PATH_USER_PAYMENTS}
             element={accessModel !== ACCESS_MODEL.AVOD ? <PaymentContainer /> : <Navigate to={RELATIVE_PATH_USER_ACCOUNT} />}
           />
+          <Route path={RELATIVE_PATH_USER_SUBSCRIPTION} element={<Subscription error={null} />} />
           <Route path="*" element={<Navigate to={RELATIVE_PATH_USER_ACCOUNT} />} />
         </Routes>
       </div>

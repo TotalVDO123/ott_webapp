@@ -21,9 +21,10 @@ type Props = {
   onButtonClick?: () => void;
   titleId?: string;
   favoritesEnabled?: boolean;
+  canSeeSubscription?: boolean;
 };
 
-const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favoritesEnabled, focusable, titleId }: Props) => {
+const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favoritesEnabled, focusable, titleId, canSeeSubscription }: Props) => {
   const { t } = useTranslation('user');
   const navigate = useNavigate();
   const accountController = getModule(AccountController);
@@ -66,7 +67,7 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        {showPaymentItems && (
+        {showPaymentItems && !canSeeSubscription && (
           <li>
             <MenuButton
               small={small}
@@ -78,16 +79,18 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        <li>
-          <MenuButton
-            small={small}
-            onClick={onButtonClick}
-            to={PATH_MANAGE_SUBSCRIPTIONS}
-            label="Manage subscriptions"
-            startIcon={<Icon icon={BalanceWallet} />}
-            tabIndex={tabIndex}
-          />
-        </li>
+        {canSeeSubscription && (
+          <li>
+            <MenuButton
+              small={small}
+              onClick={onButtonClick}
+              to={PATH_MANAGE_SUBSCRIPTIONS}
+              label={t('nav.subscription')}
+              startIcon={<Icon icon={BalanceWallet} />}
+              tabIndex={tabIndex}
+            />
+          </li>
+        )}
         <li className={classNames(styles.divider, { [styles.small]: small })}>
           <MenuButton small={small} onClick={onLogout} label={t('nav.logout')} startIcon={<Icon icon={Exit} />} tabIndex={tabIndex} />
         </li>

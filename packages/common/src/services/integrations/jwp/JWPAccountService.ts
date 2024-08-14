@@ -84,6 +84,7 @@ export default class JWPAccountService extends AccountService {
       hasSocialURLs: true,
       // Limit of media_ids length passed to the /apps/watchlists endpoint
       watchListSizeLimit: 48,
+      canSeeSubscription: true,
     });
 
     this.storageService = storageService;
