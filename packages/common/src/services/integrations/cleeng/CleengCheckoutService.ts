@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import type {
   AccessMethod,
   AddAdyenPaymentDetails,
+  ChooseOffer,
   CreateOrder,
   CreateOrderPayload,
   DeletePaymentMethod,
@@ -58,7 +59,7 @@ export default class CleengCheckoutService extends CheckoutService {
     );
   };
 
-  chooseOffer = async () => {};
+  chooseOffer: ChooseOffer = async () => {};
 
   getOffer: GetOffer = async (payload) => {
     const customerIP = await this.getCustomerIP();

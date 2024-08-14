@@ -62,7 +62,7 @@ export default class CheckoutController {
 
   getSubscriptionOfferIds = () => this.accountService.svodOfferIds;
 
-  chooseOffer = async (selectedOffer: Offer) => {
+  chooseOffer = async (selectedOffer: Offer & { returnUrl?: string }) => {
     useCheckoutStore.setState({ selectedOffer });
 
     return this.checkoutService.chooseOffer(selectedOffer);

@@ -4,7 +4,7 @@ import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
-import type { OfferType } from '@jwp/ott-common/types/checkout';
+import type { Offer, OfferType } from '@jwp/ott-common/types/checkout';
 
 const useOffers = () => {
   const checkoutController = getModule(CheckoutController);
@@ -27,7 +27,7 @@ const useOffers = () => {
 
   const chooseOffer = useMutation({
     mutationKey: ['chooseOffer'],
-    mutationFn: checkoutController.chooseOffer,
+    mutationFn: (offer: Offer) => checkoutController.chooseOffer({ ...offer, returnUrl: window.location.href }),
   });
 
   const switchSubscription = useMutation({

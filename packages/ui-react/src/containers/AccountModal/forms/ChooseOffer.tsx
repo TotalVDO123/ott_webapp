@@ -21,6 +21,7 @@ const ChooseOffer = () => {
   const isSwitch = useQueryParam('u') === 'upgrade-subscription';
   const isPendingOffer = useAccountStore(({ pendingOffer }) => ({ isPendingOffer: !!pendingOffer }));
   const accessMethod = useCheckoutStore((state) => state.accessMethod);
+  const redirectUrlRef = useRef<string>('');
 
   const { isLoading, mediaOffers, subscriptionOffers, switchSubscriptionOffers, defaultOfferType, hasMultipleOfferTypes, chooseOffer, switchSubscription } =
     useOffers();
@@ -43,15 +44,32 @@ const ChooseOffer = () => {
 
       if (!offer) return;
 
-      await chooseOffer.mutateAsync(offer);
+      const url = await chooseOffer.mutateAsync(offer);
+
+      if (url) {
+        redirectUrlRef.current = url;
+      }
 
       if (isSwitch) {
         return await switchSubscription.mutateAsync();
       }
     },
     onSubmitSuccess: async () => {
-      if (isSwitch && isPendingOffer) return navigate(upgradePendingUrl);
-      if (isSwitch) return navigate(upgradeSuccessUrl);
+      if (accessMethod === 'plan') {
+        if (redirectUrlRef.current) {
+          window.location.href = redirectUrlRef.current;
+        }
+
+        return;
+      }
+
+      if (isSwitch) {
+        if (isPendingOffer) {
+          return navigate(upgradePendingUrl);
+        }
+
+        return navigate(upgradeSuccessUrl);
+      }
 
       navigate(checkoutUrl);
     },
@@ -82,7 +100,7 @@ const ChooseOffer = () => {
   }, [defaultOfferType]);
 
   // loading state
-  if (isLoading) {
+  if (isLoading || redirectUrlRef.current) {
     return (
       <div style={{ height: 300 }}>
         <LoadingOverlay inline />

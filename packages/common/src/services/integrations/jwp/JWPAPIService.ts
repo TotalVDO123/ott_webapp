@@ -76,7 +76,7 @@ export default class JWPAPIService {
   private performRequest = async (
     path: string = '/',
     method = 'GET',
-    body?: Record<string, unknown>,
+    bodyObject?: Record<string, unknown>,
     {
       contentType = 'form',
       responseType = 'json',
@@ -99,10 +99,16 @@ export default class JWPAPIService {
       }
     }
 
-    const formData = new URLSearchParams();
+    const body = (() => {
+      if (!bodyObject) return;
 
-    if (body) {
-      Object.entries(body).forEach(([key, value]) => {
+      if (contentType === 'json') {
+        return JSON.stringify(bodyObject);
+      }
+
+      const formData = new URLSearchParams();
+
+      Object.entries(bodyObject).forEach(([key, value]) => {
         if (value || value === 0) {
           if (typeof value === 'object') {
             Object.entries(value as Record<string, string | number>).forEach(([innerKey, innerValue]) => {
@@ -113,7 +119,9 @@ export default class JWPAPIService {
           }
         }
       });
-    }
+
+      return formData.toString();
+    })();
 
     const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient)}${path}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
@@ -123,7 +131,7 @@ export default class JWPAPIService {
       headers,
       keepalive,
       method,
-      body: body && formData.toString(),
+      body,
     });
 
     const resParsed = await resp[responseType]?.();

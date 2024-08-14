@@ -115,23 +115,22 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  chooseOffer: ChooseOffer = async (offer) => {
+  chooseOffer: ChooseOffer = async ({ contentExternalId, offerId, returnUrl }) => {
     try {
-      // const res = await this.apiService.post<unknown>(
-      await this.apiService.post<unknown>(
+      const { url } = await this.apiService.post<{ url: string }>(
         '/checkout',
         {
-          access_plan_id: offer.contentExternalId,
-          price_id: offer.offerId,
+          access_plan_id: contentExternalId,
+          price_id: offerId,
           mode: 'subscription',
-          redirect_url: 'http://example.com',
+          redirect_url: returnUrl,
         },
-        { withAuthentication: true, fromSimsClient: true },
+        { withAuthentication: true, fromSimsClient: true, contentType: 'json' },
       );
 
-      // console.log('vvv res', res);
+      return url;
     } catch (error) {
-      // console.log('vvv error', error);
+      throw new Error('Failed to get checkout URL');
     }
   };
 
