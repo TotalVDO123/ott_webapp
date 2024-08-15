@@ -90,7 +90,7 @@ export class MockCheckoutController {
       const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
 
       // Validate required params
-      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
+      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
       const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
       if (missingRequiredParams.length > 0) {
         sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));

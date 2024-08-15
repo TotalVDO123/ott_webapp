@@ -44,7 +44,13 @@ const ChooseOffer = () => {
 
       if (!offer) return;
 
-      const url = await chooseOffer.mutateAsync(offer);
+      const baseUrl = window.location.href.split('/?')[0];
+
+      const url = await chooseOffer.mutateAsync({
+        offer,
+        successUrl: `${baseUrl}${modalURLFromLocation(location, 'welcome')}`,
+        cancelUrl: `${baseUrl}${modalURLFromLocation(location, 'payment-error')}`,
+      });
 
       if (url) {
         redirectUrlRef.current = url;

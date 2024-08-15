@@ -152,6 +152,12 @@ export type GetOfferPayload = {
   offerId: string;
 };
 
+export type ChooseOfferPayload = {
+  offer: Offer;
+  successUrl: string;
+  cancelUrl: string;
+};
+
 export type GetOffersPayload = {
   offerIds: string[] | number[];
 };
@@ -366,7 +372,7 @@ export type FinalizeAdyenPaymentDetailsPayload = Omit<FinalizeAdyenPaymentPayloa
 export type FinalizeAdyenPaymentDetailsResponse = PaymentDetail;
 
 export type GetOffers = PromiseRequest<GetOffersPayload, Offer[]>;
-export type ChooseOffer = PromiseRequest<Offer & { returnUrl?: string }, string | void>;
+export type ChooseOffer = PromiseRequest<ChooseOfferPayload, string | void>;
 export type GetOffer = EnvironmentServiceRequest<GetOfferPayload, Offer>;
 export type CreateOrder = EnvironmentServiceRequest<CreateOrderArgs, CreateOrderResponse>;
 export type GetOrder = EnvironmentServiceRequest<GetOrderPayload, GetOrderResponse>;

@@ -36,7 +36,8 @@ describe('CheckoutController tests', async () => {
       access_plan_id: VALID_PLAN_ID,
       price_id: STRIPE_PRICE.id,
       mode: 'subscription',
-      redirect_url: 'http://example.com',
+      success_url: 'http://example.com',
+      cancel_url: 'http://example.com',
     });
 
     const requestOptions = {
@@ -125,7 +126,7 @@ describe('CheckoutController tests', async () => {
       access_plan_id: VALID_PLAN_ID,
       price_id: STRIPE_PRICE.id,
       mode: 'payment',
-      // missing redirect_url
+      // missing success_url and cancel_url
     });
 
     const requestOptions = {
@@ -162,7 +163,8 @@ describe('CheckoutController tests', async () => {
         access_plan_id: VALID_PLAN_ID,
         price_id: STRIPE_PRICE.id,
         mode: 'subscription',
-        redirect_url: 'http://example.com',
+        success_url: 'http://example.com',
+        cancel_url: 'http://example.com',
       });
 
       const requestOptions = {

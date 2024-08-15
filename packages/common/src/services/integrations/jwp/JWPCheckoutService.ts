@@ -115,7 +115,7 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  chooseOffer: ChooseOffer = async ({ contentExternalId, offerId, returnUrl }) => {
+  chooseOffer: ChooseOffer = async ({ offer: { contentExternalId, offerId }, successUrl, cancelUrl }) => {
     try {
       const { url } = await this.apiService.post<{ url: string }>(
         '/checkout',
@@ -123,7 +123,8 @@ export default class JWPCheckoutService extends CheckoutService {
           access_plan_id: contentExternalId,
           price_id: offerId,
           mode: 'subscription',
-          redirect_url: returnUrl,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
         },
         { withAuthentication: true, fromSimsClient: true, contentType: 'json' },
       );

@@ -101,8 +101,8 @@ export class StripeService {
         },
         customer_email: viewer.email,
         mode: params.mode,
-        success_url: params.redirect_url,
-        cancel_url: params.redirect_url,
+        success_url: params.success_url,
+        cancel_url: params.cancel_url,
       });
 
       return session;
