@@ -1,3 +1,10 @@
+## [6.5.1](https://github.com/jwplayer/ott-web-app/compare/v6.5.0...v6.5.1) (2024-08-15)
+
+
+### Bug Fixes
+
+* wrong protocol and url path ([#588](https://github.com/jwplayer/ott-web-app/issues/588)) ([de75eb7](https://github.com/jwplayer/ott-web-app/commit/de75eb7eaca51d4fef9be4a40f13d043437bf3f0))
+
 ## [6.5.0](https://github.com/jwplayer/ott-web-app/compare/v6.4.0...v6.5.0) (2024-07-25)
 
 
