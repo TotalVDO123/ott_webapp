@@ -7,6 +7,7 @@ import type {
   DeletePaymentMethod,
   FinalizeAdyenPaymentDetails,
   GetAdyenPaymentSession,
+  GenerateBillingPortalURL,
   GetEntitlements,
   GetFinalizeAdyenPayment,
   GetInitialAdyenPayment,
@@ -183,4 +184,6 @@ export default class CleengCheckoutService extends CheckoutService {
     this.cleengService.post('/connectors/adyen/payment-details/finalize', JSON.stringify(payload), { authenticate: true });
 
   directPostCardPayment = async () => false;
+
+  generateBillingPortalUrl: GenerateBillingPortalURL = async () => {};
 }

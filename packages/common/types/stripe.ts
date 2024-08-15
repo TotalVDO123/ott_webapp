@@ -7,3 +7,7 @@ export type StripeCheckoutParams = {
 export type StripeCheckoutResponse = {
   url: string;
 };
+
+export type StripeBillingPortalParams = {
+  return_url: string;
+};

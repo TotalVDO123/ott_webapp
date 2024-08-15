@@ -124,4 +124,39 @@ export class StripeService {
       throw e;
     }
   }
+
+  /**
+   * Retrieves a Stripe customer ID based on the email address.
+   * @param email The email address of the customer.
+   * @returns A Promise resolving to the customer ID or null if no customer is found.
+   */
+  async getCustomerIdByEmail(email: string): Promise<string | null> {
+    try {
+      const customers = await this.stripe.customers.search({
+        query: `email:'${email}'`,
+      });
+      return customers.data.length > 0 ? customers.data[0].id : null;
+    } catch (e) {
+      console.error('Service: error fetching Stripe customer by email:', e);
+      throw new BadRequestError({ description: 'Error retrieving customer ID' });
+    }
+  }
+
+  /**
+   * Creates a Stripe billing portal session for a given customer ID.
+   * @param customerId The ID of the customer for whom the session is created.
+   * @returns A Promise resolving to the URL of the billing portal session.
+   */
+  async createBillingPortalSession(customerId: string, returnUrl: string): Promise<string> {
+    try {
+      const session = await this.stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: returnUrl,
+      });
+      return session.url;
+    } catch (e) {
+      console.error('Service: error creating billing portal session:', e);
+      throw new BadRequestError({ description: 'Error creating billing portal session' });
+    }
+  }
 }

@@ -18,6 +18,8 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
+  fromSimsClient?: boolean;
+  forSiteId?: boolean;
 };
 
 @injectable()
@@ -25,16 +27,28 @@ export default class JWPAPIService {
   private readonly storageService: StorageService;
 
   private useSandboxEnv = true;
+  private siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
 
-  setup = (useSandboxEnv: boolean) => {
+  setup = (useSandboxEnv: boolean, siteId: string) => {
     this.useSandboxEnv = useSandboxEnv;
+    this.siteId = siteId; // 'a1NXSCNM';
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'http://sims.jwplayer.com');
+  private getBaseUrl = (fromSimsClient = false, forSiteId?: boolean) => {
+    if (fromSimsClient) {
+      return `http://localhost:3000/v2${forSiteId ? `/sites/${this.siteId}` : ''}`;
+    }
+
+    if (this.useSandboxEnv) {
+      return 'https://daily-sims.jwplayer.com';
+    }
+
+    return 'https://sims.jwplayer.com';
+  };
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -63,8 +77,16 @@ export default class JWPAPIService {
   private performRequest = async (
     path: string = '/',
     method = 'GET',
-    body?: Record<string, unknown>,
-    { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
+    bodyObject?: Record<string, unknown>,
+    {
+      contentType = 'form',
+      responseType = 'json',
+      withAuthentication = false,
+      keepalive,
+      includeFullResponse = false,
+      fromSimsClient = false,
+      forSiteId = false,
+    }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
     const headers: Record<string, string> = {
@@ -79,10 +101,16 @@ export default class JWPAPIService {
       }
     }
 
-    const formData = new URLSearchParams();
+    const body = (() => {
+      if (!bodyObject) return;
 
-    if (body) {
-      Object.entries(body).forEach(([key, value]) => {
+      if (contentType === 'json') {
+        return JSON.stringify(bodyObject);
+      }
+
+      const formData = new URLSearchParams();
+
+      Object.entries(bodyObject).forEach(([key, value]) => {
         if (value || value === 0) {
           if (typeof value === 'object') {
             Object.entries(value as Record<string, string | number>).forEach(([innerKey, innerValue]) => {
@@ -93,9 +121,11 @@ export default class JWPAPIService {
           }
         }
       });
-    }
 
-    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`}${
+      return formData.toString();
+    })();
+
+    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient, forSiteId)}${path}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 
@@ -103,7 +133,7 @@ export default class JWPAPIService {
       headers,
       keepalive,
       method,
-      body: body && formData.toString(),
+      body,
     });
 
     const resParsed = await resp[responseType]?.();

@@ -24,7 +24,10 @@ export const endpoints: EndpointHandler = {
   '/v2/sites/:site_id/products': {
     GET: productsController.getProducts,
   },
-  '/v2/sites/:site_id/checkout': {
+  '/v2/checkout': {
     POST: checkoutController.initiateCheckout,
+  },
+  '/v2/billing-portal': {
+    POST: checkoutController.generateBillingPortalURL,
   },
 };

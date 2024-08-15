@@ -1,3 +1,5 @@
+import type { AccountServiceFeatures } from './services/integrations/AccountService';
+
 export enum PersonalShelf {
   ContinueWatching = 'continue_watching',
   Favorites = 'favorites',
@@ -67,7 +69,7 @@ export const CARD_ASPECT_RATIOS = ['1:1', '2:1', '2:3', '4:3', '5:3', '16:9', '9
 
 export const MAX_WATCHLIST_ITEMS_COUNT = 48; // Default value
 
-export const DEFAULT_FEATURES = {
+export const DEFAULT_FEATURES: AccountServiceFeatures = {
   canUpdateEmail: false,
   canSupportEmptyFullName: false,
   canChangePasswordWithOldPassword: false,
@@ -79,6 +81,7 @@ export const DEFAULT_FEATURES = {
   hasSocialURLs: false,
   hasNotifications: false,
   watchListSizeLimit: MAX_WATCHLIST_ITEMS_COUNT,
+  canSeeSubscription: false,
 };
 
 export const EPG_TYPE = {

@@ -19,6 +19,7 @@ import type {
   SwitchSubscription,
   UpdateOrder,
   UpdatePaymentWithPayPal,
+  GenerateBillingPortalURL,
 } from '../../../types/checkout';
 
 export default abstract class CheckoutService {
@@ -61,4 +62,6 @@ export default abstract class CheckoutService {
   abstract addAdyenPaymentDetails?: AddAdyenPaymentDetails;
 
   abstract finalizeAdyenPaymentDetails?: FinalizeAdyenPaymentDetails;
+
+  abstract generateBillingPortalUrl: GenerateBillingPortalURL;
 }

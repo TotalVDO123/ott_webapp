@@ -15,7 +15,7 @@ Create a `.env.local` file in the root of this project and add the following var
 - BIND_ADDR=localhost
 - BIND_PORT=3000
 - ACCESS_CONTROL_CLIENT=https://cdn-dev.jwplayer.com
-- PLANS_CLIENT=https://daily-sims.jwplayer.com
+- SIMS_CLIENT=https://daily-sims.jwplayer.com
 
 Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual value from your JW Dashboard.  
 You can also copy and paste the contents of `.env.example` into `.env.local` and just ajust the API_SECRET and STRIPE_SECRET.

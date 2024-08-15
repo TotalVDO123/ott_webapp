@@ -5,6 +5,7 @@ import type {
   CardPaymentData,
   CreateOrder,
   CreateOrderArgs,
+  GenerateBillingPortalURL,
   GetEntitlements,
   GetEntitlementsResponse,
   GetOffers,
@@ -300,6 +301,20 @@ export default class JWPCheckoutService extends CheckoutService {
       return true;
     } catch {
       throw new Error('Failed to make payment');
+    }
+  };
+
+  generateBillingPortalUrl: GenerateBillingPortalURL = async (returnUrl) => {
+    try {
+      const { url } = await this.apiService.post<{ url: string }>(
+        '/billing-portal',
+        { return_url: returnUrl },
+        { withAuthentication: true, fromSimsClient: true, contentType: 'json' },
+      );
+
+      return url;
+    } catch (error) {
+      throw new Error('Failed to fetch billing portal URL');
     }
   };
 

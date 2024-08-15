@@ -84,6 +84,7 @@ export default class JWPAccountService extends AccountService {
       hasSocialURLs: true,
       // Limit of media_ids length passed to the /apps/watchlists endpoint
       watchListSizeLimit: 48,
+      canSeeSubscription: true,
     });
 
     this.storageService = storageService;
@@ -153,7 +154,7 @@ export default class JWPAccountService extends AccountService {
     const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
-    this.apiService.setup(this.sandbox);
+    this.apiService.setup(this.sandbox, config.siteId);
 
     // calculate access model
     if (jwpConfig.clientId) {

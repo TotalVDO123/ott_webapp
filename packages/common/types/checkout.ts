@@ -384,3 +384,4 @@ export type DeletePaymentMethod = EnvironmentServiceRequest<DeletePaymentMethodP
 export type AddAdyenPaymentDetails = EnvironmentServiceRequest<AddAdyenPaymentDetailsPayload, AddAdyenPaymentDetailsResponse>;
 export type FinalizeAdyenPaymentDetails = EnvironmentServiceRequest<FinalizeAdyenPaymentDetailsPayload, FinalizeAdyenPaymentDetailsResponse>;
 export type GetDirectPostCardPayment = (cardPaymentPayload: CardPaymentData, order: Order, referrer: string, returnUrl: string) => Promise<boolean>;
+export type GenerateBillingPortalURL = PromiseRequest<string, string | void>;

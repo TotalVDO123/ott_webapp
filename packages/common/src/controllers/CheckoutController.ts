@@ -355,4 +355,8 @@ export default class CheckoutController {
   getEntitlements: GetEntitlements = (payload) => {
     return this.checkoutService.getEntitlements(payload);
   };
+
+  generateBillingPortalUrl = async (returnUrl: string) => {
+    return this.checkoutService.generateBillingPortalUrl(returnUrl);
+  };
 }

@@ -8,7 +8,7 @@ import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react'
 import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
-import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS, PATH_USER_SUBSCRIPTIONS } from '@jwp/ott-common/src/paths';
 
 import styles from '../UserMenu/UserMenu.module.scss'; // TODO inherit styling
 import MenuButton from '../MenuButton/MenuButton';
@@ -28,6 +28,8 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
   const navigate = useNavigate();
   const accountController = getModule(AccountController);
   const tabIndex = focusable ? 0 : -1;
+
+  const { canSeeSubscription } = accountController.getFeatures();
 
   const onLogout = useCallback(async () => {
     if (onButtonClick) {
@@ -66,13 +68,25 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        {showPaymentItems && (
+        {showPaymentItems && !canSeeSubscription && (
           <li>
             <MenuButton
               small={small}
               onClick={onButtonClick}
               to={PATH_USER_PAYMENTS}
               label={t('nav.payments')}
+              startIcon={<Icon icon={BalanceWallet} />}
+              tabIndex={tabIndex}
+            />
+          </li>
+        )}
+        {canSeeSubscription && (
+          <li>
+            <MenuButton
+              small={small}
+              onClick={onButtonClick}
+              to={PATH_USER_SUBSCRIPTIONS}
+              label={t('nav.subscription')}
               startIcon={<Icon icon={BalanceWallet} />}
               tabIndex={tabIndex}
             />

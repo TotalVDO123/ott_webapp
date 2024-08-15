@@ -21,6 +21,7 @@ export class Server {
     return new Promise((resolve, reject) => {
       const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
         try {
           await this.handleRequest(req, res);
         } catch (e) {
@@ -66,6 +67,20 @@ export class Server {
   }
 
   private async validateRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    if (req.method === 'OPTIONS') {
+      // Set CORS headers
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Max-Age', 86400); // 24 hours
+
+      // End the response
+      res.writeHead(204); // No Content
+      //res.end();
+      return sendErrors(res, new NotFoundError({}));
+    }
+
     if (!req.method || !(ALLOWED_REQUEST_METHODS as readonly string[]).includes(req.method)) {
       return sendErrors(res, new MethodNotAllowedError({ allowedMethods: [...ALLOWED_REQUEST_METHODS] }));
     }
