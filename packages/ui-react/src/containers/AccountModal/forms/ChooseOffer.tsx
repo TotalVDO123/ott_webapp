@@ -49,7 +49,7 @@ const ChooseOffer = () => {
       const url = await chooseOffer.mutateAsync({
         offer,
         successUrl: `${baseUrl}${modalURLFromLocation(location, 'welcome')}`,
-        cancelUrl: `${baseUrl}${modalURLFromLocation(location, 'payment-error')}`,
+        cancelUrl: `${baseUrl}${modalURLFromLocation(location, 'payment-cancelled')}`,
       });
 
       if (url) {

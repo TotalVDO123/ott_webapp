@@ -46,7 +46,7 @@ export default class JWPAPIService {
       return 'https://daily-sims.jwplayer.com';
     }
 
-    return 'http://sims.jwplayer.com';
+    return 'https://sims.jwplayer.com';
   };
 
   setToken = (token: string, refreshToken = '', expires: number) => {
