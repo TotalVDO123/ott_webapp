@@ -127,7 +127,6 @@
   "subscription": {
     "subscription_text": "",
     "stripe_portal": "",
-    "goto_provider": "",
-    "redirecting": ""
+    "goto_provider": ""
   }
 }

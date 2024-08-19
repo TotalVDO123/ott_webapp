@@ -1,21 +1,31 @@
-import { useQuery, useQueryClient } from 'react-query';
-import { useEffect } from 'react';
+import { useMutation } from 'react-query';
+import { useCallback, useMemo, useState } from 'react';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 
 const useBillingPortal = () => {
-  const queryClient = useQueryClient();
-
   const checkoutController = getModule(CheckoutController);
 
-  useEffect(
-    () => () => {
-      queryClient.invalidateQueries(['billing-portal']);
-    },
-    [queryClient],
-  );
+  const [isRedirecting, setRedirecting] = useState(false);
 
-  return useQuery(['billing-portal'], () => checkoutController.generateBillingPortalUrl(window.location.href));
+  const billingPortalUrlRequest = useMutation({
+    mutationKey: 'billing-portal',
+    mutationFn: () => checkoutController.generateBillingPortalUrl(window.location.href),
+  });
+
+  const redirectToBillingPortal = useCallback(async () => {
+    const billingPortalUrl = await billingPortalUrlRequest.mutateAsync();
+
+    setRedirecting(true);
+
+    if (billingPortalUrl) {
+      window.location.href = billingPortalUrl;
+    }
+  }, [billingPortalUrlRequest]);
+
+  const isLoading = billingPortalUrlRequest.isLoading || isRedirecting;
+
+  return useMemo(() => ({ isLoading, redirectToBillingPortal }), [isLoading, redirectToBillingPortal]);
 };
 
 export default useBillingPortal;
