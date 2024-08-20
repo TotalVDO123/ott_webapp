@@ -5,16 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 
-import useNotifications from '#src/hooks/useNotifications';
-
 const RoutesContainer = () => {
   const { i18n } = useTranslation();
   const location = useLocation();
 
   const userData = useAccountStore((s) => ({ loading: s.loading, user: s.user }), shallow);
-
-  // listen to websocket notifications
-  useNotifications();
 
   // set/update lang html lang attribute
   useEffect(() => {

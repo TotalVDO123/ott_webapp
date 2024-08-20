@@ -13,7 +13,6 @@ import type {
   JwtDetails,
   Login,
   LoginPayload,
-  NotificationsData,
   Register,
   RegisterPayload,
   ResetPassword,
@@ -342,10 +341,6 @@ export default class CleengAccountService extends AccountService {
 
   getFavorites = async () => {
     return (this.externalData['favorites'] || []) as SerializedFavorite[];
-  };
-
-  subscribeToNotifications: NotificationsData = async () => {
-    return false;
   };
 
   getSocialUrls: undefined;

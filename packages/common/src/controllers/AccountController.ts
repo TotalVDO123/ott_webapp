@@ -7,15 +7,7 @@ import CheckoutService from '../services/integrations/CheckoutService';
 import AccountService, { type AccountServiceFeatures } from '../services/integrations/AccountService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
 import type { Offer } from '../../types/checkout';
-import type {
-  Capture,
-  Customer,
-  CustomerConsent,
-  EmailConfirmPasswordInput,
-  FirstLastNameInput,
-  GetCaptureStatusResponse,
-  SubscribeToNotificationsPayload,
-} from '../../types/account';
+import type { Capture, Customer, CustomerConsent, EmailConfirmPasswordInput, FirstLastNameInput, GetCaptureStatusResponse } from '../../types/account';
 import { assertFeature, assertModuleMethod, getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
@@ -497,10 +489,6 @@ export default class AccountController {
 
   getAuthData = async () => {
     return this.accountService.getAuthData();
-  };
-
-  subscribeToNotifications = async ({ uuid, onMessage }: SubscribeToNotificationsPayload) => {
-    return this.accountService.subscribeToNotifications({ uuid, onMessage });
   };
 
   getFeatures() {

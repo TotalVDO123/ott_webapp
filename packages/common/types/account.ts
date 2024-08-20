@@ -273,11 +273,6 @@ export type DeleteAccountPayload = {
   password: string;
 };
 
-export type SubscribeToNotificationsPayload = {
-  uuid: string;
-  onMessage: (payload: string) => void;
-};
-
 export type GetSocialURLsPayload = {
   redirectUrl: string;
 };
@@ -326,7 +321,6 @@ export type ResetPassword = PromiseRequest<ResetPasswordPayload, void>;
 export type ChangePassword = PromiseRequest<ChangePasswordWithTokenPayload, void>;
 export type ChangePasswordWithOldPassword = PromiseRequest<ChangePasswordWithOldPasswordPayload, void>;
 export type GetSocialURLs = PromiseRequest<GetSocialURLsPayload, SocialURLs[]>;
-export type NotificationsData = PromiseRequest<SubscribeToNotificationsPayload, boolean>;
 export type UpdateWatchHistory = PromiseRequest<UpdateWatchHistoryArgs, void>;
 export type UpdateFavorites = PromiseRequest<UpdateFavoritesArgs, void>;
 export type GetWatchHistory = PromiseRequest<GetWatchHistoryArgs, SerializedWatchHistoryItem[]>;

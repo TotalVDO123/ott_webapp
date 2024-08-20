@@ -1,4 +1,3 @@
-import InPlayer, { Env } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
 import { injectable } from 'inversify';
 
@@ -17,7 +16,6 @@ import type {
   GetCustomerConsents,
   GetPublisherConsents,
   Login,
-  NotificationsData,
   Register,
   ResetPassword,
   GetSocialURLs,
@@ -49,12 +47,6 @@ import type {
   ListSocialURLs,
 } from './types';
 import JWPAPIService from './JWPAPIService';
-
-enum InPlayerEnv {
-  Development = 'development',
-  Production = 'production',
-  Daily = 'daily',
-}
 
 const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 
@@ -149,9 +141,6 @@ export default class JWPAccountService extends AccountService {
 
     // set environment
     this.sandbox = !!jwpConfig.useSandbox;
-
-    const env: string = this.sandbox ? InPlayerEnv.Daily : InPlayerEnv.Production;
-    InPlayer.setConfig(env as Env);
 
     this.apiService.setup(this.sandbox, config.siteId);
 
@@ -366,10 +355,6 @@ export default class JWPAccountService extends AccountService {
 
   logout = async () => {
     try {
-      if (InPlayer.Notifications.isSubscribed()) {
-        InPlayer.Notifications.unsubscribe();
-      }
-
       if (await this.apiService.isAuthenticated()) {
         await this.apiService.get<undefined>('/accounts/logout', { withAuthentication: true });
         await this.apiService.removeToken();
@@ -543,20 +528,6 @@ export default class JWPAccountService extends AccountService {
     );
 
     return watchHistoryData?.collection?.map(this.formatHistoryItem) || [];
-  };
-
-  subscribeToNotifications: NotificationsData = async ({ uuid, onMessage }) => {
-    try {
-      if (!InPlayer.Notifications.isSubscribed()) {
-        InPlayer.subscribe(uuid, {
-          onMessage: onMessage,
-          onOpen: () => true,
-        });
-      }
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   exportAccountData: ExportAccountData = async () => {
