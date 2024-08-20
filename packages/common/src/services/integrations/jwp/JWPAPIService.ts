@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import StorageService from '../../StorageService';
 
+import { API_CONSTS } from './constants';
 import type { JWPError } from './types';
 
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
@@ -35,19 +36,17 @@ export default class JWPAPIService {
 
   setup = (useSandboxEnv: boolean, siteId: string) => {
     this.useSandboxEnv = useSandboxEnv;
-    this.siteId = siteId; // 'a1NXSCNM';
+    this.siteId = siteId;
   };
 
   private getBaseUrl = (fromSimsClient = false, forSiteId?: boolean) => {
+    const { API_BASE_URL, MIDDLEWARE_BASE_URL, MIDDLEWARE_SITE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
+
     if (fromSimsClient) {
-      return `http://localhost:3000/v2${forSiteId ? `/sites/${this.siteId}` : ''}`;
+      return forSiteId ? MIDDLEWARE_SITE_BASE_URL(this.siteId) : MIDDLEWARE_BASE_URL;
     }
 
-    if (this.useSandboxEnv) {
-      return 'https://daily-sims.jwplayer.com';
-    }
-
-    return 'https://sims.jwplayer.com';
+    return API_BASE_URL;
   };
 
   setToken = (token: string, refreshToken = '', expires: number) => {
