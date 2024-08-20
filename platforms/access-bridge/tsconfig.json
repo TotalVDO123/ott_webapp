@@ -13,5 +13,5 @@
         "noUnusedLocals": true,
     },
     "include": ["test/**/*", "src/**/*"],
+    "exclude": ["node_modules", "build"],
 }
-  

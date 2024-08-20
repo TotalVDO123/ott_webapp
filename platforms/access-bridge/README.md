@@ -17,7 +17,7 @@ Create a `.env.local` file in the root of this project and add the following var
 - PLANS_CLIENT=https://daily-sims.jwplayer.com
 
 Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual values from your JW Dashboard.  
-You can also copy and paste the contents of `.env.example` into `.env.local` and just ajust the API_SECRET.
+You can also copy and paste the contents of `.env.example` into `.env.local` and just adjust the API_SECRET.
 
 ## Getting started
 

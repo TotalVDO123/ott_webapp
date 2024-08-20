@@ -100,19 +100,25 @@ export class AccessService {
 
   // URL signer - needed for validating requests on Delivery Gateway
   // More about this: https://docs.jwplayer.com/platform/reference/protect-your-content-with-signed-urls
-  async generateSignedUrl(path: string, host: string = this.accessControlClient) {
-    const now = new Date();
-    const token = jwt.sign(
-      {
-        exp: Math.ceil((now.getTime() + 3600) / 300) * 300,
-        resource: path,
-      },
-      this.apiSecret,
-      {
-        noTimestamp: true,
-      }
-    );
+  async generateSignedUrl(path: string, host: string = this.accessControlClient): Promise<string> {
+    try {
+      const now = new Date();
+      const token = jwt.sign(
+        {
+          exp: Math.ceil((now.getTime() + 3600) / 300) * 300,
+          resource: path,
+        },
+        this.apiSecret,
+        {
+          noTimestamp: true,
+        }
+      );
 
-    return `${host}${path}?token=${token}`;
+      const signedUrl = `${host}${path}?token=${token}`;
+      return signedUrl;
+    } catch (error) {
+      console.error('Error in generateSignedUrl:', error);
+      throw error;
+    }
   }
 }
