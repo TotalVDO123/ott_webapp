@@ -1,12 +1,14 @@
 import http from 'http';
-import { RequestOptions } from 'node:https';
+import { RequestOptions } from 'https';
 
-import { EndpointHandler } from '../src/endpoints.js';
+import { Express } from 'express';
+
 import { Server } from '../src/server.js';
 
 interface ExtendedRequestOptions extends RequestOptions {
   body?: string;
 }
+
 export class MockServer {
   private server: Server;
   readonly port: number;
@@ -16,8 +18,8 @@ export class MockServer {
     this.port = port;
   }
 
-  static async create(endpoints: EndpointHandler): Promise<MockServer> {
-    const server = new Server('localhost', 3000, endpoints);
+  static async create(registerEndpoints: (app: Express) => void): Promise<MockServer> {
+    const server = new Server('localhost', 3000, registerEndpoints);
     const port = await server.listen();
     return new this(server, port);
   }

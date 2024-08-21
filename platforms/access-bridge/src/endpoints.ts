@@ -1,20 +1,11 @@
-import { IncomingMessage, ServerResponse } from 'node:http';
+import { Express, Request, Response, NextFunction } from 'express';
 
 import { AccessController } from './controllers/access-controller.js';
 
-export type EndpointHandler = {
-  [path: string]: {
-    [method: string]: (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => Promise<void>;
-  };
-};
-
 const accessController = new AccessController();
 
-export const endpoints: EndpointHandler = {
-  '/v2/sites/:site_id/access/generate': {
-    PUT: accessController.generatePassport,
-  },
-  '/v2/sites/:site_id/access/refresh': {
-    PUT: accessController.refreshPassport,
-  },
-};
+export function registerEndpoints(app: Express) {
+  app.put('/v2/sites/:site_id/access/generate', (req: Request, res: Response, next: NextFunction) =>
+    accessController.generatePassport(req, res, next)
+  );
+}

@@ -10,7 +10,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "start": "vite",
+    "start": "node build/main.js",
+    "prestart": "yarn build",
+    "pretest": "yarn build",
     "test": "vitest",
     "lint:ts": "tsc --pretty --noEmit -p ./"
   },
@@ -25,6 +27,7 @@
   "dependencies": {
     "@jwp/ott-common": "*",
     "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
   }
 }

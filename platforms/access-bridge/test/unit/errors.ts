@@ -1,79 +1,56 @@
-import assert from 'assert';
-import { describe, test } from 'node:test';
+import { describe, it, expect } from 'vitest';
 
-import {
-  BadRequestError,
-  ErrorCode,
-  ForbiddenError,
-  getErrorCodeDescription,
-  InternalError,
-  MethodNotAllowedError,
-  NotFoundError,
-  ParameterInvalidError,
-  ParameterMissingError,
-  UnauthorizedError,
-} from '../../src/errors.js';
-import { RequestMethod } from '../../src/http.js';
+import { ErrorDefinitions } from '../../src/errors.js';
 
-describe('Error Classes', () => {
-  test('should create BadRequestError correctly', () => {
-    const error = new BadRequestError({});
-    assert.strictEqual(error.code, ErrorCode.BadRequestError);
-    assert.strictEqual(error.statusCode, 400);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.BadRequestError));
-  });
+describe('AccessBridgeError', () => {
+  // Test for each error definition
+  for (const [key, definition] of Object.entries(ErrorDefinitions)) {
+    const errorKey = key as keyof typeof ErrorDefinitions;
+    const { code, statusCode, description } = definition;
 
-  test('should create ParameterMissingError correctly', () => {
-    const error = new ParameterMissingError({ parameterName: 'param' });
-    assert.strictEqual(error.code, ErrorCode.ParameterMissing);
-    assert.strictEqual(error.statusCode, 400);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.ParameterMissing, 'param'));
-  });
+    it(`should create ${errorKey} with the correct code and status code`, () => {
+      const error = definition.create({});
+      expect(error.code).toBe(code);
+      expect(error.statusCode).toBe(statusCode);
 
-  test('should create ParameterInvalidError correctly', () => {
-    const error = new ParameterInvalidError({ parameterName: 'param', reason: 'is invalid' });
-    assert.strictEqual(error.code, 'parameter_invalid');
-    assert.strictEqual(error.statusCode, 400);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.ParameterInvalid, 'param', 'is invalid'));
-  });
+      // Test default description
+      const expectedDescription = description.replace('{value}', '').replace('{reason}', '');
+      expect(error.description).toBe(expectedDescription);
+    });
 
-  test('should create ForbiddenError correctly', () => {
-    const error = new ForbiddenError({});
-    assert.strictEqual(error.code, ErrorCode.Forbidden);
-    assert.strictEqual(error.statusCode, 403);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.Forbidden));
-  });
+    it(`should create ${errorKey} with a custom description`, () => {
+      // Define context based on error type
+      const context = (() => {
+        switch (errorKey) {
+          case 'ParameterMissingError':
+            return { parameterName: 'testParam' };
+          case 'ParameterInvalidError':
+            return { parameterName: 'testParam', reason: 'Invalid reason' };
+          default:
+            return {};
+        }
+      })();
 
-  test('should create UnauthorizedError correctly', () => {
-    const error = new UnauthorizedError({});
-    assert.strictEqual(error.code, ErrorCode.Unauthorized);
-    assert.strictEqual(error.statusCode, 401);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.Unauthorized));
-  });
+      // Define the custom description
+      const customDescription = (() => {
+        switch (errorKey) {
+          case 'ParameterMissingError':
+            return `Required parameter ${context.parameterName} is missing.`;
+          case 'ParameterInvalidError':
+            return `Parameter ${context.parameterName} is invalid. ${context.reason || ''}.`;
+          default:
+            return description;
+        }
+      })();
 
-  test('should create NotFoundError correctly', () => {
-    const error = new NotFoundError({});
-    assert.strictEqual(error.code, ErrorCode.NotFound);
-    assert.strictEqual(error.statusCode, 404);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.NotFound));
-  });
+      // Create the error with context and custom description
+      const error = definition.create({
+        ...context,
+        description: customDescription,
+      });
 
-  test('should create MethodNotAllowedError correctly', () => {
-    const allowedMethods: RequestMethod[] = ['GET', 'PUT'];
-    const error = new MethodNotAllowedError({ allowedMethods });
-    assert.strictEqual(error.code, ErrorCode.MethodNotAllowed);
-    assert.strictEqual(error.statusCode, 405);
-    assert.strictEqual(
-      error.description,
-      getErrorCodeDescription(ErrorCode.MethodNotAllowed, allowedMethods.sort().join(', '))
-    );
-    assert.deepStrictEqual(error.headers, [['Allow', 'GET, PUT']]);
-  });
-
-  test('should create InternalError correctly', () => {
-    const error = new InternalError({});
-    assert.strictEqual(error.code, ErrorCode.InternalError);
-    assert.strictEqual(error.statusCode, 500);
-    assert.strictEqual(error.description, getErrorCodeDescription(ErrorCode.InternalError));
-  });
+      // Check that the description matches
+      expect(error.description).toBe(customDescription);
+    });
+  }
 });

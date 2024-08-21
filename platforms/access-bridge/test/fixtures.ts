@@ -1,5 +1,6 @@
-import { Viewer } from '@jwp/ott-common/types/access.js';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
+
+import { Viewer } from '../src/services/identity-service';
 
 // Utility function to get Unix timestamp
 export const getTimestamp = (daysOffset: number): number => {
@@ -14,8 +15,7 @@ const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
 
 // API endpoints constant
 export const ENDPOINTS = {
-  GENERATE_TOKENS: '/v2/sites/:site_id/access/generate',
-  REFRESH_TOKENS: '/v2/sites/:site_id/access/refresh',
+  GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
 };
 
 // mock data for access tokens

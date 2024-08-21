@@ -1,12 +1,11 @@
-import assert from 'assert';
-import { describe, test } from 'node:test';
+import { describe, it, expect } from 'vitest';
 
-import { AccessService } from '../../src/services/access-service.js';
+import { PassportService } from '../../src/services/passport-service.js';
 
-describe('AccessService generateSignedUrl test', () => {
-  const service = new AccessService();
+describe('PassportService generateSignedUrl test', () => {
+  const service = new PassportService();
 
-  test('should generate a signed URL with the correct token', async () => {
+  it('should generate a signed URL with the correct token', async () => {
     const path = '/path/to/resource';
     const clientHost = 'https://example.com';
 
@@ -16,6 +15,6 @@ describe('AccessService generateSignedUrl test', () => {
     const url = new URL(result);
     const token = url.searchParams.get('token');
 
-    assert.strictEqual(result, `${clientHost}${path}?token=${token}`);
+    expect(result).toBe(`${clientHost}${path}?token=${token}`);
   });
 });

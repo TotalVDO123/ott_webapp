@@ -1,19 +1,13 @@
 import { AccessControlPlan, AccessControlPlansParams, PlansResponse } from '@jwp/ott-common/types/plans.js';
 
-import { SIMS_CLIENT } from '../app-config.js';
-import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError, isJWError } from '../errors.js';
+import { SIMS_API_HOST } from '../app-config.js';
+import { ErrorDefinitions, handleJWError, isJWError } from '../errors.js';
 import { get } from '../http.js';
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
  */
 export class PlansService {
-  private simsClient: string;
-
-  constructor() {
-    this.simsClient = SIMS_CLIENT;
-  }
-
   /**
    * Retrieves access control plans based on the specified endpoint type.
    *
@@ -38,7 +32,7 @@ export class PlansService {
     authorization,
   }: AccessControlPlansParams): Promise<AccessControlPlan[]> {
     try {
-      const response = await get<PlansResponse>(`${this.simsClient}/v3/sites/${siteId}/${endpointType}`, authorization);
+      const response = await get<PlansResponse>(`${SIMS_API_HOST}/v3/sites/${siteId}/${endpointType}`, authorization);
 
       if (!response?.plans) {
         return [];
@@ -70,21 +64,11 @@ export class PlansService {
       // @ts-ignore
       // This will be removed once SIMS team addresses the error format for the case
       if (e.code === 401) {
-        throw new UnauthorizedError({});
+        throw ErrorDefinitions.UnauthorizedError.create();
       }
       if (isJWError(e)) {
         const error = e.errors[0];
-        // Possible error scenarios coming from SIMS
-        switch (error.code) {
-          case 'unauthorized':
-            throw new UnauthorizedError({ description: error.description });
-          case 'forbidden':
-            throw new ForbiddenError({ description: error.description });
-          case 'not_found':
-            throw new NotFoundError({ description: error.description });
-          default:
-            throw new BadRequestError({ description: error.description });
-        }
+        handleJWError(error);
       }
       console.error('Service: error fetching access control plans:', e);
       throw e;

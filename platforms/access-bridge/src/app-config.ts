@@ -17,6 +17,9 @@ export const BIND_PORT = parseInt(requireEnvVar(process.env.APP_BIND_PORT, 'APP_
 // Customer secret resonsible for authenticating requests
 export const API_SECRET = requireEnvVar(process.env.APP_API_SECRET, 'APP_API_SECRET');
 
-// Client URLs
-export const ACCESS_CONTROL_CLIENT = requireEnvVar(process.env.APP_ACCESS_CONTROL_HOST, 'APP_ACCESS_CONTROL_HOST');
-export const SIMS_CLIENT = requireEnvVar(process.env.APP_SIMS_HOST, 'SIMS_HOST');
+// Client host URLs
+export const ACCESS_CONTROL_API_HOST = requireEnvVar(
+  process.env.APP_ACCESS_CONTROL_API_HOST,
+  'APP_ACCESS_CONTROL_API_HOST'
+);
+export const SIMS_API_HOST = requireEnvVar(process.env.APP_SIMS_API_HOST, 'SIMS_API_HOST');

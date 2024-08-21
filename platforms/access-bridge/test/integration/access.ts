@@ -1,12 +1,13 @@
 import http from 'http';
 
+import { Express, NextFunction, Response, Request } from 'express';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
 import { AccessController } from '../../src/controllers/access-controller.js';
 import { MockServer } from '../mock-server.js';
-import { ErrorCode } from '../../src/errors.js';
 import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, SITE_ID } from '../fixtures.js';
 import { MockAccessController } from '../mocks/access.js';
+import { ErrorDefinitions } from '../../src/errors.js';
 
 describe('AccessController passport generate/refresh tests', () => {
   let mockServer: MockServer;
@@ -15,16 +16,13 @@ describe('AccessController passport generate/refresh tests', () => {
   beforeAll(async () => {
     accessController = new MockAccessController();
 
-    const endpoints = {
-      [ENDPOINTS.GENERATE_TOKENS]: {
-        PUT: accessController.generatePassport,
-      },
-      [ENDPOINTS.REFRESH_TOKENS]: {
-        PUT: accessController.refreshPassport,
-      },
+    const registerEndpoints = (app: Express) => {
+      app.put(ENDPOINTS.GENERATE_PASSPORT, (req: Request, res: Response, next: NextFunction) => {
+        accessController.generatePassport(req, res, next);
+      });
     };
 
-    mockServer = await MockServer.create(endpoints);
+    mockServer = await MockServer.create(registerEndpoints);
   });
 
   const testCases = [
@@ -32,7 +30,7 @@ describe('AccessController passport generate/refresh tests', () => {
       description: 'should generate passport access tokens without authorization',
       requestOptions: {
         method: 'PUT',
-        path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
+        path: ENDPOINTS.GENERATE_PASSPORT.replace(':site_id', SITE_ID.VALID),
       },
       expectedStatusCode: 200,
       expectedResponse: {
@@ -45,7 +43,7 @@ describe('AccessController passport generate/refresh tests', () => {
       requestOptions: {
         headers: { Authorization: AUTHORIZATION.VALID },
         method: 'PUT',
-        path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
+        path: ENDPOINTS.GENERATE_PASSPORT.replace(':site_id', SITE_ID.VALID),
       },
       expectedStatusCode: 200,
       expectedResponse: {
@@ -58,43 +56,20 @@ describe('AccessController passport generate/refresh tests', () => {
       requestOptions: {
         headers: { Authorization: AUTHORIZATION.INVALID },
         method: 'PUT',
-        path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.VALID),
+        path: ENDPOINTS.GENERATE_PASSPORT.replace(':site_id', SITE_ID.VALID),
       },
       expectedStatusCode: 401,
-      expectedError: ErrorCode.Unauthorized,
+      expectedError: ErrorDefinitions.UnauthorizedError.code,
     },
     {
       description: 'should return ParameterInvalidError for invalid site_id',
       requestOptions: {
         headers: { Authorization: AUTHORIZATION.VALID },
         method: 'PUT',
-        path: ENDPOINTS.GENERATE_TOKENS.replace(':site_id', SITE_ID.INVALID),
+        path: ENDPOINTS.GENERATE_PASSPORT.replace(':site_id', SITE_ID.INVALID),
       },
       expectedStatusCode: 400,
-      expectedError: ErrorCode.ParameterInvalid,
-    },
-    {
-      description: 'should refresh passport access tokens',
-      requestOptions: {
-        method: 'PUT',
-        path: ENDPOINTS.REFRESH_TOKENS.replace(':site_id', SITE_ID.VALID),
-        body: JSON.stringify({ refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID }),
-      },
-      expectedStatusCode: 200,
-      expectedResponse: {
-        passport: ACCESS_TOKENS.PASSPORT.VALID,
-        refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID,
-      },
-    },
-    {
-      description: 'should return ParameterInvalidError for invalid refresh token',
-      requestOptions: {
-        method: 'PUT',
-        path: ENDPOINTS.REFRESH_TOKENS.replace(':site_id', SITE_ID.VALID),
-        body: JSON.stringify({ refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.INVALID }),
-      },
-      expectedStatusCode: 400,
-      expectedError: ErrorCode.ParameterInvalid,
+      expectedError: ErrorDefinitions.ParameterInvalidError.code,
     },
   ];
 

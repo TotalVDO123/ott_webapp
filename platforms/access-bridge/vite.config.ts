@@ -20,13 +20,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
   return defineConfig({
     define: {
-      // Replace global constants if needed
       'process.env': {
-        BIND_PORT: env.APP_BIND_PORT,
-        BIND_ADDR: env.APP_BIND_ADDR,
-        API_SECRET: env.APP_API_SECRET,
-        ACCESS_CONTROL_CLIENT: env.APP_ACCESS_CONTROL_HOST,
-        SIMS_HOST: env.APP_SIMS_HOST,
+        APP_BIND_PORT: env.APP_BIND_PORT,
+        APP_BIND_ADDR: env.APP_BIND_ADDR,
+        APP_API_SECRET: env.APP_API_SECRET,
+        APP_ACCESS_CONTROL_API_HOST: env.APP_ACCESS_CONTROL_API_HOST,
+        APP_SIMS_API_HOST: env.APP_SIMS_API_HOST,
       },
     },
     envPrefix,
@@ -42,7 +41,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'main.js',
           dir: 'build',
         },
-        external: ['http', 'https', 'path', 'jsonwebtoken'],
+        external: ['http', 'https', 'path', 'jsonwebtoken', 'express', 'node-fetch'],
       },
     },
     resolve: {
@@ -52,7 +51,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     },
     test: {
       setupFiles: 'test/vitest.setup.ts',
-      include: ['test/integration/access.ts'],
+      include: ['test/unit/*.ts', 'test/integration/*.ts'],
       chaiConfig: {
         truncateThreshold: 100000000,
       },
