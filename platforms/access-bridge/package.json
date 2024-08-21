@@ -12,8 +12,7 @@
     "build": "vite build",
     "start": "node build/main.js",
     "prestart": "yarn build",
-    "pretest": "yarn build",
-    "test": "vitest",
+    "test": "yarn build & TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
     "lint:ts": "tsc --pretty --noEmit -p ./"
   },
   "devDependencies": {
@@ -23,7 +22,7 @@
     "eslint-config-jwp": "*",
     "typescript": "^5.5.3",
     "vite": "^5.3.1",
-    "vitest": "^2.0.5"
+    "vitest": "^1.6.0"
   },
   "dependencies": {
     "@jwp/ott-common": "*",

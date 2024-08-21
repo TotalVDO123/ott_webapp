@@ -41,7 +41,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'main.js',
           dir: 'build',
         },
-        external: ['http', 'https', 'path', 'jsonwebtoken', 'express', 'node-fetch'],
+        external: ['http', 'https', 'path', 'jsonwebtoken', 'express'],
       },
     },
     resolve: {
@@ -50,6 +50,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       },
     },
     test: {
+      globals: true,
       setupFiles: 'test/vitest.setup.ts',
       include: ['**/*.test.ts'],
       chaiConfig: {
