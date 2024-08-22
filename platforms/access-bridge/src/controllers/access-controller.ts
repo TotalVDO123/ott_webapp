@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
 import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
 import { PassportService } from '../services/passport-service.js';
@@ -44,7 +43,6 @@ export class AccessController {
       let viewer: Viewer = { id: 'unauthorized', email: '' };
 
       const authorization = req.headers['authorization'];
-
       if (authorization) {
         viewer = await this.identityService.getAccount({ authorization });
         if (!viewer.id || !viewer.email) {
@@ -53,23 +51,22 @@ export class AccessController {
         }
       }
 
-      const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId,
-        endpointType: 'entitlements',
-        authorization,
-      });
+      const viewerEntitledPlans = await this.plansService.getEntitledPlans({ siteId, authorization });
+      const plans = viewerEntitledPlans
+        .map((plan) => ({
+          id: plan.access_plan?.id,
+          exp: plan.access_plan?.exp,
+        }))
+        .filter((plan) => plan.id !== undefined && plan.exp !== undefined);
 
-      // map to exclude the external_providers since it's not needed in the passport data
-      const plans: AccessControlPlan[] = accessControlPlans.map(({ id, exp }) => ({ id, exp }));
-
-      // Generate access tokens for the given site, viewer and plans.
-      const accessTokens = await this.passportService.generatePassport({
+      // Generate passport tokens for the given site, viewer and plans.
+      const passport = await this.passportService.generatePassport({
         siteId,
         viewerId: viewer.id,
         plans,
       });
 
-      res.json(accessTokens);
+      res.json(passport);
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);

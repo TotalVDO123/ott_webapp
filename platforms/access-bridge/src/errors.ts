@@ -145,13 +145,12 @@ export function isJWError(error: unknown): error is JWErrorResponse {
 export function handleJWError(error: JWError): AccessBridgeError {
   const { code, description } = error;
   const errorDefinition = Object.keys(ErrorDefinitions).find((key) => ErrorDefinitions[key as ErrorCode].code === code);
-
   if (errorDefinition) {
-    return ErrorDefinitions[errorDefinition as ErrorCode].create({ description });
+    throw ErrorDefinitions[errorDefinition as ErrorCode].create({ description });
   }
 
   // Fallback to a generic BadRequestError if no specific match is found
-  return ErrorDefinitions.BadRequestError.create({ description });
+  throw ErrorDefinitions.BadRequestError.create({ description });
 }
 
 // Utility function to handle Stripe errors

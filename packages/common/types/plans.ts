@@ -6,7 +6,7 @@ type AccessOptions = {
   };
 };
 
-type AccessControlPlanExternalProviders = {
+type PlanExternalProviders = {
   stripe?: string;
   apple?: string;
   google?: string;
@@ -15,7 +15,6 @@ type AccessControlPlanExternalProviders = {
 export type AccessControlPlan = {
   id: string;
   exp: number;
-  external_providers?: AccessControlPlanExternalProviders;
 };
 
 export type Plan = {
@@ -24,7 +23,7 @@ export type Plan = {
   access_plan: AccessControlPlan;
   access: AccessOptions;
   metadata: {
-    external_providers: AccessControlPlanExternalProviders;
+    external_providers: PlanExternalProviders;
   };
 };
 

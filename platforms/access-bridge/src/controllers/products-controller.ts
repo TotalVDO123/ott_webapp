@@ -18,10 +18,13 @@ export class ProductsController {
   }
 
   /**
-   * Service handler for fetching and filtering products based on external provider IDs.
-   * @param req The HTTP request object.
-   * @param res The HTTP response object.
-   * @param params The request parameters containing site_id.
+   * Service handler for fetching and returning Stripe products with prices based on available plans
+   * for a given site ID. Validates the site ID, retrieves and filters plans, and matches them with
+   * Stripe products via external provider IDs. Sends appropriate error responses for invalid requests.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
    */
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     const siteId = req.params.site_id;
@@ -31,14 +34,12 @@ export class ProductsController {
     }
 
     try {
-      const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId,
-        endpointType: 'plans',
-      });
+      const availablePlans = await this.plansService.getAvailablePlans({ siteId });
+      const stripeProductIds: string[] = availablePlans
+        .map((plan) => plan.metadata.external_providers?.stripe ?? [])
+        .flat();
 
-      const stripeProductIds: string[] = accessControlPlans.map((plan) => plan.external_providers?.stripe ?? []).flat();
       const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
-
       res.json(products);
     } catch (error) {
       if (error instanceof AccessBridgeError) {

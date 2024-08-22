@@ -1,7 +1,8 @@
 import Stripe from 'stripe';
+import { Plan } from '@jwp/ott-common/types/plans.js';
 
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors.js';
-import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
+import { PlansService } from '../../src/services/plans-service.js';
 import { StripeService } from '../../src/services/stripe-service.js';
 import { PLANS, STRIPE_PRODUCT } from '../fixtures.js';
 
@@ -9,7 +10,7 @@ export type MockBehavior = 'default' | 'empty' | 'error';
 
 // Mock PlansService
 export class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
+  async getAvailablePlans({ siteId }: { siteId: string }): Promise<Plan[]> {
     return PLANS.VALID;
   }
 }
