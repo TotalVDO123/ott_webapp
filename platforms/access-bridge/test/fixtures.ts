@@ -1,9 +1,9 @@
 import Stripe from 'stripe';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
-import { Viewer } from '@jwp/ott-common/types/access.js';
 
 import { StripeProduct } from '../src/services/stripe-service.js';
-import { ErrorCode } from '../src/errors.js';
+import { Viewer } from '../src/services/identity-service';
+import { ErrorDefinitions } from '../src/errors.js';
 
 // Utility function to get Unix timestamp
 export const getTimestamp = (daysOffset: number): number => {
@@ -18,8 +18,7 @@ const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
 
 // API endpoints constant
 export const ENDPOINTS = {
-  GENERATE_TOKENS: '/v2/sites/:site_id/access/generate',
-  REFRESH_TOKENS: '/v2/sites/:site_id/access/refresh',
+  GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
   PRODUCTS: '/v2/sites/:site_id/products',
 };
 
@@ -87,6 +86,7 @@ export const STRIPE_PRICE: Stripe.Price = {
   product: 'prod_123456789',
   recurring: {
     interval: 'month',
+    meter: null,
     interval_count: 1,
     usage_type: 'licensed',
     aggregate_usage: null,
@@ -131,7 +131,7 @@ export const STRIPE_ERRORS = [
       type: 'invalid_request_error',
       message: 'Invalid request',
     }),
-    expectedCode: ErrorCode.BadRequestError,
+    expectedCode: ErrorDefinitions.BadRequestError.code,
     statusCode: 400,
   },
 
@@ -140,7 +140,7 @@ export const STRIPE_ERRORS = [
       type: 'authentication_error',
       message: 'Not authenticated.',
     }),
-    expectedCode: ErrorCode.Unauthorized,
+    expectedCode: ErrorDefinitions.UnauthorizedError.code,
     statusCode: 401,
   },
 
@@ -149,7 +149,7 @@ export const STRIPE_ERRORS = [
       type: 'invalid_grant',
       message: 'Permission error request.',
     }),
-    expectedCode: ErrorCode.Forbidden,
+    expectedCode: ErrorDefinitions.ForbiddenError.code,
     statusCode: 403,
   },
 
@@ -158,7 +158,7 @@ export const STRIPE_ERRORS = [
       type: 'api_error',
       message: 'Invalid request',
     }),
-    expectedCode: ErrorCode.BadRequestError,
+    expectedCode: ErrorDefinitions.BadRequestError.code,
     statusCode: 400,
   },
 ];

@@ -1,10 +1,9 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
 import { StripeService } from '../services/stripe-service.js';
-import { ParameterInvalidError, AccessBridgeError, sendErrors } from '../errors.js';
+import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
-import { STRIPE_SECRET } from '../app-config.js';
 
 /**
  * Controller class responsible for handling Stripe-related services.
@@ -15,7 +14,7 @@ export class ProductsController {
 
   constructor() {
     this.plansService = new PlansService();
-    this.stripeService = new StripeService(STRIPE_SECRET);
+    this.stripeService = new StripeService();
   }
 
   /**
@@ -24,39 +23,30 @@ export class ProductsController {
    * @param res The HTTP response object.
    * @param params The request parameters containing site_id.
    */
-  getProducts = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
-    try {
-      if (!isValidSiteId(params.site_id)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
-        return;
-      }
+  async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const siteId = req.params.site_id;
+    if (!isValidSiteId(siteId)) {
+      sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
+      return;
+    }
 
+    try {
       const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId: params.site_id,
+        siteId,
         endpointType: 'plans',
-        authorization: req.headers['authorization'],
       });
 
-      const externalProviderIds: string[] = accessControlPlans
-        .map((plan) => plan.external_providers?.stripe)
-        .filter((id): id is string => id !== undefined);
+      const stripeProductIds: string[] = accessControlPlans.map((plan) => plan.external_providers?.stripe ?? []).flat();
+      const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
 
-      // This is just for testing purpose until SIMS API is updated to include external ids
-      // Uncomment if you want to recieve real Stripe data instead of empty array
-      // if (!externalProviderIds.length) {
-      //   externalProviderIds = ['prod_QRUHbH7wK5HHPr'];
-      // }
-
-      const products = await this.stripeService.getProductsWithPrices(externalProviderIds);
-
-      res.end(JSON.stringify(products));
+      res.json(products);
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
       console.error('Controller: failed to get Stripe products.', error);
-      throw error;
+      next(error);
     }
-  };
+  }
 }

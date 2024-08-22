@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
+import { handleStripeError } from '../errors.js';
+import { STRIPE_SECRET } from '../app-config.js';
 
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
@@ -12,8 +13,8 @@ export type StripeProduct = Stripe.Product & {
 export class StripeService {
   private stripe: Stripe;
 
-  constructor(stripeApiKey: string) {
-    this.stripe = new Stripe(stripeApiKey, {
+  constructor() {
+    this.stripe = new Stripe(STRIPE_SECRET, {
       apiVersion: '2024-06-20',
     });
   }
@@ -59,18 +60,8 @@ export class StripeService {
 
       return productsWithPrices;
     } catch (e) {
-      // Handle specific Stripe errors
       if (e instanceof Stripe.errors.StripeError) {
-        switch (e.type) {
-          case 'StripeInvalidRequestError':
-            throw new BadRequestError({ description: e.message });
-          case 'StripeAuthenticationError':
-            throw new UnauthorizedError({ description: e.message });
-          case 'StripePermissionError':
-            throw new ForbiddenError({ description: e.message });
-          default:
-            throw new BadRequestError({ description: e.message });
-        }
+        handleStripeError(e);
       }
       console.error('Service: error fetching Stripe products:', e);
       throw e;

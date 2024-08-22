@@ -1,34 +1,24 @@
-import { RefreshAccessTokensParams } from '@jwp/ott-common/types/access.js';
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
-
-import { ParameterInvalidError, UnauthorizedError } from '../../src/errors.js';
-import { AccessService } from '../../src/services/access-service.js';
-import { PlansService } from '../../src/services/plans-service.js';
+import { PassportService } from '../../src/services/passport-service.js';
+import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
 import { ACCESS_TOKENS, PLANS, AUTHORIZATION, VIEWER } from '../fixtures.js';
-import { AccountService } from '../../src/services/account-service.js';
+import { IdentityService } from '../../src/services/identity-service.js';
 import { AccessController } from '../../src/controllers/access-controller.js';
+import { ErrorDefinitions } from '../../src/errors.js';
 
-// Mock AccountService
-class MockAccountService extends AccountService {
+// Mock IdentityService
+class MockIdentityService extends IdentityService {
   async getAccount({ authorization }: { authorization: string }) {
     if (authorization === AUTHORIZATION.INVALID) {
-      throw new UnauthorizedError({});
+      throw ErrorDefinitions.UnauthorizedError.create();
     }
 
     return VIEWER;
   }
 }
 
-// Mock AccessService
-class MockAccessService extends AccessService {
-  async generateAccessTokens() {
-    return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
-  }
-
-  async refreshAccessTokens({ siteId, refreshToken }: RefreshAccessTokensParams) {
-    if (refreshToken === ACCESS_TOKENS.REFRESH_TOKEN.INVALID) {
-      throw new ParameterInvalidError({ parameterName: 'refresh_token' });
-    }
+// Mock PassportService
+class MockPassportService extends PassportService {
+  async generatePassport() {
     return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
   }
 }
@@ -48,8 +38,8 @@ class MockPlansService extends PlansService {
 export class MockAccessController extends AccessController {
   constructor() {
     super();
-    Reflect.set(this, 'accountService', new MockAccountService());
-    Reflect.set(this, 'accessService', new MockAccessService());
+    Reflect.set(this, 'identityService', new MockIdentityService());
+    Reflect.set(this, 'passportService', new MockPassportService());
     Reflect.set(this, 'plansService', new MockPlansService());
   }
 }

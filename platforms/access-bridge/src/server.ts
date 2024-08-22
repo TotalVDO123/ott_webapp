@@ -1,124 +1,104 @@
-import { Server as HTTPServer, IncomingMessage, ServerResponse, createServer } from 'http';
+import { Server as HTTPServer } from 'http';
 
-import { EndpointHandler } from './endpoints.js';
-import { InternalError, MethodNotAllowedError, NotFoundError, AccessBridgeError, sendErrors } from './errors.js';
-import { ALLOWED_REQUEST_METHODS, RequestMethod } from './http.js';
+import express, { Express, Request, Response, NextFunction } from 'express';
 
+import { AccessBridgeError, ErrorDefinitions, sendErrors } from './errors.js';
+
+/**
+ * Server class that initializes and manages an Express application with error handling.
+ */
 export class Server {
+  private app: Express;
   private httpServer: HTTPServer | null;
   private address: string;
   private port: number;
-  private endpointsHandler: EndpointHandler;
 
-  constructor(address: string, port: number, endpointsHandler: EndpointHandler) {
+  /**
+   * Creates an instance of the Server class.
+   * @param address - Address to bind the server to
+   * @param port - Port to bind the server to
+   * @param registerEndpoints - Function to register routes and endpoints
+   */
+  constructor(address: string, port: number, registerEndpoints: (app: Express) => void) {
+    this.app = express();
     this.httpServer = null;
     this.address = address;
     this.port = port;
-    this.endpointsHandler = endpointsHandler;
+    this.initialize(registerEndpoints);
   }
 
+  /**
+   * Initializes the server with middleware and endpoints.
+   * @param registerEndpoints - Function to register routes and endpoints
+   */
+  private initialize(registerEndpoints: (app: Express) => void) {
+    // Middleware for parsing JSON request bodies
+    this.app.use(express.json());
+
+    // Register custom endpoints
+    registerEndpoints(this.app);
+
+    // Handle 404 Not Found errors
+    this.app.use(this.notFoundErrorHandler);
+
+    // Global error handling middleware
+    this.app.use(this.globalErrorHandler);
+  }
+
+  /**
+   * Middleware to handle 404 Not Found errors.
+   */
+  private notFoundErrorHandler = (req: Request, res: Response, next: NextFunction) => {
+    sendErrors(res, ErrorDefinitions.NotFoundError.create());
+    return;
+  };
+
+  /**
+   * Global error handler middleware for the server.
+   */
+  private globalErrorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (err instanceof AccessBridgeError) {
+      sendErrors(res, err);
+      return;
+    }
+    console.error('Unexpected error:', err);
+    sendErrors(res, ErrorDefinitions.InternalError.create());
+  };
+
+  /**
+   * Starts the server and listens on the specified port.
+   * @returns A promise that resolves to the port the server is listening on
+   */
   public async listen(): Promise<number> {
     return new Promise((resolve, reject) => {
-      const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
-        res.setHeader('Content-Type', 'application/json');
-        try {
-          await this.handleRequest(req, res);
-        } catch (e) {
-          sendErrors(res, new InternalError({}));
-        }
-      });
-
-      server.on('error', (err: Error) => {
-        reject(err);
-      });
-
-      server.listen(this.port, this.address, () => {
-        this.httpServer = server;
-        this.port = (server.address() as { port: number }).port;
+      this.httpServer = this.app.listen(this.port, this.address, () => {
+        this.port = (this.httpServer?.address() as { port: number })?.port || this.port;
+        console.info(`Server listening at http://${this.address}:${this.port}`);
         resolve(this.port);
+      });
+
+      this.httpServer.on('error', (err: Error) => {
+        reject(err);
       });
     });
   }
 
+  /**
+   * Closes the server connection.
+   * @returns A promise that resolves when the server is closed
+   */
   public async close(): Promise<void> {
-    if (this.httpServer) {
-      return new Promise((resolve, reject) => {
-        this.httpServer?.close((err?: Error) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+    if (!this.httpServer) {
+      return Promise.resolve();
     }
-  }
-
-  private async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    try {
-      await this.validateRequest(req, res);
-    } catch (e) {
-      if (e instanceof AccessBridgeError) {
-        return sendErrors(res, e);
-      }
-      sendErrors(res, new InternalError({}));
-    }
-  }
-
-  private async validateRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    if (!req.method || !(ALLOWED_REQUEST_METHODS as readonly string[]).includes(req.method)) {
-      return sendErrors(res, new MethodNotAllowedError({ allowedMethods: [...ALLOWED_REQUEST_METHODS] }));
-    }
-
-    if (!req.url) {
-      return sendErrors(res, new NotFoundError({}));
-    }
-
-    // Iterate through registered endpoint patterns
-    const requestedMethod = req.method.toUpperCase();
-    for (const endpointPattern in this.endpointsHandler) {
-      const params = this.extractParams(endpointPattern, req.url);
-      if (params) {
-        const endpoint = this.endpointsHandler[endpointPattern];
-        const methodHandler = endpoint[requestedMethod];
-        if (methodHandler) {
-          await methodHandler(req, res, params);
-          return;
+    return new Promise((resolve, reject) => {
+      this.httpServer?.close((err?: Error) => {
+        if (err) {
+          reject(err);
         } else {
-          return sendErrors(
-            res,
-            new MethodNotAllowedError({ allowedMethods: Object.keys(endpoint) as RequestMethod[] })
-          );
+          resolve();
         }
-      }
-    }
-
-    return sendErrors(res, new NotFoundError({}));
-  }
-
-  // Extract params from URL
-  private extractParams(pattern: string, url: string): { [key: string]: string } | null {
-    const patternParts = pattern.split('/');
-    const urlParts = url.split('/');
-
-    if (patternParts.length !== urlParts.length) {
-      return null;
-    }
-
-    const params: { [key: string]: string } = {};
-
-    for (let i = 0; i < patternParts.length; i++) {
-      const patternPart = patternParts[i];
-      const urlPart = urlParts[i];
-
-      if (patternPart.startsWith(':')) {
-        const paramName = patternPart.slice(1);
-        params[paramName] = urlPart;
-      } else if (patternPart !== urlPart) {
-        return null;
-      }
-    }
-
-    return params;
+      });
+    });
   }
 }

@@ -1,195 +1,132 @@
-import { ServerResponse } from 'node:http';
-
+import Stripe from 'stripe';
+import { Response } from 'express';
 import { JWError, JWErrorResponse } from '@jwp/ott-common/types/errors.js';
 
-import { RequestMethod } from './http.js';
+// Define types for error codes and status codes
+export type ErrorCode = keyof typeof ErrorDefinitions;
+export type ErrorStatusCode = (typeof ErrorDefinitions)[ErrorCode]['statusCode'];
 
-/**
- * List of possible error codes based on RFC-JW03-Delivery API
- * https://www.notion.so/jwplayer/RFC-JW03-Delivery-API-fc35c5f5d300445eba4004de970d06b4
- */
-export enum ErrorCode {
-  BadRequestError = 'bad_request',
-  ParameterMissing = 'parameter_missing',
-  ParameterInvalid = 'parameter_invalid',
-  Unauthorized = 'unauthorized',
-  Forbidden = 'forbidden',
-  NotFound = 'not_found',
-  MethodNotAllowed = 'method_not_allowed',
-  InternalError = 'internal_error',
+// Define context types for each error
+interface BaseContext {
+  description?: string;
 }
 
-const ErrorCodeDescription: Record<ErrorCode, string> = {
-  [ErrorCode.BadRequestError]: 'The request was not constructed correctly.',
-  [ErrorCode.ParameterMissing]: 'Required parameter {value} is missing.',
-  [ErrorCode.ParameterInvalid]: 'Parameter {value} is invalid. {reason}.',
-  [ErrorCode.Unauthorized]: 'Missing or invalid auth credentials.',
-  [ErrorCode.Forbidden]: 'Access to the requested resource is not allowed.',
-  [ErrorCode.NotFound]: 'The requested resource could not be found.',
-  [ErrorCode.MethodNotAllowed]: 'The requested resource only supports {value} requests.',
-  [ErrorCode.InternalError]: 'An error was encountered while processing the request. Please try again.',
-};
-
-/**
- * Allowed response status codes.
- */
-export type ErrorStatusCode = 400 | 401 | 403 | 404 | 405 | 500;
-
-/**
- * Base class for errors.
- */
-export abstract class AccessBridgeError {
-  private readonly descriptionOverride: string | null;
-
-  protected constructor(description?: string) {
-    this.descriptionOverride = description || null;
-  }
-
-  abstract get code(): ErrorCode;
-  abstract get statusCode(): ErrorStatusCode;
-  abstract get headers(): Iterable<[string, string]>;
-  protected abstract get defaultDescription(): string;
-
-  get description(): string {
-    return this.descriptionOverride || this.defaultDescription;
-  }
+interface ParameterMissingContext extends BaseContext {
+  parameterName: string;
 }
 
-/**
- * Factory for generating error classes.
- * @param errorCode - The error code for errors of this type.
- * @param statusCode - The corresponding HTTP status code.
- * @param defaultDescriptionFactory - A function to fill in the default description based on the error context.
- * @param headersFactory - A function to fill in the error response headers based on the error context.
- * @returns a new error class.
- */
-function createError<T>(
-  errorCode: ErrorCode,
-  statusCode: ErrorStatusCode,
-  defaultDescriptionFactory: (context: T) => string,
-  headersFactory: (context: T) => Iterable<[string, string]> = () => []
-): new (context: T & { description?: string }) => AccessBridgeError {
-  return class extends AccessBridgeError {
-    private readonly context: T;
-
-    constructor(context: T & { description?: string }) {
-      super(context?.description);
-      this.context = context;
-    }
-
-    get code(): ErrorCode {
-      return errorCode;
-    }
-
-    get statusCode(): ErrorStatusCode {
-      return statusCode;
-    }
-
-    get headers(): Iterable<[string, string]> {
-      return headersFactory(this.context);
-    }
-
-    protected get defaultDescription(): string {
-      return defaultDescriptionFactory(this.context);
-    }
-  };
-}
-
-/**
- * Retrieves the description for a given error code.
- *
- * This function replaces placeholders in the error description with the provided `value` and `reason`.
- *
- * @param {ErrorCode} code - The error code for which the description is needed.
- * @param {string} [value] - An optional value to replace the `{value}` placeholder in the description.
- * @param {string} [reason] - An optional reason to replace the `{reason}` placeholder in the description.
- * @returns {string} The description corresponding to the error code, with the `{value}` and `{reason}`
- * placeholders replaced by the provided arguments if applicable.
- */
-export function getErrorCodeDescription(code: ErrorCode, value?: string, reason?: string): string {
-  let description = ErrorCodeDescription[code];
-
-  if (description.includes('{value}')) {
-    description = description.replace('{value}', value || '');
-  }
-
-  if (description.includes('{reason}')) {
-    description = description.replace('{reason}', reason || '');
-  }
-
-  return description;
-}
-
-/**
- * Send one or more errors.
- *
- * @param res - The response object to send the error to. This ends the response.
- * @param error - The error to send.
- * @param errors - Any other errors to send. Their status code must match error's.
- */
-export function sendErrors(res: ServerResponse, error: AccessBridgeError, ...errors: AccessBridgeError[]) {
-  // All errors must share the same error code
-  const statusCode = error.statusCode;
-  if (errors.find((e) => e.statusCode !== statusCode)) {
-    throw new Error('All errors must result in the same HTTP status code');
-  }
-
-  res.statusCode = statusCode;
-  const allErrors = [error, ...errors];
-  for (const error of allErrors) {
-    for (const header of error.headers) {
-      res.setHeader(...header);
-    }
-  }
-
-  const body = {
-    errors: allErrors.map((e) => ({
-      code: e.code,
-      description: e.description,
-    })),
-  };
-
-  res.end(JSON.stringify(body));
-}
-
-// Define specific errors
-export const BadRequestError = createError(ErrorCode.BadRequestError, 400, () =>
-  getErrorCodeDescription(ErrorCode.BadRequestError)
-);
-
-export const ParameterMissingError = createError<{ parameterName: string }>(
-  ErrorCode.ParameterMissing,
-  400,
-  ({ parameterName }) => getErrorCodeDescription(ErrorCode.ParameterMissing, parameterName)
-);
-
-export const ParameterInvalidError = createError<{
+interface ParameterInvalidContext extends BaseContext {
   parameterName: string;
   reason?: string;
-}>(ErrorCode.ParameterInvalid, 400, ({ parameterName, reason }) =>
-  getErrorCodeDescription(ErrorCode.ParameterInvalid, parameterName, reason)
-);
+}
 
-export const UnauthorizedError = createError(ErrorCode.Unauthorized, 401, () =>
-  getErrorCodeDescription(ErrorCode.Unauthorized)
-);
+// Unified Error Definitions with details and creation functions
+export const ErrorDefinitions = {
+  BadRequestError: {
+    code: 'bad_request',
+    statusCode: 400,
+    description: 'The request was not constructed correctly.',
+    create: (context?: BaseContext) => new AccessBridgeError('BadRequestError', context),
+  },
+  ParameterMissingError: {
+    code: 'parameter_missing',
+    statusCode: 400,
+    description: 'Required parameter {value} is missing.',
+    create: (context: Partial<ParameterMissingContext>) =>
+      new AccessBridgeError('ParameterMissingError', {
+        ...context,
+        description: `Required parameter ${context.parameterName || ''} is missing.`,
+      }),
+  },
+  ParameterInvalidError: {
+    code: 'parameter_invalid',
+    statusCode: 400,
+    description: 'Parameter {value} is invalid. {reason}.',
+    create: (context: Partial<ParameterInvalidContext>) =>
+      new AccessBridgeError('ParameterInvalidError', {
+        ...context,
+        description: `Parameter ${context.parameterName || ''} is invalid. ${context.reason || ''}.`,
+      }),
+  },
+  UnauthorizedError: {
+    code: 'unauthorized',
+    statusCode: 401,
+    description: 'Missing or invalid auth credentials.',
+    create: (context?: BaseContext) => new AccessBridgeError('UnauthorizedError', context),
+  },
+  ForbiddenError: {
+    code: 'forbidden',
+    statusCode: 403,
+    description: 'Access to the requested resource is not allowed.',
+    create: (context?: BaseContext) => new AccessBridgeError('ForbiddenError', context),
+  },
+  NotFoundError: {
+    code: 'not_found',
+    statusCode: 404,
+    description: 'The requested resource could not be found.',
+    create: (context?: BaseContext) => new AccessBridgeError('NotFoundError', context),
+  },
+  MethodNotAllowedError: {
+    code: 'method_not_allowed',
+    statusCode: 405,
+    description: 'The used HTTP method is not supported on the given resource.',
+    create: (context?: BaseContext) => new AccessBridgeError('MethodNotAllowedError', context),
+  },
+  InternalError: {
+    code: 'internal_error',
+    statusCode: 500,
+    description: 'An error was encountered while processing the request. Please try again.',
+    create: (context?: BaseContext) => new AccessBridgeError('InternalError', context),
+  },
+} as const;
 
-export const ForbiddenError = createError(ErrorCode.Forbidden, 403, () => getErrorCodeDescription(ErrorCode.Forbidden));
+// Create the base class for errors
+export class AccessBridgeError extends Error {
+  private readonly errorKey: keyof typeof ErrorDefinitions;
+  private readonly context?: BaseContext;
 
-export const NotFoundError = createError(ErrorCode.NotFound, 404, () => getErrorCodeDescription(ErrorCode.NotFound));
+  constructor(errorKey: keyof typeof ErrorDefinitions, context?: BaseContext) {
+    super();
+    this.errorKey = errorKey;
+    this.context = context;
+  }
 
-export const MethodNotAllowedError = createError<{
-  allowedMethods: RequestMethod[];
-}>(
-  ErrorCode.MethodNotAllowed,
-  405,
-  ({ allowedMethods }) => getErrorCodeDescription(ErrorCode.MethodNotAllowed, allowedMethods.sort().join(', ')),
-  ({ allowedMethods }) => [['Allow', allowedMethods.sort().join(', ')]]
-);
+  get code(): string {
+    return ErrorDefinitions[this.errorKey].code;
+  }
 
-export const InternalError = createError(ErrorCode.InternalError, 500, () =>
-  getErrorCodeDescription(ErrorCode.InternalError)
-);
+  get statusCode(): ErrorStatusCode {
+    return ErrorDefinitions[this.errorKey].statusCode;
+  }
+
+  protected get defaultDescription(): string {
+    return ErrorDefinitions[this.errorKey].description;
+  }
+
+  get description(): string {
+    return this.context?.description || this.defaultDescription;
+  }
+}
+
+// Send one or more errors
+export function sendErrors(res: Response, error: AccessBridgeError): void {
+  const statusCode = error.statusCode;
+
+  // Set the response status code
+  res.status(statusCode);
+
+  // Construct and send the JSON response body
+  const body = {
+    errors: [
+      {
+        code: error.code,
+        description: error.description,
+      },
+    ],
+  };
+
+  res.json(body);
+}
 
 // Type guard to check if the error is a JWErrorResponse
 export function isJWError(error: unknown): error is JWErrorResponse {
@@ -202,4 +139,31 @@ export function isJWError(error: unknown): error is JWErrorResponse {
       (e) => typeof (e as JWError).code === 'string' && typeof (e as JWError).description === 'string'
     )
   );
+}
+
+// Utility function to handle JW errors
+export function handleJWError(error: JWError): AccessBridgeError {
+  const { code, description } = error;
+  const errorDefinition = Object.keys(ErrorDefinitions).find((key) => ErrorDefinitions[key as ErrorCode].code === code);
+
+  if (errorDefinition) {
+    return ErrorDefinitions[errorDefinition as ErrorCode].create({ description });
+  }
+
+  // Fallback to a generic BadRequestError if no specific match is found
+  return ErrorDefinitions.BadRequestError.create({ description });
+}
+
+// Utility function to handle Stripe errors
+export function handleStripeError(error: Stripe.errors.StripeError): AccessBridgeError {
+  if (error.type === 'StripeInvalidRequestError') {
+    return ErrorDefinitions.BadRequestError.create({ description: error.message });
+  } else if (error.type === 'StripeAuthenticationError') {
+    return ErrorDefinitions.UnauthorizedError.create({ description: error.message });
+  } else if (error.type === 'StripePermissionError') {
+    return ErrorDefinitions.ForbiddenError.create({ description: error.message });
+  } else {
+    // Fallback to a generic InternalError for unexpected Stripe errors
+    return ErrorDefinitions.InternalError.create({ description: error.message });
+  }
 }
