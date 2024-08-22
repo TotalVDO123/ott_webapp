@@ -51,7 +51,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // Head tags
   const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
   const metaTags = createHeadMetaTags({
-    'apple-itunes-app': env.APP_APPLE_ITUNES_APP,
+    'apple-itunes-app': env.APP_APPLE_ITUNES_APP ? `app-id=${env.APP_APPLE_ITUNES_APP}` : undefined,
     'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
   });
   const tags = [fontTags, metaTags, getGtmTags(env)].flat();
@@ -80,8 +80,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           theme_color: '#DD0000',
           orientation: 'any',
           background_color: '#000',
-          related_applications: [],
-          prefer_related_applications: false,
+          related_applications: env.APP_GOOGLE_RELATED_APPLICATION_ID ? [{ platform: 'play', id: env.APP_GOOGLE_RELATED_APPLICATION_ID, url: '' }] : [],
+          prefer_related_applications: !!env.APP_GOOGLE_RELATED_APPLICATION_ID,
           icons: [
             {
               src: 'images/icons/pwa-192x192.png',
