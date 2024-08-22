@@ -2,10 +2,9 @@
 
 ## When working on this project, keep these in mind:
 
-- Use `yarn`
+- Use `yarn` to install dependencies
 - Run tests through `yarn test`
-- Format the code through `yarn format` (or automatically do it via git hooks)
-- Lint through `yarn lint` (eslint, prettier, stylelint and tsc checks)
+- Start the project using `yarn start`
 
 ## Project Structure
 
@@ -16,7 +15,7 @@
 /src                    - Source code for the application
   /controllers          - Controller modules containing the core logic for handling requests and responses
   /services             - Services which connect external data sources to the application
-  /appConfig.ts         - Configuration settings for the application
+  /app-config.ts        - Configuration settings for the application
   /endpoints.ts         - Definitions for the exposed endpoints
   /errors.ts            - Custom error classes and error handling logic
   /http.ts              - HTTP utility functions and setup

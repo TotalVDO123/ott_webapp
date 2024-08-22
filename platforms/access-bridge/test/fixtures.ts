@@ -1,9 +1,9 @@
 import Stripe from 'stripe';
-import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
-import { Viewer } from '@jwp/ott-common/types/access.js';
+import { Plan } from '@jwp/ott-common/types/plans.js';
 
 import { StripeProduct } from '../src/services/stripe-service.js';
-import { ErrorCode } from '../src/errors.js';
+import { Viewer } from '../src/services/identity-service';
+import { ErrorDefinitions } from '../src/errors.js';
 
 // Utility function to get Unix timestamp
 export const getTimestamp = (daysOffset: number): number => {
@@ -18,10 +18,9 @@ const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
 
 // API endpoints constant
 export const ENDPOINTS = {
-  GENERATE_TOKENS: '/v2/sites/:site_id/access/generate',
-  REFRESH_TOKENS: '/v2/sites/:site_id/access/refresh',
+  GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
   PRODUCTS: '/v2/sites/:site_id/products',
-  CHECKOUT: '/v2/sites/:site_id/checkout',
+  CHECKOUT: '/v2/checkout',
 };
 
 // mock data for access tokens
@@ -42,17 +41,98 @@ export const VIEWER: Viewer = {
   email: 'dummy@test.com',
 };
 
-// plan variations mock
-const createMockPlan = (id: string, exp: number): AccessControlPlan => ({
-  id,
-  exp,
-  external_providers: { stripe: 'dummy123' },
+// Plan mock creation function
+const createMockPlan = ({ name, access_model, access_plan, access, metadata }: Plan): Plan => ({
+  name,
+  access_model,
+  access_plan,
+  access,
+  metadata,
 });
+
 export const PLANS = {
-  VALID: [createMockPlan('plan1234', FUTURE_EXPIRY)],
-  FREE: [createMockPlan('free1234', FUTURE_EXPIRY)],
-  INVALID: [createMockPlan('plan123456', FUTURE_EXPIRY)],
-  EXPIRED: [createMockPlan('plan123456', PAST_EXPIRY)],
+  VALID: [
+    createMockPlan({
+      name: 'plan1234',
+      access_model: 'svod',
+      access_plan: {
+        id: 'plan1234',
+        exp: FUTURE_EXPIRY,
+      },
+      access: {
+        drm_policy_id: 'drm_policy_123',
+        tags: {
+          include: ['tag1'],
+          exclude: ['tag2'],
+        },
+      },
+      metadata: {
+        external_providers: {
+          stripe: 'stripe_id',
+        },
+      },
+    }),
+  ],
+  FREE: [
+    createMockPlan({
+      name: 'free1234',
+      access_model: 'free',
+      access_plan: {
+        id: 'free1234',
+        exp: FUTURE_EXPIRY,
+      },
+      access: {
+        drm_policy_id: 'drm_policy_456',
+        tags: {
+          include: ['tag3'],
+          exclude: [],
+        },
+      },
+      metadata: {
+        external_providers: {},
+      },
+    }),
+  ],
+  INVALID: [
+    createMockPlan({
+      name: 'plan123456',
+      access_model: 'svod',
+      access_plan: {
+        id: 'plan123456',
+        exp: FUTURE_EXPIRY,
+      },
+      access: {
+        drm_policy_id: 'drm_policy_789',
+        tags: {
+          include: ['tag4'],
+          exclude: ['tag5'],
+        },
+      },
+      metadata: {
+        external_providers: {},
+      },
+    }),
+  ],
+  EXPIRED: [
+    createMockPlan({
+      name: 'plan1234',
+      access_model: 'svod',
+      access_plan: {
+        id: 'plan1234',
+        exp: PAST_EXPIRY,
+      },
+      access: {
+        drm_policy_id: 'drm_policy_101',
+        tags: {
+          include: ['tag6'],
+          exclude: [],
+        },
+      },
+      metadata: {
+        external_providers: {},
+      },
+    }),
+  ],
 };
 
 // Valid and invalid site id mock
@@ -89,6 +169,7 @@ export const STRIPE_PRICE: Stripe.Price = {
   product: 'prod_123456789',
   recurring: {
     interval: 'month',
+    meter: null,
     interval_count: 1,
     usage_type: 'licensed',
     aggregate_usage: null,
@@ -133,7 +214,7 @@ export const STRIPE_ERRORS = [
       type: 'invalid_request_error',
       message: 'Invalid request',
     }),
-    expectedCode: ErrorCode.BadRequestError,
+    expectedCode: ErrorDefinitions.BadRequestError.code,
     statusCode: 400,
   },
 
@@ -142,7 +223,7 @@ export const STRIPE_ERRORS = [
       type: 'authentication_error',
       message: 'Not authenticated.',
     }),
-    expectedCode: ErrorCode.Unauthorized,
+    expectedCode: ErrorDefinitions.UnauthorizedError.code,
     statusCode: 401,
   },
 
@@ -151,7 +232,7 @@ export const STRIPE_ERRORS = [
       type: 'invalid_grant',
       message: 'Permission error request.',
     }),
-    expectedCode: ErrorCode.Forbidden,
+    expectedCode: ErrorDefinitions.ForbiddenError.code,
     statusCode: 403,
   },
 
@@ -160,7 +241,7 @@ export const STRIPE_ERRORS = [
       type: 'api_error',
       message: 'Invalid request',
     }),
-    expectedCode: ErrorCode.BadRequestError,
+    expectedCode: ErrorDefinitions.BadRequestError.code,
     statusCode: 400,
   },
 ];

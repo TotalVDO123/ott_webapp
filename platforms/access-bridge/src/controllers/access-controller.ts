@@ -1,38 +1,41 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { Request, Response, NextFunction } from 'express';
 
-import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
-import { Viewer } from '@jwp/ott-common/types/access.js';
-
-import { ParameterInvalidError, AccessBridgeError, sendErrors, UnauthorizedError } from '../errors.js';
-import { AccessService } from '../services/access-service.js';
+import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { PassportService } from '../services/passport-service.js';
 import { PlansService } from '../services/plans-service.js';
-import { isValidSiteId, parseJsonBody } from '../utils.js';
-import { AccountService } from '../services/account-service.js';
+import { isValidSiteId } from '../utils.js';
+import { IdentityService, Viewer } from '../services/identity-service.js';
 
 /**
  * Controller class responsible for handling access-related services.
+ * The controller interacts with services for identity management, plans management, and passport generation.
  */
 export class AccessController {
-  private accountService: AccountService;
-  private accessService: AccessService;
+  private identityService: IdentityService;
+  private passportService: PassportService;
   private plansService: PlansService;
 
   constructor() {
-    this.accountService = new AccountService();
-    this.accessService = new AccessService();
+    this.identityService = new IdentityService();
+    this.passportService = new PassportService();
     this.plansService = new PlansService();
   }
 
   /**
-   * Service handler for generating passport access tokens.
-   * @param req The HTTP request object.
-   * @param res The HTTP response object.
-   * @param params The request parameters containing site_id.
+   * Service handler for generating passport access tokens based on the provided site ID
+   * and authorization token. Validates the site ID, checks user authorization, retrieves
+   * access control plans, and generates access tokens. Sends appropriate error responses
+   * for invalid requests.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
    */
-  generatePassport = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
+  async generatePassport(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!isValidSiteId(params.site_id)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
         return;
       }
 
@@ -41,69 +44,36 @@ export class AccessController {
 
       const authorization = req.headers['authorization'];
       if (authorization) {
-        viewer = await this.accountService.getAccount({ authorization });
+        viewer = await this.identityService.getAccount({ authorization });
         if (!viewer.id || !viewer.email) {
-          sendErrors(res, new UnauthorizedError({}));
+          sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
           return;
         }
       }
 
-      const accessControlPlans = await this.plansService.getAccessControlPlans({
-        siteId: params.site_id,
-        endpointType: 'entitlements',
-        authorization,
-      });
+      const viewerEntitledPlans = await this.plansService.getEntitledPlans({ siteId, authorization });
+      const plans = viewerEntitledPlans
+        .map((plan) => ({
+          id: plan.access_plan?.id,
+          exp: plan.access_plan?.exp,
+        }))
+        .filter((plan) => plan.id !== undefined && plan.exp !== undefined);
 
-      // map to exclude the external_providers since it's not needed in the passport data
-      const plans: AccessControlPlan[] = accessControlPlans.map(({ id, exp }) => ({ id, exp }));
-
-      // Generate access tokens for the given site, viewer and plans.
-      const accessTokens = await this.accessService.generateAccessTokens({
-        siteId: params.site_id,
+      // Generate passport tokens for the given site, viewer and plans.
+      const passport = await this.passportService.generatePassport({
+        siteId,
         viewerId: viewer.id,
         plans,
       });
 
-      res.end(JSON.stringify(accessTokens));
+      res.json(passport);
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
       console.error('Controller: failed to generate passport.', error);
-      throw error;
+      next(error);
     }
-  };
-
-  /**
-   * Service handler for refreshing passport access tokens.
-   * @param req The HTTP request object.
-   * @param res The HTTP response object.
-   * @param params The request parameters containing site_id.
-   */
-  refreshPassport = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
-    try {
-      if (!isValidSiteId(params.site_id)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
-        return;
-      }
-
-      const { refresh_token: refreshToken } = await parseJsonBody<{ refresh_token: string }>(req);
-      if (!refreshToken) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'refresh_token' }));
-        return;
-      }
-
-      const accessTokens = await this.accessService.refreshAccessTokens({ siteId: params.site_id, refreshToken });
-
-      res.end(JSON.stringify(accessTokens));
-    } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
-        return;
-      }
-      console.error('Controller: failed to refresh passport.', error);
-      throw error;
-    }
-  };
+  }
 }
