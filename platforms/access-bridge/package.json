@@ -12,7 +12,8 @@
     "build": "vite build",
     "start": "node build/main.js",
     "prestart": "yarn build",
-    "test": "yarn build & TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
+    "pretest": "yarn build",
+    "test": "TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
     "lint:ts": "tsc --pretty --noEmit -p ./"
   },
   "devDependencies": {
@@ -26,7 +27,6 @@
   },
   "dependencies": {
     "@jwp/ott-common": "*",
-    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
   }

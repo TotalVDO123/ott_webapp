@@ -1,7 +1,5 @@
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
-
 import { PassportService } from '../../src/services/passport-service.js';
-import { PlansService } from '../../src/services/plans-service.js';
+import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
 import { ACCESS_TOKENS, PLANS, AUTHORIZATION, VIEWER } from '../fixtures.js';
 import { IdentityService } from '../../src/services/identity-service.js';
 import { AccessController } from '../../src/controllers/access-controller.js';

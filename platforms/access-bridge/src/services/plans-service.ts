@@ -1,8 +1,14 @@
-import { AccessControlPlan, AccessControlPlansParams, PlansResponse } from '@jwp/ott-common/types/plans.js';
+import { AccessControlPlan, PlansResponse } from '@jwp/ott-common/types/plans.js';
 
 import { SIMS_API_HOST } from '../app-config.js';
-import { ErrorDefinitions, handleJWError, isJWError } from '../errors.js';
+import { handleJWError, isJWError } from '../errors.js';
 import { get } from '../http.js';
+
+export type AccessControlPlansParams = {
+  siteId: string;
+  endpointType: 'plans' | 'entitlements';
+  authorization?: string;
+};
 
 /**
  * Service class responsible for interacting with the Plans API that handles access control plans.
@@ -61,11 +67,6 @@ export class PlansService {
 
       return accessControlPlans;
     } catch (e) {
-      // @ts-ignore
-      // This will be removed once SIMS team addresses the error format for the case
-      if (e.code === 401) {
-        throw ErrorDefinitions.UnauthorizedError.create();
-      }
       if (isJWError(e)) {
         const error = e.errors[0];
         handleJWError(error);

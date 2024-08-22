@@ -51,10 +51,10 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     },
     test: {
       globals: true,
-      setupFiles: 'test/vitest.setup.ts',
       include: ['**/*.test.ts'],
       chaiConfig: {
-        truncateThreshold: 100000000,
+        // Prevent truncation of detailed test descriptions.
+        truncateThreshold: 1000,
       },
     },
   });
