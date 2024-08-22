@@ -16,9 +16,9 @@ import {
   extractExternalFonts,
   getFileCopyTargets,
   getGoogleFontTags,
-  getGoogleVerificationTag,
   getGtmTags,
   generateIconTags,
+  createHeadMetaTags,
 } from './scripts/build-tools/buildTools';
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
@@ -42,12 +42,20 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     description: process.env.APP_DESCRIPTION || 'JW OTT Webapp is an open-source, dynamically generated video website.',
   };
 
+  // Fonts
   const bodyFonts = extractExternalFonts(env.APP_BODY_FONT_FAMILY);
   const bodyAltFonts = extractExternalFonts(env.APP_BODY_ALT_FONT_FAMILY);
-
-  const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
   const bodyFontsString = bodyFonts.map((font) => font.fontFamily).join(', ');
   const bodyAltFontsString = bodyAltFonts.map((font) => font.fontFamily).join(', ');
+
+  // Head tags
+  const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
+  const metaTags = createHeadMetaTags({
+    'apple-itunes-app': env.APP_APPLE_ITUNES_APP,
+    'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
+  });
+  const tags = [fontTags, metaTags, getGtmTags(env)].flat();
+
   const favicons = generateIconTags(basePath, favIconSizes, appleIconSizes);
 
   return defineConfig({
@@ -91,7 +99,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       createHtmlPlugin({
         minify: true,
         inject: {
-          tags: [getGoogleVerificationTag(env), fontTags, getGtmTags(env)].flat(),
+          tags,
           data: { ...app, favicons },
         },
       }),

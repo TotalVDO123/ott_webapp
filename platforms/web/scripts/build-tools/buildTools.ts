@@ -39,19 +39,14 @@ export const getFileCopyTargets = (mode: string): Target[] => {
   return fileCopyTargets;
 };
 
-export const getGoogleVerificationTag = (env: Record<string, string>): HtmlTagDescriptor[] => {
-  if (!env.APP_GOOGLE_SITE_VERIFICATION_ID) return [];
-
-  return [
-    {
+export const createHeadMetaTags = (tagData: Record<string, string | undefined>): HtmlTagDescriptor[] => {
+  return Object.entries(tagData)
+    .filter(([_, value]) => !!value)
+    .map(([name, content]) => ({
       tag: 'meta',
       injectTo: 'head',
-      attrs: {
-        content: process.env.APP_GOOGLE_SITE_VERIFICATION_ID,
-        name: 'google-site-verification',
-      },
-    },
-  ];
+      attrs: { name, content },
+    }));
 };
 
 // @todo: move to common?
