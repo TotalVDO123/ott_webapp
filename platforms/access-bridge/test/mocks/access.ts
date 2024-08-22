@@ -1,5 +1,7 @@
+import { Plan } from '@jwp/ott-common/types/plans.js';
+
 import { PassportService } from '../../src/services/passport-service.js';
-import { AccessControlPlansParams, PlansService } from '../../src/services/plans-service.js';
+import { PlansService } from '../../src/services/plans-service.js';
 import { ACCESS_TOKENS, PLANS, AUTHORIZATION, VIEWER } from '../fixtures.js';
 import { IdentityService } from '../../src/services/identity-service.js';
 import { AccessController } from '../../src/controllers/access-controller.js';
@@ -25,7 +27,11 @@ class MockPassportService extends PassportService {
 
 // Mock PlansService
 class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
+  async getAvailablePlans({ siteId }: { siteId: string }): Promise<Plan[]> {
+    return PLANS.VALID;
+  }
+
+  async getEntitledPlans({ siteId, authorization }: { siteId: string; authorization: string }): Promise<Plan[]> {
     if (!authorization) {
       // if no auth, only free plans available
       return PLANS.FREE;

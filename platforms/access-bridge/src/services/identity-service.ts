@@ -20,7 +20,7 @@ export class IdentityService {
    */
   async getAccount({ authorization }: { authorization: string }): Promise<Viewer> {
     try {
-      const account = await get<Viewer>(`${SIMS_API_HOST}/v2/accounts`, authorization);
+      const account = await get<Viewer>(`${SIMS_API_HOST}/v3/accounts`, authorization);
       if (!account) {
         throw ErrorDefinitions.NotFoundError.create({ description: 'Account not found.' });
       }
@@ -30,11 +30,6 @@ export class IdentityService {
         email: account.email,
       };
     } catch (e) {
-      // @ts-ignore
-      // This will be removed once SIMS team addresses the error format for the case
-      if (e.code === 401) {
-        throw ErrorDefinitions.UnauthorizedError.create();
-      }
       if (isJWError(e)) {
         const error = e.errors[0];
         handleJWError(error);
