@@ -55,6 +55,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
   });
   const tags = [fontTags, metaTags, getGtmTags(env)].flat();
+  const related_applications = env.APP_GOOGLE_RELATED_APPLICATION_ID ? [{ platform: 'play', id: env.APP_GOOGLE_RELATED_APPLICATION_ID, url: '' }] : [];
 
   const favicons = generateIconTags(basePath, favIconSizes, appleIconSizes);
 
@@ -80,7 +81,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           theme_color: '#DD0000',
           orientation: 'any',
           background_color: '#000',
-          related_applications: env.APP_GOOGLE_RELATED_APPLICATION_ID ? [{ platform: 'play', id: env.APP_GOOGLE_RELATED_APPLICATION_ID, url: '' }] : [],
+          related_applications,
           prefer_related_applications: !!env.APP_GOOGLE_RELATED_APPLICATION_ID,
           icons: [
             {
