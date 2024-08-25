@@ -1,5 +1,5 @@
 import { BIND_ADDR, BIND_PORT } from './app-config.js';
-import { endpoints } from './endpoints.js';
+import { registerEndpoints } from './endpoints.js';
 import { Server } from './server.js';
 
 if (BIND_PORT <= 0 || BIND_PORT > 65535) {
@@ -7,12 +7,11 @@ if (BIND_PORT <= 0 || BIND_PORT > 65535) {
   process.exit(1);
 }
 
-const server = new Server(BIND_ADDR, BIND_PORT, endpoints);
+const server = new Server(BIND_ADDR, BIND_PORT, registerEndpoints);
 
 async function startServer() {
   try {
-    const serverPort = await server.listen();
-    console.info(`Server is listening at http://${BIND_ADDR}:${serverPort}`);
+    await server.listen();
   } catch (err) {
     console.error(`Failed to start server: ${err}`);
     process.exit(1);

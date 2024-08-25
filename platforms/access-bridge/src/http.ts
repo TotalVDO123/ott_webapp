@@ -1,9 +1,3 @@
-// Allowed backend request methods.
-export const ALLOWED_REQUEST_METHODS = ['GET', 'PUT', 'POST'] as const;
-
-// Type to describe allowed request methods.
-export type RequestMethod = (typeof ALLOWED_REQUEST_METHODS)[number];
-
 /**
  * Performs a GET request using fetch with optional authentication token.
  * @param url The URL to fetch.
