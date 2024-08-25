@@ -30,3 +30,44 @@
 Note: Some system and util files are not shown above for brevity.
 You probably won't need to mess with anything not shown here.
 ```
+
+## Sentry Setup and Configuration
+
+### Integrating Sentry
+
+Sentry is integrated into this project to track and monitor errors, as well as performance issues. To ensure that Sentry is properly configured and working as expected, follow the steps below:
+
+- Environment Variables:  
+  Ensure that your .env.<mode> files include the following Sentry-related environment variables:  
+  APP_SENTRY_DSN=Your_Sentry_DSN  
+  APP_SENTRY_AUTH_TOKEN=Your_Sentry_Auth_Token  
+  APP_SENTRY_TRACE_RATE=Trace rate for performance monitoring  
+  <em>These variables are essential for Sentry to function correctly and should be kept secure.</em>
+
+- Running the Project:  
+  Use the following commands to install dependencies, run tests, and start the project, with Sentry automatically configured:
+  Install dependencies: yarn  
+  Run tests: yarn test  
+  Start the project: yarn start
+
+- Source Maps:  
+  Source maps are configured to be generated during the build process to allow Sentry to provide readable stack traces.
+  When building the project, the source maps will be automatically uploaded to Sentry if the correct environment variables are set.
+
+- Error Monitoring:  
+  Sentry captures unhandled errors and sends detailed reports, including stack traces, to help in debugging.
+  Review the Sentry dashboard regularly to monitor the health of the application.
+
+- Performance Monitoring:  
+  Sentry is also configured for performance monitoring. Ensure that the trace rate is appropriately set in the environment variables.
+
+## Adding Sentry to New Features
+
+When adding new features or making significant changes to the code:
+
+- Error Handling:  
+  Ensure that errors are properly captured and logged using Sentry.
+- Custom Error Classes:  
+  If you define custom error classes, integrate them with Sentry for better tracking.
+- Performance Considerations:  
+  For critical paths, consider adding custom performance monitoring using Sentry’s APIs.

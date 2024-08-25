@@ -29,6 +29,7 @@
     "@jwp/ott-common": "*",
     "@sentry/node": "^8.26.0",
     "@sentry/profiling-node": "^8.26.0",
+    "@sentry/vite-plugin": "^2.22.2",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "stripe": "^16.8.0"

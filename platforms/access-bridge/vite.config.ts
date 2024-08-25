@@ -1,7 +1,8 @@
 import path from 'path';
 
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, PluginOption } from 'vite';
 import type { ConfigEnv, UserConfigExport } from 'vitest/config';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   const envPrefix = 'APP_';
@@ -18,7 +19,24 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     process.env.NODE_ENV = 'production';
   }
 
+  // Define plugins
+  const plugins: PluginOption[] | undefined = [];
+
+  // Conditionally add the Sentry plugin if the necessary env variables are provided
+  if (env.APP_SENTRY_DSN && env.APP_SENTRY_AUTH_TOKEN) {
+    // Sentry vite plugin should be placed after all other plugins.
+    // This plugin is needed allow sentry to provide readable stack traces.
+    plugins.push(
+      sentryVitePlugin({
+        authToken: env.APP_SENTRY_AUTH_TOKEN,
+        org: 'personal-r4t', // Sentry organization name
+        project: 'node', // Sentry project name
+      })
+    );
+  }
+
   return defineConfig({
+    plugins,
     define: {
       'process.env': {
         APP_BIND_PORT: env.APP_BIND_PORT,
@@ -29,6 +47,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         APP_SIMS_API_HOST: env.APP_SIMS_API_HOST,
         APP_SENTRY_DSN: env.APP_SENTRY_DSN,
         APP_SENTRY_TRACE_RATE: env.APP_SENTRY_TRACE_RATE,
+        APP_SENTRY_AUTH_TOKEN: env.APP_SENTRY_AUTH_TOKEN,
       },
     },
     envPrefix,
@@ -37,6 +56,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     },
     build: {
       outDir: 'build',
+      sourcemap: true,
       rollupOptions: {
         input: {
           main: 'src/main.ts',

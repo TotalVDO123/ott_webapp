@@ -25,7 +25,7 @@ Express is a minimal and flexible Node.js web application framework that provide
 
 [Read more.](https://expressjs.com/)
 
-# Vitest
+## Vitest
 
 Vitest is a blazing-fast unit testing framework built for modern JavaScript and TypeScript projects. It is designed to work seamlessly with Vite, leveraging its speed and simplicity, but can be used in any project. Vitest provides an intuitive and powerful API that makes writing tests easy and efficient.
 
@@ -61,3 +61,16 @@ The Stripe SDK provides a comprehensive set of APIs and tools for integrating pa
 - PCI compliance and secure transactions
 
 [Read more.](https://docs.stripe.com/)
+
+## Sentry
+
+Sentry is an open-source error tracking and performance monitoring tool that helps developers monitor and fix crashes in real-time. With Sentry, you can identify and address performance bottlenecks, errors, and exceptions in your applications. Sentry provides detailed stack traces, allowing developers to see exactly where an issue occurred, and integrates seamlessly with many popular languages and frameworks.
+
+- Real-time error tracking and alerting
+- Performance monitoring and tracing
+- Detailed stack traces for easy debugging
+- Seamless integration with various languages and frameworks
+- Support for source maps to map minified code to original source code
+- Customizable notifications and workflow integrations
+
+[Read more.](https://docs.sentry.io/)
