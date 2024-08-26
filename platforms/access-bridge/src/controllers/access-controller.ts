@@ -40,8 +40,9 @@ export class AccessController {
         return;
       }
 
-      // unauthorized is default for viewers without an authorization token
-      let viewer: Viewer = { id: 'unauthorized', email: '' };
+      // anonymous is default for not authenticated viewers
+      // they only have access to free plans
+      let viewer: Viewer = { id: 'anonymous', email: '' };
 
       const authorization = req.headers['authorization'];
       if (authorization) {
