@@ -8,10 +8,11 @@ if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
     integrations: [nodeProfilingIntegration()],
+    environment: import.meta.env.MODE || 'development',
+    release: import.meta.env.APP_VERSION,
     // make sure you setup your APP_SENTRY_TRACE_RATE env according to your monitoring needs
     // to balance performance and resource usage.
     tracesSampleRate: SENTRY_TRACE_RATE,
     profilesSampleRate: SENTRY_TRACE_RATE,
-    debug: false,
   });
 }

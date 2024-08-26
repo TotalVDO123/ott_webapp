@@ -39,6 +39,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     plugins,
     define: {
       'process.env': {
+        APP_VERSION: env.APP_VERSION,
         APP_BIND_PORT: env.APP_BIND_PORT,
         APP_BIND_ADDR: env.APP_BIND_ADDR,
         APP_API_SECRET: env.APP_API_SECRET,

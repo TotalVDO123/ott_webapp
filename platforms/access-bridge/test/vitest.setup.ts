@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 import * as Sentry from '@sentry/node';
 
+// Mock sentry lib
 vi.mock('@sentry/node', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof Sentry;
 
