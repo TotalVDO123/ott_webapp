@@ -19,6 +19,7 @@ import {
   getGtmTags,
   generateIconTags,
   createHeadMetaTags,
+  getRelatedApplications,
 } from './scripts/build-tools/buildTools';
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
@@ -55,7 +56,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
   });
   const tags = [fontTags, metaTags, getGtmTags(env)].flat();
-  const related_applications = env.APP_GOOGLE_RELATED_APPLICATION_ID ? [{ platform: 'play', id: env.APP_GOOGLE_RELATED_APPLICATION_ID, url: '' }] : [];
+
+  const related_applications = getRelatedApplications({ appleAppId: env.APP_APPLE_ITUNES_APP, googleAppId: env.APP_GOOGLE_RELATED_APPLICATION_ID });
 
   const favicons = generateIconTags(basePath, favIconSizes, appleIconSizes);
 

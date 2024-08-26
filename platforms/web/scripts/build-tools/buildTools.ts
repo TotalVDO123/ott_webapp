@@ -1,6 +1,7 @@
 import fs from 'fs';
 
 import type { HtmlTagDescriptor } from 'vite';
+import type { ManifestOptions } from 'vite-plugin-pwa';
 import type { Target } from 'vite-plugin-static-copy';
 
 const initSettings = (mode: string) => {
@@ -83,6 +84,33 @@ export const generateIconTags = (basePath: string, favIconSizes: number[], apple
     return `<link rel="apple-touch-icon" href="${basePath}apple-touch-icon-${size}x${size}.png">`;
   });
   return [...favIconTags, ...appleIconTags].join('\n');
+};
+
+export const getRelatedApplications = ({
+  appleAppId,
+  googleAppId,
+}: {
+  appleAppId?: string | undefined;
+  googleAppId?: string | undefined;
+} = {}): ManifestOptions['related_applications'] => {
+  const relatedApplications = [];
+
+  if (appleAppId) {
+    relatedApplications.push({
+      platform: 'itunes',
+      url: `https://apps.apple.com/nl/app/${appleAppId}`,
+    });
+  }
+
+  if (googleAppId) {
+    relatedApplications.push({
+      platform: 'play',
+      id: googleAppId,
+      url: `https://play.google.com/store/apps/details?id=${googleAppId}`,
+    });
+  }
+
+  return relatedApplications;
 };
 
 const makeFontsUnique = (arr: ExternalFont[]) => {
