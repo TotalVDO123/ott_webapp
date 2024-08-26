@@ -24,8 +24,4 @@ export function registerEndpoints(app: Express) {
   app.post('/v2/checkout', (req: Request, res: Response, next: NextFunction) =>
     checkoutController.initiateCheckout(req, res, next)
   );
-
-  app.get('/debug-sentry', function mainHandler(req, res) {
-    throw new Error('My second Sentry error!');
-  });
 }
