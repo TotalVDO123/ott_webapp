@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test</h1>
+    <button id="testButton">Test CORS</button>
+
+    <script>
+        document.getElementById('testButton').addEventListener('click', () => {
+            fetch('http://localhost:3000/v2/sites/a1NXSCNM/access/generate', { // Replace with your Express server URL
+                method: 'PUT',
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('CORS request failed');
+                }
+            })
+            .then(data => {
+                console.log('Response:', data);
+                alert('CORS request succeeded. Check console for details.');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('CORS request failed. Check console for details.');
+            });
+        });
+    </script>
+</body>
+</html>
