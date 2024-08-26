@@ -1,7 +1,8 @@
 export type StripeCheckoutParams = {
   price_id: string;
   mode: 'payment' | 'setup' | 'subscription';
-  redirect_url: string;
+  success_url: string;
+  cancel_url: string;
 };
 
 export type StripeCheckoutResponse = {

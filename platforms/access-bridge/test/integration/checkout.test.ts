@@ -12,6 +12,7 @@ import {
   STRIPE_PRICE,
   STRIPE_ERRORS,
   AUTHORIZATION,
+  SITE_ID,
 } from '../fixtures.js';
 import { MockCheckoutController } from '../mocks/checkout.js';
 
@@ -43,17 +44,37 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.CHECKOUT,
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           price_id: STRIPE_PRICE.id,
           mode: 'subscription',
-          redirect_url: 'http://example.com',
+          success_url: 'http://example.com',
+          cancel_url: 'http://example.com',
         }),
       },
       expectedStatusCode: 200,
       expectedResponse: {
         url: STRIPE_SESSION_URL,
       },
+    },
+    {
+      description: 'should return ParameterInvalidError for invalid site_id',
+      requestOptions: {
+        headers: {
+          Authorization: AUTHORIZATION.VALID,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.INVALID),
+        body: JSON.stringify({
+          price_id: STRIPE_PRICE.id,
+          mode: 'subscription',
+          success_url: 'http://example.com',
+          cancel_url: 'http://example.com',
+        }),
+      },
+      expectedStatusCode: 400,
+      expectedError: ErrorDefinitions.ParameterInvalidError.code,
     },
     {
       description: 'should return UnauthorizedError for missing authorization token',
@@ -63,7 +84,7 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.CHECKOUT,
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
       },
       expectedStatusCode: 401,
       expectedError: ErrorDefinitions.UnauthorizedError.code,
@@ -76,11 +97,12 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.CHECKOUT,
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           price_id: STRIPE_PRICE.id,
           mode: 'payment',
-          // missing redirect_url
+          // missing success_url
+          // missing cancel_url
         }),
       },
       expectedStatusCode: 400,
@@ -97,7 +119,7 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.BILLING_PORTAL,
+        path: ENDPOINTS.BILLING_PORTAL.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           return_url: 'http://example.com',
         }),
@@ -108,6 +130,22 @@ describe('CheckoutController tests', () => {
       },
     },
     {
+      description: 'should return ParameterInvalidError for invalid site_id',
+      requestOptions: {
+        headers: {
+          Authorization: AUTHORIZATION.VALID,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.INVALID),
+        body: JSON.stringify({
+          return_url: 'http://example.com',
+        }),
+      },
+      expectedStatusCode: 400,
+      expectedError: ErrorDefinitions.ParameterInvalidError.code,
+    },
+    {
       description: 'should return UnauthorizedError for missing authorization token in billing portal',
       requestOptions: {
         headers: {
@@ -115,7 +153,7 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.BILLING_PORTAL,
+        path: ENDPOINTS.BILLING_PORTAL.replace(':site_id', SITE_ID.VALID),
       },
       expectedStatusCode: 401,
       expectedError: ErrorDefinitions.UnauthorizedError.code,
@@ -128,7 +166,7 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.BILLING_PORTAL,
+        path: ENDPOINTS.BILLING_PORTAL.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           // missing return_url
         }),
@@ -176,7 +214,8 @@ describe('CheckoutController tests', () => {
         access_plan_id: VALID_PLAN_ID,
         price_id: STRIPE_PRICE.id,
         mode: 'subscription',
-        redirect_url: 'http://example.com',
+        success_url: 'http://example.com',
+        cancel_url: 'http://example.com',
       });
 
       const requestOptions = {
@@ -185,7 +224,7 @@ describe('CheckoutController tests', () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        path: ENDPOINTS.CHECKOUT,
+        path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: requestBody,
       };
 

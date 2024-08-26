@@ -2,6 +2,7 @@ import { Server as HTTPServer } from 'http';
 
 import * as Sentry from '@sentry/node';
 import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 
 import { AccessBridgeError, ErrorDefinitions, sendErrors } from './errors.js';
 import logger from './logger.js';
@@ -34,6 +35,9 @@ export class Server {
    * @param registerEndpoints - Function to register routes and endpoints
    */
   private initialize(registerEndpoints: (app: Express) => void) {
+    // Middleware to enable Cross-Origin Resource Sharing (CORS)
+    this.app.use(cors());
+
     // Middleware for parsing JSON request bodies
     this.app.use(express.json());
 

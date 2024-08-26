@@ -127,8 +127,8 @@ export class StripeService {
         },
         customer_email: viewer.email,
         mode: checkoutParams.mode,
-        success_url: checkoutParams.redirect_url,
-        cancel_url: checkoutParams.redirect_url,
+        success_url: checkoutParams.success_url,
+        cancel_url: checkoutParams.cancel_url,
 
         // Conditionally include `subscription_data` only if mode is `subscription`
         ...(checkoutParams.mode === 'subscription' && {
