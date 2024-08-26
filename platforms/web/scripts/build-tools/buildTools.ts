@@ -40,7 +40,7 @@ export const getFileCopyTargets = (mode: string): Target[] => {
   return fileCopyTargets;
 };
 
-export const createHeadMetaTags = (tagData: Record<string, string | undefined>): HtmlTagDescriptor[] => {
+export const getMetaTags = (tagData: Record<string, string | undefined>): HtmlTagDescriptor[] => {
   return Object.entries(tagData)
     .filter(([_, value]) => !!value)
     .map(([name, content]) => ({
@@ -98,7 +98,7 @@ export const getRelatedApplications = ({
   if (appleAppId) {
     relatedApplications.push({
       platform: 'itunes',
-      url: `https://apps.apple.com/nl/app/${appleAppId}`,
+      url: `https://apps.apple.com/app/${appleAppId}`,
     });
   }
 

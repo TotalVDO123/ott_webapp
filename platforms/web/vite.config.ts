@@ -18,7 +18,7 @@ import {
   getGoogleFontTags,
   getGtmTags,
   generateIconTags,
-  createHeadMetaTags,
+  getMetaTags,
   getRelatedApplications,
 } from './scripts/build-tools/buildTools';
 
@@ -51,7 +51,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
   // Head tags
   const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
-  const metaTags = createHeadMetaTags({
+  const metaTags = getMetaTags({
     'apple-itunes-app': env.APP_APPLE_ITUNES_APP ? `app-id=${env.APP_APPLE_ITUNES_APP}` : undefined,
     'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
   });
