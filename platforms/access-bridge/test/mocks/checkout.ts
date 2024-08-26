@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../../src/errors.js';
 import { StripeService } from '../../src/services/stripe-service.js';
-import { STRIPE_CHECKOUT_SESSION_URL, AUTHORIZATION, VIEWER } from '../fixtures.js';
+import { STRIPE_SESSION_URL, AUTHORIZATION, VIEWER } from '../fixtures.js';
 import { IdentityService, Viewer } from '../../src/services/identity-service.js';
 
 // Mock IdentityService
@@ -49,7 +49,7 @@ class MockStripeService extends StripeService {
       throw this.mockError;
     }
 
-    return { url: STRIPE_CHECKOUT_SESSION_URL } as Stripe.Checkout.Session;
+    return { url: STRIPE_SESSION_URL } as Stripe.Checkout.Session;
   }
 }
 
@@ -74,7 +74,7 @@ export class MockCheckoutController {
       const checkoutParams = req.body;
 
       // Validate required params
-      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
+      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
       const missingParam = requiredParams.find((param) => !checkoutParams[param]);
       if (missingParam) {
         sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: missingParam }));

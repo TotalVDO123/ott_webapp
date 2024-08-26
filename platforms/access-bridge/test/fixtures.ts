@@ -246,5 +246,5 @@ export const STRIPE_ERRORS = [
   },
 ];
 
-// mock of stripe checkout session url
-export const STRIPE_CHECKOUT_SESSION_URL = 'https://example.com';
+// mock of stripe session url
+export const STRIPE_SESSION_URL = 'https://example.com';
