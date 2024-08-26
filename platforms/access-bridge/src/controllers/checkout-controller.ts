@@ -36,7 +36,7 @@ export class CheckoutController {
       const checkoutParams = req.body;
 
       // Validate required params
-      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'redirect_url'];
+      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
       const missingParam = requiredParams.find((param) => !checkoutParams[param]);
       if (missingParam) {
         sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: missingParam }));

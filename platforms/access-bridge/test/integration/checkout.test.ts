@@ -6,7 +6,7 @@ import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { MockServer } from '../mock-server.js';
 import { ErrorDefinitions } from '../../src/errors.js';
 import {
-  STRIPE_CHECKOUT_SESSION_URL,
+  STRIPE_SESSION_URL,
   VALID_PLAN_ID,
   ENDPOINTS,
   STRIPE_PRICE,
@@ -44,12 +44,13 @@ describe('CheckoutController tests', () => {
         body: JSON.stringify({
           price_id: STRIPE_PRICE.id,
           mode: 'subscription',
-          redirect_url: 'http://example.com',
+          success_url: 'http://example.com',
+          cancel_url: 'http://example.com',
         }),
       },
       expectedStatusCode: 200,
       expectedResponse: {
-        url: STRIPE_CHECKOUT_SESSION_URL,
+        url: STRIPE_SESSION_URL,
       },
     },
     {
@@ -121,7 +122,8 @@ describe('CheckoutController tests', () => {
         access_plan_id: VALID_PLAN_ID,
         price_id: STRIPE_PRICE.id,
         mode: 'subscription',
-        redirect_url: 'http://example.com',
+        success_url: 'http://example.com',
+        cancel_url: 'http://example.com',
       });
 
       const requestOptions = {
