@@ -70,6 +70,30 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
   ]
   ```
 
+#### URL: `/v2/checkout`
+
+- **Method:** POST
+- **Authorization:** Valid SIMS token
+- **Summary:** Generates Stripe checkout url, where the viewer can continue with purchase.
+- **Response:**
+  ```json
+  {
+    "url": "checkout-url"
+  }
+  ```
+
+#### URL: `/v2/billing-portal`
+
+- **Method:** POST
+- **Authorization:** Valid SIMS token
+- **Summary:** Generates Stripe billing portal url, where the viewer can view / update their purchase info.
+- **Response:**
+  ```json
+  {
+    "url": "billing-portal-url"
+  }
+  ```
+
 ## Developer guidelines
 
 - Read the workspace guidelines here [../../docs/developer-guidelines.md](../../docs/developer-guidelines.md).
