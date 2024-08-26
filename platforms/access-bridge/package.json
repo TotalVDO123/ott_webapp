@@ -9,10 +9,11 @@
   "author": "JW Player",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build --mode ${MODE:=prod}",
+    "build-test": "vite build --mode test",
     "start": "node --import ./build/instrument.js build/main.js",
     "prestart": "yarn build",
-    "pretest": "yarn build",
+    "pretest": "yarn build-test",
     "test": "TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
     "lint:ts": "tsc --pretty --noEmit -p ./"
   },

@@ -10,6 +10,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
   // Shorten default mode names to dev / prod
   // Also differentiates from build type (production / development)
+
   mode = mode === 'development' ? 'dev' : mode;
   mode = mode === 'production' ? 'prod' : mode;
 
@@ -23,14 +24,14 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   const plugins: PluginOption[] | undefined = [];
 
   // Conditionally add the Sentry plugin if the necessary env variables are provided
-  if (env.APP_SENTRY_DSN && env.APP_SENTRY_AUTH_TOKEN) {
+  if (mode !== 'test' && env.APP_SENTRY_DSN && env.APP_SENTRY_AUTH_TOKEN) {
     // Sentry vite plugin should be placed after all other plugins.
     // This plugin is needed allow sentry to provide readable stack traces.
     plugins.push(
       sentryVitePlugin({
         authToken: env.APP_SENTRY_AUTH_TOKEN,
-        org: 'personal-r4t', // Sentry organization name
-        project: 'node', // Sentry project name
+        org: env.APP_SENTRY_ORG_NAME, // Sentry organization name
+        project: env.APP_SENTRY_PROJ_NAME, // Sentry project name
       })
     );
   }
@@ -49,6 +50,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         APP_SENTRY_DSN: env.APP_SENTRY_DSN,
         APP_SENTRY_TRACE_RATE: env.APP_SENTRY_TRACE_RATE,
         APP_SENTRY_AUTH_TOKEN: env.APP_SENTRY_AUTH_TOKEN,
+        APP_SENTRY_ORG_NAME: env.APP_SENTRY_ORG_NAME,
+        APP_SENTRY_PROJ_NAME: env.APP_SENTRY_PROJ_NAME,
       },
     },
     envPrefix,

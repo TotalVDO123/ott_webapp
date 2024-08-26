@@ -42,6 +42,8 @@ Sentry is integrated into this project to track and monitor errors, as well as p
   APP_SENTRY_DSN=Your_Sentry_DSN  
   APP_SENTRY_AUTH_TOKEN=Your_Sentry_Auth_Token  
   APP_SENTRY_TRACE_RATE=Trace rate for performance monitoring  
+  APP_SENTRY_ORG_NAME=Your_Sentry_ORG_Name  
+  APP_SENTRY_PROJ_NAME=Your_Sentry_Project_Name  
   <em>These variables are essential for Sentry to function correctly and should be kept secure.</em>
 
 - Running the Project:  
