@@ -70,7 +70,7 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
   ]
   ```
 
-#### URL: `/v2/checkout`
+#### URL: `/v2/sites/{site_id}/checkout`
 
 - **Method:** POST
 - **Authorization:** Valid SIMS token
@@ -82,7 +82,7 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
   }
   ```
 
-#### URL: `/v2/billing-portal`
+#### URL: `/v2/sites/{site_id}/billing-portal`
 
 - **Method:** POST
 - **Authorization:** Valid SIMS token

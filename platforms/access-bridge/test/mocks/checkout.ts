@@ -6,6 +6,7 @@ import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../../src/error
 import { StripeService } from '../../src/services/stripe-service.js';
 import { STRIPE_SESSION_URL, AUTHORIZATION, VIEWER, STRIPE_CUSTOMER_ID } from '../fixtures.js';
 import { IdentityService, Viewer } from '../../src/services/identity-service.js';
+import { isValidSiteId } from '../../src/utils.js';
 
 // Mock IdentityService
 class MockIdentityService extends IdentityService {
@@ -83,6 +84,12 @@ export class MockCheckoutController {
 
   initiateCheckout = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
+        return;
+      }
+
       const authorization = req.headers['authorization'];
       if (!authorization) {
         sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
@@ -114,6 +121,12 @@ export class MockCheckoutController {
 
   async generateBillingPortalURL(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
+        return;
+      }
+
       const authorization = req.headers['authorization'];
       if (!authorization) {
         sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
