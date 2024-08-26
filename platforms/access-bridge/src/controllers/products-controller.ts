@@ -40,7 +40,7 @@ export class ProductsController {
         .map((plan) => plan.metadata.external_providers?.stripe ?? [])
         .flat();
 
-      const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
+      const products = await this.stripeService.getProductsWithPrices({ productIds: stripeProductIds });
       res.json(products);
     } catch (error) {
       if (error instanceof AccessBridgeError) {

@@ -41,7 +41,7 @@ export class MockStripeService extends StripeService {
     }
   }
 
-  async getProductsWithPrices(productIds: string[]) {
+  async getProductsWithPrices({ productIds }: { productIds: string[] }) {
     if (this.mockBehavior === 'error' && this.mockError) {
       throw this.mockError;
     }

@@ -24,4 +24,8 @@ export function registerEndpoints(app: Express) {
   app.post('/v2/checkout', (req: Request, res: Response, next: NextFunction) =>
     checkoutController.initiateCheckout(req, res, next)
   );
+
+  app.post('/v2/billing-portal', (req: Request, res: Response, next: NextFunction) =>
+    checkoutController.generateBillingPortalURL(req, res, next)
+  );
 }

@@ -21,6 +21,7 @@ export const ENDPOINTS = {
   GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
   PRODUCTS: '/v2/sites/:site_id/products',
   CHECKOUT: '/v2/checkout',
+  BILLING_PORTAL: '/v2/billing-portal',
 };
 
 // mock data for access tokens
@@ -153,6 +154,9 @@ export const AUTHORIZATION = {
   MISSING: '',
 };
 
+// Dummy stripe customer id
+export const STRIPE_CUSTOMER_ID = 'cus_Qi45IcSi81LstA';
+
 // Stripe price mock
 export const STRIPE_PRICE: Stripe.Price = {
   id: 'price_123456789',
@@ -246,5 +250,5 @@ export const STRIPE_ERRORS = [
   },
 ];
 
-// mock of stripe checkout session url
-export const STRIPE_CHECKOUT_SESSION_URL = 'https://example.com';
+// mock of stripe session url
+export const STRIPE_SESSION_URL = 'https://example.com';

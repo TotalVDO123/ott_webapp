@@ -6,7 +6,7 @@ import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import { MockServer } from '../mock-server.js';
 import { ErrorDefinitions } from '../../src/errors.js';
 import {
-  STRIPE_CHECKOUT_SESSION_URL,
+  STRIPE_SESSION_URL,
   VALID_PLAN_ID,
   ENDPOINTS,
   STRIPE_PRICE,
@@ -26,12 +26,15 @@ describe('CheckoutController tests', () => {
       app.post(ENDPOINTS.CHECKOUT, (req: Request, res: Response, next: NextFunction) => {
         checkoutController.initiateCheckout(req, res, next);
       });
+      app.post(ENDPOINTS.BILLING_PORTAL, (req: Request, res: Response, next: NextFunction) => {
+        checkoutController.generateBillingPortalURL(req, res, next);
+      });
     };
 
     mockServer = await MockServer.create(registerEndpoints);
   });
 
-  const testCases = [
+  const checkoutTestCases = [
     {
       description: 'should initiate checkout session successfully',
       requestOptions: {
@@ -49,7 +52,7 @@ describe('CheckoutController tests', () => {
       },
       expectedStatusCode: 200,
       expectedResponse: {
-        url: STRIPE_CHECKOUT_SESSION_URL,
+        url: STRIPE_SESSION_URL,
       },
     },
     {
@@ -85,7 +88,59 @@ describe('CheckoutController tests', () => {
     },
   ];
 
-  it.each(testCases)(
+  const billingPortalTestCases = [
+    {
+      description: 'should create billing portal URL successfully',
+      requestOptions: {
+        headers: {
+          Authorization: AUTHORIZATION.VALID,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        path: ENDPOINTS.BILLING_PORTAL,
+        body: JSON.stringify({
+          return_url: 'http://example.com',
+        }),
+      },
+      expectedStatusCode: 200,
+      expectedResponse: {
+        url: STRIPE_SESSION_URL,
+      },
+    },
+    {
+      description: 'should return UnauthorizedError for missing authorization token in billing portal',
+      requestOptions: {
+        headers: {
+          Authorization: AUTHORIZATION.MISSING,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        path: ENDPOINTS.BILLING_PORTAL,
+      },
+      expectedStatusCode: 401,
+      expectedError: ErrorDefinitions.UnauthorizedError.code,
+    },
+    {
+      description: 'should handle missing required parameters in billing portal',
+      requestOptions: {
+        headers: {
+          Authorization: AUTHORIZATION.VALID,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        path: ENDPOINTS.BILLING_PORTAL,
+        body: JSON.stringify({
+          // missing return_url
+        }),
+      },
+      expectedStatusCode: 400,
+      expectedError: ErrorDefinitions.ParameterMissingError.code,
+    },
+  ];
+
+  const allTestCases = [...checkoutTestCases, ...billingPortalTestCases];
+
+  it.each(allTestCases)(
     '$description',
     async ({ requestOptions, expectedStatusCode, expectedResponse, expectedError }) => {
       const response = await new Promise<http.IncomingMessage>((resolve) => {
