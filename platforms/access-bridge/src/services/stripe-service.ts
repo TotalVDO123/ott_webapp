@@ -1,8 +1,11 @@
 import Stripe from 'stripe';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
-import { Viewer } from '@jwp/ott-common/types/access.js';
 
-import { BadRequestError, ForbiddenError, UnauthorizedError } from '../errors.js';
+import { handleStripeError } from '../errors.js';
+import { STRIPE_SECRET } from '../app-config.js';
+import logger from '../logger.js';
+
+import { Viewer } from './identity-service.js';
 
 export type StripeProduct = Stripe.Product & {
   prices: Stripe.Price[];
@@ -14,10 +17,34 @@ export type StripeProduct = Stripe.Product & {
 export class StripeService {
   private stripe: Stripe;
 
-  constructor(stripeApiKey: string) {
-    this.stripe = new Stripe(stripeApiKey, {
+  constructor() {
+    this.stripe = new Stripe(STRIPE_SECRET, {
       apiVersion: '2024-06-20',
     });
+  }
+
+  /**
+   * Retrieves a Stripe customer ID based on the email address.
+   * @param email The email address of the customer.
+   * @returns A Promise resolving to the customer ID or null if no customer is found.
+   * @throws Error if there is an issue searching stripe customers by email.
+   */
+  async getCustomerIdByEmail({ email }: { email: string }): Promise<string | null> {
+    try {
+      // Search for customers by email using Stripe's API.
+      const customers = await this.stripe.customers.search({
+        query: `email:'${email}'`,
+      });
+
+      // Return the first customer's ID if available, otherwise null.
+      return customers.data.length ? customers.data[0].id : null;
+    } catch (e) {
+      if (e instanceof this.stripe.errors.StripeError) {
+        handleStripeError(e);
+      }
+      logger.error(`StripeService: getCustomerIdByEmail: error fetching Stripe customer by email:`, e);
+      throw e;
+    }
   }
 
   /**
@@ -26,7 +53,7 @@ export class StripeService {
    * @returns A Promise resolving to an array of filtered ProductsWithMetadata objects.
    * @throws Error if there is an issue fetching products or parsing the response.
    */
-  async getProductsWithPrices(productIds: string[]): Promise<StripeProduct[]> {
+  async getProductsWithPrices({ productIds }: { productIds: string[] }): Promise<StripeProduct[]> {
     try {
       if (!productIds.length) {
         return [];
@@ -50,7 +77,10 @@ export class StripeService {
               prices: prices.data,
             };
           } catch (priceError) {
-            console.error(`Failed to fetch prices for product ${product.id}:`, priceError);
+            logger.error(
+              `StripeService: getProductsWithPrices: Failed to fetch prices for product ${product.id}:`,
+              priceError
+            );
             return {
               ...product,
               prices: [], // Return an empty array if price retrieval fails
@@ -61,20 +91,10 @@ export class StripeService {
 
       return productsWithPrices;
     } catch (e) {
-      // Handle specific Stripe errors
       if (e instanceof Stripe.errors.StripeError) {
-        switch (e.type) {
-          case 'StripeInvalidRequestError':
-            throw new BadRequestError({ description: e.message });
-          case 'StripeAuthenticationError':
-            throw new UnauthorizedError({ description: e.message });
-          case 'StripePermissionError':
-            throw new ForbiddenError({ description: e.message });
-          default:
-            throw new BadRequestError({ description: e.message });
-        }
+        handleStripeError(e);
       }
-      console.error('Service: error fetching Stripe products:', e);
+      logger.error(`StripeService: getProductsWithPrices: Unexpected error:`, e);
       throw e;
     }
   }
@@ -86,13 +106,19 @@ export class StripeService {
    * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
    * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
    */
-  async createCheckoutSession(viewer: Viewer, params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
+  async createCheckoutSession({
+    viewer,
+    checkoutParams,
+  }: {
+    viewer: Viewer;
+    checkoutParams: StripeCheckoutParams;
+  }): Promise<Stripe.Checkout.Session> {
     try {
-      const session = await this.stripe.checkout.sessions.create({
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
         line_items: [
           {
-            price: params.price_id,
+            price: checkoutParams.price_id,
             quantity: 1,
           },
         ],
@@ -100,45 +126,29 @@ export class StripeService {
           viewer_id: viewer.id,
         },
         customer_email: viewer.email,
-        mode: params.mode,
-        success_url: params.redirect_url,
-        cancel_url: params.redirect_url,
-      });
+        mode: checkoutParams.mode,
+        success_url: checkoutParams.redirect_url,
+        cancel_url: checkoutParams.redirect_url,
+
+        // Conditionally include `subscription_data` only if mode is `subscription`
+        ...(checkoutParams.mode === 'subscription' && {
+          subscription_data: {
+            metadata: {
+              viewer_id: viewer.id,
+            },
+          },
+        }),
+      };
+
+      const session = await this.stripe.checkout.sessions.create(sessionParams);
 
       return session;
     } catch (e) {
-      // Handle specific Stripe errors
       if (e instanceof Stripe.errors.StripeError) {
-        switch (e.type) {
-          case 'StripeInvalidRequestError':
-            throw new BadRequestError({ description: e.message });
-          case 'StripeAuthenticationError':
-            throw new UnauthorizedError({ description: e.message });
-          case 'StripePermissionError':
-            throw new ForbiddenError({ description: e.message });
-          default:
-            throw new BadRequestError({ description: e.message });
-        }
+        handleStripeError(e);
       }
-      console.error('Service: error fetching Stripe products:', e);
+      logger.error(`StripeService: createCheckoutSession: Unexpected error:`, e);
       throw e;
-    }
-  }
-
-  /**
-   * Retrieves a Stripe customer ID based on the email address.
-   * @param email The email address of the customer.
-   * @returns A Promise resolving to the customer ID or null if no customer is found.
-   */
-  async getCustomerIdByEmail(email: string): Promise<string | null> {
-    try {
-      const customers = await this.stripe.customers.search({
-        query: `email:'${email}'`,
-      });
-      return customers.data.length > 0 ? customers.data[0].id : null;
-    } catch (e) {
-      console.error('Service: error fetching Stripe customer by email:', e);
-      throw new BadRequestError({ description: 'Error retrieving customer ID' });
     }
   }
 
@@ -146,17 +156,28 @@ export class StripeService {
    * Creates a Stripe billing portal session for a given customer ID.
    * @param customerId The ID of the customer for whom the session is created.
    * @returns A Promise resolving to the URL of the billing portal session.
+   * @throws Error if there is an issue creating the billing portal session.
    */
-  async createBillingPortalSession(customerId: string, returnUrl: string): Promise<string> {
+  async createBillingPortalSession({
+    customerId,
+    returnUrl,
+  }: {
+    customerId: string;
+    returnUrl: string;
+  }): Promise<Stripe.BillingPortal.Session> {
     try {
       const session = await this.stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: returnUrl,
       });
-      return session.url;
+
+      return session;
     } catch (e) {
-      console.error('Service: error creating billing portal session:', e);
-      throw new BadRequestError({ description: 'Error creating billing portal session' });
+      if (e instanceof this.stripe.errors.StripeError) {
+        handleStripeError(e);
+      }
+      logger.error(`StripeService: createBillingPortalSession: error creating billing portal session:`, e);
+      throw e;
     }
   }
 }

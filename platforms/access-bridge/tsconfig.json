@@ -11,7 +11,8 @@
         "esModuleInterop": true,
         "sourceMap": true,
         "noUnusedLocals": true,
+        "types": ["vitest/globals"],
     },
-    "include": ["test/**/*", "src/**/*"],
+    "include": ["test/**/*", "src/**/*", "instrument.mjs"],
+    "exclude": ["node_modules", "build"],
 }
-  

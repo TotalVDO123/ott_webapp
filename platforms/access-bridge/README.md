@@ -1,6 +1,6 @@
 # Access Bridge
 
-A service that facilitates seamless communication between SIMS (Subscriber Identity Management System) and Access Control services. It provides endpoints to generate and refresh access passports for authenticated viewers, ensuring secure and efficient access management.
+A service that facilitates seamless communication between the Subscriber Identity Management System (SIMS) and Access Control services. It provides endpoints to generate access passports for authenticated viewers, ensuring secure and efficient access management.
 
 ## Local Setup for Environment Variables
 
@@ -10,15 +10,16 @@ Here’s how you can set them up:
 
 Create a `.env.local` file in the root of this project and add the following variables:
 
-- API_SECRET=customer_v1_secret
-- STRIPE_SECRET=your_stripe_sk
-- BIND_ADDR=localhost
-- BIND_PORT=3000
-- ACCESS_CONTROL_CLIENT=https://cdn-dev.jwplayer.com
-- SIMS_CLIENT=https://daily-sims.jwplayer.com
+- APP_API_SECRET=customer_v1_secret
+- APP_BIND_ADDR=localhost
+- APP_BIND_PORT=3000
+- APP_ACCESS_CONTROL_API_HOST=https://cdn-dev.jwplayer.com  
+  <em>(Use https://cdn.jwplayer.com for production)</em>
+- APP_SIMS_API_HOST=https://daily-sims.jwplayer.com  
+  <em>(Use https://sims.jwplayer.com for production)</em>
 
-Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual value from your JW Dashboard.  
-You can also copy and paste the contents of `.env.example` into `.env.local` and just ajust the API_SECRET and STRIPE_SECRET.
+Make sure to replace the placeholder values (e.g., customer_v1_secret) with the actual values from your JW Dashboard.  
+You can also copy and paste the contents of `.env.example` into `.env.local` and just adjust the APP_API_SECRET.
 
 ## Getting started
 
@@ -34,25 +35,6 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
 - **Method:** PUT
 - **Authorization:** Valid SIMS token
 - **Summary:** Generates a new passport for an authenticated viewer based on the information inside the SIMS token.
-- **Response:**
-  ```json
-  {
-    "passport": "encrypted_passport",
-    "refresh_token": "random_string"
-  }
-  ```
-
-#### URL: `/v2/sites/{site_id}/access/refresh`
-
-- **Method:** PUT
-- **Authorization:** Valid SIMS token
-- **Summary:** Regenerates an existing passport with a new expiry and a new refresh token.
-- **Request:**
-  ```json
-  {
-    "refresh_token": "string"
-  }
-  ```
 - **Response:**
   ```json
   {
@@ -86,6 +68,30 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
     }
     // ...
   ]
+  ```
+
+#### URL: `/v2/checkout`
+
+- **Method:** POST
+- **Authorization:** Valid SIMS token
+- **Summary:** Generates Stripe checkout url, where the viewer can continue with purchase.
+- **Response:**
+  ```json
+  {
+    "url": "checkout-url"
+  }
+  ```
+
+#### URL: `/v2/billing-portal`
+
+- **Method:** POST
+- **Authorization:** Valid SIMS token
+- **Summary:** Generates Stripe billing portal url, where the viewer can view / update their purchase info.
+- **Response:**
+  ```json
+  {
+    "url": "billing-portal-url"
+  }
   ```
 
 ## Developer guidelines
