@@ -1,4 +1,12 @@
-export type AccessControlPlanExternalProviders = {
+type AccessOptions = {
+  drm_policy_id: string;
+  tags: {
+    include: string[];
+    exclude: string[];
+  };
+};
+
+type PlanExternalProviders = {
   stripe?: string;
   apple?: string;
   google?: string;
@@ -7,28 +15,21 @@ export type AccessControlPlanExternalProviders = {
 export type AccessControlPlan = {
   id: string;
   exp: number;
-  external_providers?: AccessControlPlanExternalProviders;
 };
 
-export type AccessControlPlansParams = {
-  siteId: string;
-  endpointType: 'plans' | 'entitlements';
-  authorization?: string;
-};
-
-export type Plans = {
+export type Plan = {
   name: string;
   access_model: 'free' | 'freeauth' | 'svod';
   access_plan: AccessControlPlan;
+  access: AccessOptions;
   metadata: {
-    external_providers: AccessControlPlanExternalProviders;
+    external_providers: PlanExternalProviders;
   };
-  // ...tbd
 };
 
 export type PlansResponse = {
   total: number;
   page: number;
   page_length: number;
-  plans: Plans[];
+  plans: Plan[];
 };

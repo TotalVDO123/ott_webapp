@@ -1,21 +1,23 @@
-import { AccessControlPlansParams } from '@jwp/ott-common/types/plans.js';
 import Stripe from 'stripe';
+import { Plan } from '@jwp/ott-common/types/plans.js';
 
-import { AccessBridgeError, BadRequestError, UnauthorizedError, ForbiddenError } from '../../src/errors.js';
+import { AccessBridgeError, ErrorDefinitions } from '../../src/errors.js';
 import { PlansService } from '../../src/services/plans-service.js';
 import { StripeService } from '../../src/services/stripe-service.js';
 import { PLANS, STRIPE_PRODUCT } from '../fixtures.js';
 
+export type MockBehavior = 'default' | 'empty' | 'error';
+
 // Mock PlansService
 export class MockPlansService extends PlansService {
-  async getAccessControlPlans({ siteId, endpointType, authorization }: AccessControlPlansParams) {
+  async getAvailablePlans({ siteId }: { siteId: string }): Promise<Plan[]> {
     return PLANS.VALID;
   }
 }
 
 // Mock StripeService
 export class MockStripeService extends StripeService {
-  private mockBehavior: 'default' | 'empty' | 'error' = 'default';
+  private mockBehavior: MockBehavior = 'default';
   private mockError: AccessBridgeError | null = null;
 
   // Method to set the mock behavior
@@ -25,21 +27,21 @@ export class MockStripeService extends StripeService {
     if (behavior === 'error' && error instanceof Stripe.errors.StripeError) {
       switch (error.type) {
         case 'StripeInvalidRequestError':
-          this.mockError = new BadRequestError({});
+          this.mockError = ErrorDefinitions.BadRequestError.create();
           break;
         case 'StripeAuthenticationError':
-          this.mockError = new UnauthorizedError({});
+          this.mockError = ErrorDefinitions.UnauthorizedError.create();
           break;
         case 'StripePermissionError':
-          this.mockError = new ForbiddenError({});
+          this.mockError = ErrorDefinitions.ForbiddenError.create();
           break;
         default:
-          this.mockError = new BadRequestError({});
+          this.mockError = ErrorDefinitions.BadRequestError.create();
       }
     }
   }
 
-  async getProductsWithPrices(productIds: string[]) {
+  async getProductsWithPrices({ productIds }: { productIds: string[] }) {
     if (this.mockBehavior === 'error' && this.mockError) {
       throw this.mockError;
     }

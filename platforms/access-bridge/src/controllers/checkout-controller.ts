@@ -1,72 +1,111 @@
-import { IncomingMessage, ServerResponse } from 'http';
-
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
+import { Request, Response, NextFunction } from 'express';
 
 import { StripeService } from '../services/stripe-service.js';
-import {
-  AccessBridgeError,
-  ParameterInvalidError,
-  ParameterMissingError,
-  sendErrors,
-  UnauthorizedError,
-} from '../errors.js';
-import { STRIPE_SECRET } from '../app-config.js';
-import { isValidSiteId, parseJsonBody, validateBodyParams } from '../utils.js';
-import { AccountService } from '../services/account-service.js';
+import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { IdentityService } from '../services/identity-service.js';
+import logger from '../logger.js';
 
 /**
  * Controller class responsible for handling Stripe Checkout sessions.
  */
 export class CheckoutController {
-  private accountService: AccountService;
+  private identityService: IdentityService;
   private stripeService: StripeService;
 
   constructor() {
-    this.accountService = new AccountService();
-    this.stripeService = new StripeService(STRIPE_SECRET);
+    this.identityService = new IdentityService();
+    this.stripeService = new StripeService();
   }
 
   /**
-   * Service handler for initiating a Stripe Checkout session based on the provided price ID and redirect URL.
-   * @param req The HTTP request object containing the price ID and redirect URL in the request body.
-   * @param res The HTTP response object used to send the checkout session URL or error messages.
-   * @throws ParameterInvalidError if the price ID or redirect URL is missing or invalid.
+   * Service handler for initiating a Stripe Checkout session based on the provided price, mode and redirect URL.
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
    * @returns A Promise that resolves with a response containing the URL for the Stripe Checkout session.
    */
-  initiateCheckout = async (req: IncomingMessage, res: ServerResponse, params: { [key: string]: string }) => {
+  async initiateCheckout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!isValidSiteId(params.site_id)) {
-        sendErrors(res, new ParameterInvalidError({ parameterName: 'site_id' }));
-        return;
-      }
-
       const authorization = req.headers['authorization'];
       if (!authorization) {
-        sendErrors(res, new UnauthorizedError({}));
+        sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
         return;
       }
 
-      const checkoutParams = await parseJsonBody<StripeCheckoutParams>(req);
+      const checkoutParams = req.body;
 
       // Validate required params
       const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
-      const missingRequiredParams = validateBodyParams<StripeCheckoutParams>(checkoutParams, requiredParams);
-      if (missingRequiredParams.length > 0) {
-        sendErrors(res, new ParameterMissingError({ parameterName: String(missingRequiredParams[0]) }));
+      const missingParam = requiredParams.find((param) => !checkoutParams[param]);
+      if (missingParam) {
+        sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: missingParam }));
         return;
       }
 
-      const viewer = await this.accountService.getAccount({ authorization });
-      const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
+      const viewer = await this.identityService.getAccount({ authorization });
+      const checkoutSession = await this.stripeService.createCheckoutSession({ viewer, checkoutParams });
 
-      res.end(JSON.stringify({ url: checkoutSession.url }));
+      res.json({ url: checkoutSession.url });
     } catch (error) {
       if (error instanceof AccessBridgeError) {
         sendErrors(res, error);
         return;
       }
-      console.error('Controller: failed to create checkout session.', error);
-      throw error;
+      logger.error('CheckoutController: initiateCheckout: failed to create checkout session:', error);
+      next(error);
     }
-  };
+  }
+
+  /**
+   * Service handler for generating a Stripe Billing portal session based on the customer.
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
+   * @returns A Promise that resolves with a response containing the URL for the Stripe Billing Portal session.
+   */
+  async generateBillingPortalURL(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const authorization = req.headers['authorization'];
+      if (!authorization) {
+        sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
+        return;
+      }
+
+      // Get the email address from the Authorization token
+      const viewer = await this.identityService.getAccount({ authorization });
+      if (!viewer.id || !viewer.email) {
+        sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
+        return;
+      }
+
+      // Retrieve Stripe customer ID using the email
+      const customerId = await this.stripeService.getCustomerIdByEmail({ email: viewer.email });
+      if (!customerId) {
+        sendErrors(
+          res,
+          ErrorDefinitions.NotFoundError.create({ description: 'The requested customer does not exist in Stripe.' })
+        );
+        return;
+      }
+
+      const { return_url } = req.body;
+      if (!return_url) {
+        sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: 'return_url' }));
+        return;
+      }
+
+      // Generate a billing portal session
+      const session = await this.stripeService.createBillingPortalSession({ customerId, returnUrl: return_url });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      if (error instanceof AccessBridgeError) {
+        sendErrors(res, error);
+        return;
+      }
+      logger.error('CheckoutController: generateBillingPortalURL: failed to generate billing portal session:', error);
+      next(error);
+    }
+  }
 }
