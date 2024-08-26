@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StripeService } from '../services/stripe-service.js';
 import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
 import { IdentityService } from '../services/identity-service.js';
+import { isValidSiteId } from '../utils.js';
 
 /**
  * Controller class responsible for handling Stripe Checkout sessions.
@@ -26,6 +27,12 @@ export class CheckoutController {
    */
   async initiateCheckout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
+        return;
+      }
+
       const authorization = req.headers['authorization'];
       if (!authorization) {
         sendErrors(res, ErrorDefinitions.UnauthorizedError.create());

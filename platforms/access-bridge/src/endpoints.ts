@@ -17,7 +17,7 @@ export function registerEndpoints(app: Express) {
     productsController.getProducts(req, res, next)
   );
 
-  app.post('/v2/checkout', (req: Request, res: Response, next: NextFunction) =>
+  app.post('/v2/sites/:site_id/checkout', (req: Request, res: Response, next: NextFunction) =>
     checkoutController.initiateCheckout(req, res, next)
   );
 }

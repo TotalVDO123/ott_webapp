@@ -20,7 +20,7 @@ const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
 export const ENDPOINTS = {
   GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
   PRODUCTS: '/v2/sites/:site_id/products',
-  CHECKOUT: '/v2/checkout',
+  CHECKOUT: '/v2/sites/:site_id/checkout',
 };
 
 // mock data for access tokens
