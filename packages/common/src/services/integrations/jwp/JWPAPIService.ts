@@ -20,7 +20,6 @@ type RequestOptions = {
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
   fromSimsClient?: boolean;
-  forSiteId?: boolean;
 };
 
 @injectable()
@@ -39,11 +38,11 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  private getBaseUrl = (fromSimsClient = false, forSiteId?: boolean) => {
-    const { API_BASE_URL, MIDDLEWARE_BASE_URL, MIDDLEWARE_SITE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
+  private getBaseUrl = (fromSimsClient = false) => {
+    const { API_BASE_URL, MIDDLEWARE_SITE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
 
     if (fromSimsClient) {
-      return forSiteId ? MIDDLEWARE_SITE_BASE_URL(this.siteId) : MIDDLEWARE_BASE_URL;
+      return MIDDLEWARE_SITE_BASE_URL(this.siteId);
     }
 
     return API_BASE_URL;
@@ -84,7 +83,6 @@ export default class JWPAPIService {
       keepalive,
       includeFullResponse = false,
       fromSimsClient = false,
-      forSiteId = false,
     }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
@@ -124,7 +122,7 @@ export default class JWPAPIService {
       return formData.toString();
     })();
 
-    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient, forSiteId)}${path}`}${
+    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient)}${path}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 
