@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useBillingPortal from '@jwp/ott-hooks-react/src/useBillingPortal';
-import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import type { Subscription as SubscriptionType } from '@jwp/ott-common/types/subscription';
 
 import styles from '../../pages/User/User.module.scss';
 import Button from '../Button/Button';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
 
-const WithActiveSubscription: React.FC<{ provider: string }> = ({ provider }) => {
+const ActiveSubscription: React.FC<{ provider: string }> = ({ provider }) => {
   const { t } = useTranslation('user');
 
   const { isLoading, redirectToBillingPortal } = useBillingPortal();
@@ -21,14 +21,12 @@ const WithActiveSubscription: React.FC<{ provider: string }> = ({ provider }) =>
   );
 };
 
-const Subscription: React.FC = () => {
+type Props = {
+  subscription: SubscriptionType | null;
+};
+
+const Subscription: React.FC<Props> = ({ subscription }) => {
   const { t } = useTranslation('user');
-
-  const { subscription, loading: isAccountLoading } = useAccountStore();
-
-  if (isAccountLoading) {
-    return <LoadingOverlay transparentBackground />;
-  }
 
   const hasActiveSubscription = subscription?.status === 'active' || subscription?.status === 'active_trial';
 
@@ -38,7 +36,7 @@ const Subscription: React.FC = () => {
         <h2>{t('user:payment.subscription_details')}</h2>
       </div>
       {hasActiveSubscription ? (
-        <WithActiveSubscription provider={subscription.paymentMethod} />
+        <ActiveSubscription provider={subscription.paymentMethod} />
       ) : (
         <>
           <p>{t('user:payment.no_subscription_new_payment')}</p>
@@ -48,4 +46,5 @@ const Subscription: React.FC = () => {
     </section>
   );
 };
+
 export default Subscription;

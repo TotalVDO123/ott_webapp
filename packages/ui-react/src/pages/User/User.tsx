@@ -27,7 +27,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog/Confirmation
 import Favorites from '../../components/Favorites/Favorites';
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay';
 import PaymentContainer from '../../containers/PaymentContainer/PaymentContainer';
-import Subscription from '../../components/Subscription/Subscription';
+import SubscriptionContainer from '../../containers/SubscriptionContainer/SubscriptionContainer';
 import Icon from '../../components/Icon/Icon';
 
 import styles from './User.module.scss';
@@ -166,7 +166,7 @@ const User = (): JSX.Element => {
             path={RELATIVE_PATH_USER_PAYMENTS}
             element={accessModel !== ACCESS_MODEL.AVOD ? <PaymentContainer /> : <Navigate to={RELATIVE_PATH_USER_ACCOUNT} />}
           />
-          <Route path={RELATIVE_PATH_USER_SUBSCRIPTION} element={<Subscription />} />
+          <Route path={RELATIVE_PATH_USER_SUBSCRIPTION} element={<SubscriptionContainer />} />
           <Route path="*" element={<Navigate to={RELATIVE_PATH_USER_ACCOUNT} />} />
         </Routes>
       </div>
