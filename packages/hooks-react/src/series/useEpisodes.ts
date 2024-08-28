@@ -20,6 +20,7 @@ export const useEpisodes = (
   seriesId: string | undefined,
   seasonNumber: string | undefined,
   options: { enabled: boolean },
+  language: string,
 ): {
   data: EpisodesWithPagination[];
   hasNextPage: boolean;
@@ -38,12 +39,12 @@ export const useEpisodes = (
     async ({ pageParam = 0 }) => {
       if (Number(seasonNumber)) {
         // Get episodes from a selected season using pagination
-        const season = await apiService.getSeasonWithEpisodes({ seriesId, seasonNumber: Number(seasonNumber), pageOffset: pageParam });
+        const season = await apiService.getSeasonWithEpisodes({ seriesId, seasonNumber: Number(seasonNumber), pageOffset: pageParam, language });
 
         return { pagination: season.pagination, episodes: season.episodes };
       } else {
         // Get episodes from a selected series using pagination
-        const data = await apiService.getEpisodes({ seriesId, pageOffset: pageParam });
+        const data = await apiService.getEpisodes({ seriesId, pageOffset: pageParam, language });
         return data;
       }
     },

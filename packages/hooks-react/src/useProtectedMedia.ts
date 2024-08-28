@@ -5,12 +5,14 @@ import { getModule } from '@jwp/ott-common/src/modules/container';
 
 import useContentProtection from './useContentProtection';
 
-export default function useProtectedMedia(item: PlaylistItem) {
+export default function useProtectedMedia(item: PlaylistItem, language: string) {
   const apiService = getModule(ApiService);
-  const contentProtectionQuery = useContentProtection('media', item.mediaid, (token, drmPolicyId) => apiService.getMediaById(item.mediaid, token, drmPolicyId));
+  const contentProtectionQuery = useContentProtection('media', item.mediaid, (token, drmPolicyId) =>
+    apiService.getMediaById(item.mediaid, language, token, drmPolicyId),
+  );
 
   const { isLoading, data: isGeoBlocked } = useQuery(
-    ['media', 'geo', item.mediaid],
+    ['media', 'geo', item.mediaid, language],
     () => {
       const m3u8 = contentProtectionQuery.data?.sources.find((source) => source.file.indexOf('.m3u8') !== -1);
       if (m3u8) {

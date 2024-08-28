@@ -17,7 +17,7 @@ type UsePlaylistResult = {
 
 const isPlaylistType = (type: PlaylistType): type is PlaylistMenuType => !PersonalShelves.some((pType) => pType === type);
 
-const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined) => {
+const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined, language: string) => {
   const page_limit = PLAYLIST_LIMIT.toString();
   const queryClient = useQueryClient();
 
@@ -36,6 +36,7 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
           queryClient,
           usePlaceholderData: true,
           params: { page_limit },
+          language,
         });
       }
 

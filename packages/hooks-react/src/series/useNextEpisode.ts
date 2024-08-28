@@ -4,13 +4,13 @@ import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { CACHE_TIME, STALE_TIME } from '@jwp/ott-common/src/constants';
 
-export const useNextEpisode = ({ series, episodeId }: { series: Series | undefined; episodeId: string | undefined }) => {
+export const useNextEpisode = ({ series, episodeId, language }: { series: Series | undefined; episodeId: string | undefined; language: string }) => {
   const apiService = getModule(ApiService);
 
   const { isLoading, data } = useQuery(
-    ['next-episode', series?.series_id, episodeId],
+    ['next-episode', series?.series_id, episodeId, language],
     async () => {
-      const item = await apiService.getEpisodes({ seriesId: series?.series_id, pageLimit: 1, afterId: episodeId });
+      const item = await apiService.getEpisodes({ seriesId: series?.series_id, pageLimit: 1, afterId: episodeId, language });
 
       return item?.episodes?.[0];
     },

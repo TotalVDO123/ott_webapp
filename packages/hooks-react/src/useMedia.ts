@@ -6,10 +6,10 @@ import { isScheduledOrLiveMedia } from '@jwp/ott-common/src/utils/liveEvent';
 
 export type UseMediaResult<TData = PlaylistItem, TError = unknown> = UseBaseQueryResult<TData, TError>;
 
-export default function useMedia(mediaId: string, enabled: boolean = true): UseMediaResult {
+export default function useMedia(mediaId: string, enabled: boolean = true, language: string): UseMediaResult {
   const apiService = getModule(ApiService);
 
-  return useQuery(['media', mediaId], () => apiService.getMediaById(mediaId), {
+  return useQuery([`media-${language}`, mediaId], () => apiService.getMediaById(mediaId, language), {
     enabled: !!mediaId && enabled,
     refetchInterval: (data, _) => {
       if (!data) return false;

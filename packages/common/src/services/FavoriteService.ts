@@ -53,7 +53,7 @@ export default class FavoriteService {
     return this.validateFavorites(favorites);
   }
 
-  getFavorites = async (user: Customer | null, favoritesList: string) => {
+  getFavorites = async (user: Customer | null, favoritesList: string, language: string) => {
     const savedItems = user ? await this.getFavoritesFromAccount(user) : await this.getFavoritesFromStorage();
     const mediaIds = savedItems.map(({ mediaid }) => mediaid);
 
@@ -62,7 +62,7 @@ export default class FavoriteService {
     }
 
     try {
-      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds);
+      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds, language);
 
       return (playlistItems || []).map((item) => this.createFavorite(item));
     } catch (error: unknown) {

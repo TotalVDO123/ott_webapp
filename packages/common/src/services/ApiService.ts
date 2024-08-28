@@ -46,10 +46,27 @@ export default class ApiService {
     return date ? parseISO(date) : undefined;
   };
 
+  private getTranslatedFields = (item: PlaylistItem, language: string, defaultLanguage: string) => {
+    const newItem = { ...item };
+
+    if (
+      language !== defaultLanguage &&
+      item[`title-${language}`] &&
+      typeof item[`title-${language}`] === 'string' &&
+      item[`description-${language}`] &&
+      typeof item[`description-${language}`] === 'string'
+    ) {
+      newItem['title'] = item[`title-${language}`] as string;
+      newItem['description'] = item[`description-${language}`] as string;
+    }
+
+    return newItem;
+  };
+
   /**
    * Transform incoming content lists
    */
-  private transformContentList = (contentList: ContentList): Playlist => {
+  private transformContentList = (contentList: ContentList, language: string): Playlist => {
     const { list, ...rest } = contentList;
 
     const playlist: Playlist = { ...rest, playlist: [] };
@@ -71,7 +88,7 @@ export default class ApiService {
         ...custom_params,
       };
 
-      return this.transformMediaItem(playlistItem, playlist);
+      return this.transformMediaItem(playlistItem, language, playlist);
     });
 
     return playlist;
@@ -80,8 +97,8 @@ export default class ApiService {
   /**
    * Transform incoming playlists
    */
-  private transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
-    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
+  private transformPlaylist = (playlist: Playlist, language: string, relatedMediaId?: string) => {
+    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, language, playlist));
 
     // remove the related media item (when this is a recommendations playlist)
     if (relatedMediaId) {
@@ -95,14 +112,17 @@ export default class ApiService {
    * Transform incoming media items
    * - Parses productId into MediaOffer[] for all cleeng offers
    */
-  transformMediaItem = (item: PlaylistItem, playlist?: Playlist) => {
+  transformMediaItem = (item: PlaylistItem, language: string, playlist?: Playlist) => {
     const config = ConfigStore.getState().config;
     const offerKeys = Object.keys(config?.integrations)[0];
     const playlistLabel = playlist?.imageLabel;
     const mediaId = item.mediaid;
+    const defaultLanguage = env.APP_DEFAULT_LANGUAGE || 'en';
+    const translatedFields = this.getTranslatedFields(item, language, defaultLanguage);
 
     const transformedMediaItem = {
       ...item,
+      ...translatedFields,
       cardImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.CARD, playlistLabel }),
       channelLogoImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.CHANNEL_LOGO, playlistLabel }),
       backgroundImage: this.generateAlternateImageURL({ mediaId, label: ImageProperty.BACKGROUND }),
@@ -117,7 +137,7 @@ export default class ApiService {
     return transformedMediaItem;
   };
 
-  private transformEpisodes = (episodesRes: EpisodesRes, seasonNumber?: number) => {
+  private transformEpisodes = (episodesRes: EpisodesRes, language: string, seasonNumber?: number) => {
     const { episodes, page, page_limit, total } = episodesRes;
 
     // Adding images and keys for media items
@@ -125,7 +145,7 @@ export default class ApiService {
       episodes: episodes
         .filter((el) => el.media_item)
         .map((el) => ({
-          ...this.transformMediaItem(el.media_item as PlaylistItem),
+          ...this.transformMediaItem(el.media_item as PlaylistItem, language),
           seasonNumber: seasonNumber?.toString() || el.season_number?.toString() || '',
           episodeNumber: String(el.episode_number),
         })),
@@ -136,7 +156,7 @@ export default class ApiService {
   /**
    * Get watchlist by playlistId
    */
-  getMediaByWatchlist = async (playlistId: string, mediaIds: string[], token?: string): Promise<PlaylistItem[] | undefined> => {
+  getMediaByWatchlist = async (playlistId: string, mediaIds: string[], language: string, token?: string): Promise<PlaylistItem[] | undefined> => {
     if (!mediaIds?.length) {
       return [];
     }
@@ -148,7 +168,7 @@ export default class ApiService {
 
     if (!data) throw new Error(`The data was not found using the watchlist ${playlistId}`);
 
-    return (data.playlist || []).map((item) => this.transformMediaItem(item));
+    return (data.playlist || []).map((item) => this.transformMediaItem(item, language));
   };
 
   /**
@@ -157,7 +177,7 @@ export default class ApiService {
    * @param {string} [token]
    * @param {string} [drmPolicyId]
    */
-  getMediaById = async (id: string, token?: string, drmPolicyId?: string): Promise<PlaylistItem | undefined> => {
+  getMediaById = async (id: string, language: string, token?: string, drmPolicyId?: string): Promise<PlaylistItem | undefined> => {
     const pathname = drmPolicyId ? `/v2/media/${id}/drm/${drmPolicyId}` : `/v2/media/${id}`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { token });
     const response = await fetch(url);
@@ -166,7 +186,7 @@ export default class ApiService {
 
     if (!mediaItem) throw new Error('MediaItem not found');
 
-    return this.transformMediaItem(mediaItem);
+    return this.transformMediaItem(mediaItem, language);
   };
 
   /**
@@ -205,11 +225,13 @@ export default class ApiService {
     pageOffset,
     pageLimit = PAGE_LIMIT,
     afterId,
+    language,
   }: {
     seriesId: string | undefined;
     pageOffset?: number;
     pageLimit?: number;
     afterId?: string;
+    language: string;
   }): Promise<EpisodesWithPagination> => {
     if (!seriesId) {
       throw new Error('Series ID is required');
@@ -225,7 +247,7 @@ export default class ApiService {
     const response = await fetch(url);
     const episodesResponse = (await getDataOrThrow(response)) as EpisodesRes;
 
-    return this.transformEpisodes(episodesResponse);
+    return this.transformEpisodes(episodesResponse, language);
   };
 
   /**
@@ -236,8 +258,10 @@ export default class ApiService {
     seasonNumber,
     pageOffset,
     pageLimit = PAGE_LIMIT,
+    language,
   }: {
     seriesId: string | undefined;
+    language: string;
     seasonNumber: number;
     pageOffset?: number;
     pageLimit?: number;
@@ -252,7 +276,7 @@ export default class ApiService {
     const response = await fetch(url);
     const episodesRes = (await getDataOrThrow(response)) as EpisodesRes;
 
-    return this.transformEpisodes(episodesRes, seasonNumber);
+    return this.transformEpisodes(episodesRes, language, seasonNumber);
   };
 
   getAdSchedule = async (id: string | undefined | null): Promise<AdSchedule | undefined> => {
@@ -269,7 +293,7 @@ export default class ApiService {
   /**
    * Get playlist by id
    */
-  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}): Promise<Playlist | undefined> => {
+  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}, language: string = env.APP_DEFAULT_LANGUAGE || 'en'): Promise<Playlist | undefined> => {
     if (!id) {
       return undefined;
     }
@@ -279,10 +303,10 @@ export default class ApiService {
     const response = await fetch(url);
     const data = (await getDataOrThrow(response)) as Playlist;
 
-    return this.transformPlaylist(data, params.related_media_id);
+    return this.transformPlaylist(data, language, params.related_media_id);
   };
 
-  getContentList = async ({ id, siteId }: { id: string | undefined; siteId: string }): Promise<Playlist | undefined> => {
+  getContentList = async ({ id, siteId, language }: { id: string | undefined; siteId: string; language: string }): Promise<Playlist | undefined> => {
     if (!id || !siteId) {
       throw new Error('List ID and Site ID are required');
     }
@@ -292,10 +316,10 @@ export default class ApiService {
     const response = await fetch(url);
     const data = (await getDataOrThrow(response)) as ContentList;
 
-    return this.transformContentList(data);
+    return this.transformContentList(data, language);
   };
 
-  getContentSearch = async ({ siteId, params }: { siteId: string; params: GetContentSearchParams }) => {
+  getContentSearch = async ({ siteId, params, language }: { siteId: string; params: GetContentSearchParams; language: string }) => {
     const pathname = `/v2/sites/${siteId}/app_content/media/search`;
 
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {
@@ -305,6 +329,6 @@ export default class ApiService {
     const response = await fetch(url);
     const data = (await getDataOrThrow(response)) as Playlist;
 
-    return this.transformPlaylist(data);
+    return this.transformPlaylist(data, language);
   };
 }

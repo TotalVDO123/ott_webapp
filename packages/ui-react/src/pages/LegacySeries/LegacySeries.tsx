@@ -12,6 +12,7 @@ import { formatSeriesMetaString } from '@jwp/ott-common/src/utils/formatting';
 import { legacySeriesURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
+import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
@@ -45,10 +46,13 @@ const LegacySeries = () => {
   const feedId = useQueryParam('r');
   const episodeId = useQueryParam('e');
 
+  // Determine currently selected language
+  const language = useSelectedLanguage();
+
   // Main data
   const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId, {}, true, false);
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '');
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '');
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '', true, language);
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '', true, language);
 
   const episodeMetadata = useMemo(() => ({ episodeNumber: episode?.episodeNumber || '0', seasonNumber: episode?.seasonNumber || '0' }), [episode]);
 

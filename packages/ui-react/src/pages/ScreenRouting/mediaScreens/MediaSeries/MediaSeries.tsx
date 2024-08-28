@@ -16,6 +16,7 @@ import { buildLegacySeriesUrlFromMediaItem, mediaURL } from '@jwp/ott-common/src
 import { VideoProgressMinMax } from '@jwp/ott-common/src/constants';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
+import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 import { useSeries } from '@jwp/ott-hooks-react/src/series/useSeries';
 import { useEpisodes } from '@jwp/ott-hooks-react/src/series/useEpisodes';
 import { useSeriesLookup } from '@jwp/ott-hooks-react/src/series/useSeriesLookup';
@@ -50,10 +51,13 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   const feedId = searchParams.get('r');
   const episodeId = searchParams.get('e');
 
+  // Determine currently selected language
+  const language = useSelectedLanguage();
+
   // Main data
   const { isLoading: isSeriesDataLoading, data: series, error: seriesError } = useSeries(seriesId);
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '');
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '');
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '', true, language);
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '', true, language);
   const { data: episodeInSeries, isLoading: isSeriesDictionaryLoading } = useSeriesLookup(episode?.mediaid);
 
   // Whether we show series or episode information
@@ -74,7 +78,7 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
     data: episodes,
     fetchNextPage: fetchNextEpisodes,
     hasNextPage: hasNextEpisodesPage,
-  } = useEpisodes(seriesId, seasonFilter, { enabled: seasonFilter !== undefined && !!series });
+  } = useEpisodes(seriesId, seasonFilter, { enabled: seasonFilter !== undefined && !!series }, language);
 
   const firstEpisode = useMemo(() => episodes?.[0]?.episodes?.[0], [episodes]);
   const episodeMetadata = useMemo(
@@ -96,7 +100,7 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   );
 
   const episodesInSeason = getEpisodesInSeason(episodeMetadata, series);
-  const { data: nextItem } = useNextEpisode({ series, episodeId: episode?.mediaid || firstEpisode?.mediaid });
+  const { data: nextItem } = useNextEpisode({ series, episodeId: episode?.mediaid || firstEpisode?.mediaid, language });
 
   // Watch history
   const watchHistoryArray = useWatchHistoryStore((state) => state.watchHistory);

@@ -12,6 +12,7 @@ import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/col
 import { testId } from '@jwp/ott-common/src/utils/common';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
+import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import Shelf from '../../components/Shelf/Shelf';
 import InfiniteScrollLoader from '../../components/InfiniteScrollLoader/InfiniteScrollLoader';
@@ -36,9 +37,10 @@ const ShelfList = ({ rows }: Props) => {
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
 
-  // Todo: move to more common package?
+  // Determine currently selected language
+  const language = useSelectedLanguage();
 
-  const playlists = usePlaylists(rows, rowsToLoad);
+  const playlists = usePlaylists(rows, rowsToLoad, language);
 
   useEffect(() => {
     // reset row count when the page changes

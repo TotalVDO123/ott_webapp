@@ -10,6 +10,8 @@ import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
 import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
+import env from '../../common/src/env';
+
 const placeholderData = generatePlaylistPlaceholder(30);
 
 export const getPlaylistQueryOptions = ({
@@ -20,6 +22,7 @@ export const getPlaylistQueryOptions = ({
   usePlaceholderData,
   params = {},
   queryClient,
+  language,
 }: {
   type: PlaylistMenuType;
   contentId: string | undefined;
@@ -28,6 +31,7 @@ export const getPlaylistQueryOptions = ({
   queryClient: QueryClient;
   usePlaceholderData?: boolean;
   params?: GetPlaylistParams;
+  language: string;
 }) => {
   const apiService = getModule(ApiService);
 
@@ -36,7 +40,7 @@ export const getPlaylistQueryOptions = ({
     queryKey: ['playlist', type, contentId],
     queryFn: async () => {
       if (type === PLAYLIST_TYPE.playlist) {
-        const playlist = await apiService.getPlaylistById(contentId, params);
+        const playlist = await apiService.getPlaylistById(contentId, params, language);
 
         // This pre-caches all playlist items and makes navigating a lot faster.
         playlist?.playlist?.forEach((playlistItem) => {
@@ -45,7 +49,7 @@ export const getPlaylistQueryOptions = ({
 
         return playlist;
       } else if (type === PLAYLIST_TYPE.content_list) {
-        const contentList = await apiService.getContentList({ siteId, id: contentId });
+        const contentList = await apiService.getContentList({ siteId, id: contentId, language });
 
         return contentList;
       }
@@ -68,11 +72,12 @@ export default function usePlaylist(
   enabled: boolean = true,
   usePlaceholderData: boolean = true,
   type: PlaylistMenuType = PLAYLIST_TYPE.playlist,
+  language: string = env.APP_DEFAULT_LANGUAGE || 'en',
 ) {
   const queryClient = useQueryClient();
   const siteId = useConfigStore((state) => state.config.siteId);
 
-  const queryOptions = getPlaylistQueryOptions({ type, contentId, siteId, params, queryClient, enabled, usePlaceholderData });
+  const queryOptions = getPlaylistQueryOptions({ type, contentId, siteId, params, queryClient, enabled, usePlaceholderData, language });
 
   return useQuery<Playlist | undefined, ApiError>(queryOptions);
 }

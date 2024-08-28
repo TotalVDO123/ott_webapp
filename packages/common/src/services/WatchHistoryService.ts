@@ -8,6 +8,7 @@ import { getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
 import { MAX_WATCHLIST_ITEMS_COUNT } from '../constants';
 import { logError } from '../logger';
+import env from '../env';
 
 import ApiService from './ApiService';
 import StorageService from './StorageService';
@@ -36,7 +37,7 @@ export default class WatchHistoryService {
 
   // Retrieve watch history media items info using a provided watch list
   private getWatchHistoryItems = async (continueWatchingList: string, ids: string[]): Promise<Record<string, PlaylistItem>> => {
-    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids);
+    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, env.APP_DEFAULT_LANGUAGE || 'en');
     const watchHistoryItemsDict = Object.fromEntries((watchHistoryItems || []).map((item) => [item.mediaid, item]));
 
     return watchHistoryItemsDict;
@@ -50,7 +51,7 @@ export default class WatchHistoryService {
       .filter(Boolean) as string[];
     const uniqueSerieIds = [...new Set(seriesIds)];
 
-    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds);
+    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, env.APP_DEFAULT_LANGUAGE || 'en');
     const seriesItemsDict = Object.keys(mediaWithSeries || {}).reduce((acc, key) => {
       const seriesItemId = mediaWithSeries?.[key]?.[0]?.series_id;
       if (seriesItemId) {
