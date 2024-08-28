@@ -49,15 +49,12 @@ export default class ApiService {
   private getTranslatedFields = (item: PlaylistItem, language: string, defaultLanguage: string) => {
     const newItem = { ...item };
 
-    if (
-      language !== defaultLanguage &&
-      item[`title-${language}`] &&
-      typeof item[`title-${language}`] === 'string' &&
-      item[`description-${language}`] &&
-      typeof item[`description-${language}`] === 'string'
-    ) {
-      newItem['title'] = item[`title-${language}`] as string;
-      newItem['description'] = item[`description-${language}`] as string;
+    if (language !== defaultLanguage) {
+      for (const [key, _] of Object.entries(newItem)) {
+        if (!key.includes(`-${language}`) && item[`${key}-${language}`]) {
+          newItem[key] = item[`${key}-${language}`] as string;
+        }
+      }
     }
 
     return newItem;
