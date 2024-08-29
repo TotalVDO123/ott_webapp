@@ -6,7 +6,6 @@ import type { PlaylistItem } from '../../types/playlist';
 import { useAccountStore } from '../stores/AccountStore';
 import { useFavoritesStore } from '../stores/FavoritesStore';
 import { useConfigStore } from '../stores/ConfigStore';
-import env from '../env';
 
 @injectable()
 export default class FavoritesController {
@@ -28,7 +27,7 @@ export default class FavoritesController {
       return;
     }
 
-    const favorites = await this.favoritesService.getFavorites(user, favoritesList, env.APP_DEFAULT_LANGUAGE || 'en');
+    const favorites = await this.favoritesService.getFavorites(user, favoritesList);
 
     useFavoritesStore.setState({ favorites, favoritesPlaylistId: favoritesList });
   };

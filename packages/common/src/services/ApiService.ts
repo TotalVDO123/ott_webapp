@@ -46,7 +46,12 @@ export default class ApiService {
     return date ? parseISO(date) : undefined;
   };
 
-  private getTranslatedFields = (item: PlaylistItem, language: string, defaultLanguage: string) => {
+  private getTranslatedFields = (item: PlaylistItem, language?: string) => {
+    if (!language) {
+      return item;
+    }
+
+    const defaultLanguage = env.APP_DEFAULT_LANGUAGE || 'en';
     const newItem = { ...item };
 
     if (language !== defaultLanguage) {
@@ -85,7 +90,7 @@ export default class ApiService {
         ...custom_params,
       };
 
-      return this.transformMediaItem(playlistItem, language, playlist);
+      return this.transformMediaItem({ item: playlistItem, playlist, language });
     });
 
     return playlist;
@@ -94,8 +99,8 @@ export default class ApiService {
   /**
    * Transform incoming playlists
    */
-  private transformPlaylist = (playlist: Playlist, language: string, relatedMediaId?: string) => {
-    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, language, playlist));
+  private transformPlaylist = (playlist: Playlist, relatedMediaId?: string, language?: string) => {
+    playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem({ item, playlist, language }));
 
     // remove the related media item (when this is a recommendations playlist)
     if (relatedMediaId) {
@@ -109,13 +114,12 @@ export default class ApiService {
    * Transform incoming media items
    * - Parses productId into MediaOffer[] for all cleeng offers
    */
-  transformMediaItem = (item: PlaylistItem, language: string, playlist?: Playlist) => {
+  transformMediaItem = ({ item, playlist, language }: { item: PlaylistItem; playlist?: Playlist; language?: string }) => {
     const config = ConfigStore.getState().config;
     const offerKeys = Object.keys(config?.integrations)[0];
     const playlistLabel = playlist?.imageLabel;
     const mediaId = item.mediaid;
-    const defaultLanguage = env.APP_DEFAULT_LANGUAGE || 'en';
-    const translatedFields = this.getTranslatedFields(item, language, defaultLanguage);
+    const translatedFields = this.getTranslatedFields(item, language);
 
     const transformedMediaItem = {
       ...item,
@@ -142,7 +146,7 @@ export default class ApiService {
       episodes: episodes
         .filter((el) => el.media_item)
         .map((el) => ({
-          ...this.transformMediaItem(el.media_item as PlaylistItem, language),
+          ...this.transformMediaItem({ item: el.media_item as PlaylistItem, language }),
           seasonNumber: seasonNumber?.toString() || el.season_number?.toString() || '',
           episodeNumber: String(el.episode_number),
         })),
@@ -153,7 +157,7 @@ export default class ApiService {
   /**
    * Get watchlist by playlistId
    */
-  getMediaByWatchlist = async (playlistId: string, mediaIds: string[], language: string, token?: string): Promise<PlaylistItem[] | undefined> => {
+  getMediaByWatchlist = async (playlistId: string, mediaIds: string[], language?: string, token?: string): Promise<PlaylistItem[] | undefined> => {
     if (!mediaIds?.length) {
       return [];
     }
@@ -165,7 +169,7 @@ export default class ApiService {
 
     if (!data) throw new Error(`The data was not found using the watchlist ${playlistId}`);
 
-    return (data.playlist || []).map((item) => this.transformMediaItem(item, language));
+    return (data.playlist || []).map((item) => this.transformMediaItem({ item, language }));
   };
 
   /**
@@ -183,7 +187,7 @@ export default class ApiService {
 
     if (!mediaItem) throw new Error('MediaItem not found');
 
-    return this.transformMediaItem(mediaItem, language);
+    return this.transformMediaItem({ item: mediaItem, language });
   };
 
   /**
@@ -300,7 +304,7 @@ export default class ApiService {
     const response = await fetch(url);
     const data = (await getDataOrThrow(response)) as Playlist;
 
-    return this.transformPlaylist(data, language, params.related_media_id);
+    return this.transformPlaylist(data, params.related_media_id, language);
   };
 
   getContentList = async ({ id, siteId, language }: { id: string | undefined; siteId: string; language: string }): Promise<Playlist | undefined> => {
@@ -316,7 +320,7 @@ export default class ApiService {
     return this.transformContentList(data, language);
   };
 
-  getContentSearch = async ({ siteId, params, language }: { siteId: string; params: GetContentSearchParams; language: string }) => {
+  getContentSearch = async ({ siteId, params }: { siteId: string; params: GetContentSearchParams }) => {
     const pathname = `/v2/sites/${siteId}/app_content/media/search`;
 
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, {
@@ -326,6 +330,6 @@ export default class ApiService {
     const response = await fetch(url);
     const data = (await getDataOrThrow(response)) as Playlist;
 
-    return this.transformPlaylist(data, language);
+    return this.transformPlaylist(data);
   };
 }

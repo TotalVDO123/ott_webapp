@@ -54,7 +54,7 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
   const language = useSelectedLanguage();
 
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(data?.trailerId || '', true, language);
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '', language });
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(features?.recommendationsPlaylist || '', { related_media_id: id });
 
   // User, entitlement

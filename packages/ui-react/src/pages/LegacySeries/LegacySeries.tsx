@@ -51,8 +51,8 @@ const LegacySeries = () => {
 
   // Main data
   const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId, {}, true, false);
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '', true, language);
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '', true, language);
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '', language });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '', language });
 
   const episodeMetadata = useMemo(() => ({ episodeNumber: episode?.episodeNumber || '0', seasonNumber: episode?.seasonNumber || '0' }), [episode]);
 

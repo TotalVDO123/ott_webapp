@@ -23,7 +23,7 @@ const MediaEpisode: ScreenComponent<PlaylistItem> = ({ data: media, isLoading: i
   const language = useSelectedLanguage();
 
   const { data: episodeInSeries, isLoading: isSeriesIdLoading } = useSeriesLookup(media.mediaid);
-  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia(episodeInSeries?.series_id || '', true, language);
+  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia({ mediaId: episodeInSeries?.series_id || '', language });
 
   // Prevent rendering multiple times when we are loading data
   if (isMediaLoading || isSeriesIdLoading || isSeriesMediaLoading) {

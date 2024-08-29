@@ -40,7 +40,7 @@ const MediaScreenRouter = () => {
   // Determine currently selected language
   const language = useSelectedLanguage();
 
-  const { isLoading, isFetching, error, data } = useMedia(id, true, language);
+  const { isLoading, isFetching, error, data } = useMedia({ mediaId: id, language });
   const { t } = useTranslation('error');
 
   if (isLoading) {

@@ -57,7 +57,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const language = useSelectedLanguage();
 
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(media?.trailerId || '', true, language);
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: media?.trailerId || '', language });
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(playlistId || '');
 
   // Event

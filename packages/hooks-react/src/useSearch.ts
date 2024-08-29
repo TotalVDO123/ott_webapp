@@ -10,8 +10,6 @@ import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { generatePlaylistPlaceholder } from '@jwp/ott-common/src/utils/collection';
 
-import env from '../../common/src/env';
-
 const placeholderData = generatePlaylistPlaceholder(30);
 
 const useAppContentSearch = ({ siteId, enabled, query }: { query: string; siteId: string; enabled: boolean }) => {
@@ -20,7 +18,7 @@ const useAppContentSearch = ({ siteId, enabled, query }: { query: string; siteId
   const appContentSearchQuery: UseQueryResult<Playlist | undefined, ApiError> = useQuery(
     ['app-search', query],
     async () => {
-      const searchResult = await apiService.getContentSearch({ siteId, params: { searchTerm: query }, language: env.APP_DEFAULT_LANGUAGE || 'en' });
+      const searchResult = await apiService.getContentSearch({ siteId, params: { searchTerm: query } });
 
       return searchResult;
     },
