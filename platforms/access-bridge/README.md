@@ -12,7 +12,7 @@ Create a `.env.local` file in the root of this project and add the following var
 
 - APP_API_SECRET=customer_v1_secret
 - APP_BIND_ADDR=localhost
-- APP_BIND_PORT=3000
+- APP_BIND_PORT=8080
 - APP_ACCESS_CONTROL_API_HOST=https://cdn-dev.jwplayer.com  
   <em>(Use https://cdn.jwplayer.com for production)</em>
 - APP_SIMS_API_HOST=https://daily-sims.jwplayer.com  

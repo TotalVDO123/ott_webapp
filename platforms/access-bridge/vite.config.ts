@@ -56,7 +56,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     },
     envPrefix,
     server: {
-      port: 3000,
+      port: parseInt(env.APP_BIND_PORT),
     },
     build: {
       outDir: 'build',
