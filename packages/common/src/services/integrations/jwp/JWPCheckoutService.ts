@@ -118,7 +118,7 @@ export default class JWPCheckoutService extends CheckoutService {
   chooseOffer: ChooseOffer = async ({ offer: { contentExternalId, offerId }, successUrl, cancelUrl }) => {
     try {
       const { url } = await this.apiService.post<{ url: string }>(
-        '/checkout',
+        '/v2/sites/:siteId/checkout',
         {
           access_plan_id: contentExternalId,
           price_id: offerId,
@@ -152,7 +152,7 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async () => {
     try {
-      const stripeProducts = await this.apiService.get<StripeProduct[]>('/products', { fromSimsClient: true });
+      const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { fromSimsClient: true });
 
       const offers: Offer[] = [];
 
