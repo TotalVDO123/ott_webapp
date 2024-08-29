@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "build/main.js",
   "engines": {
-    "node": ">=18.13.0"
+    "node": ">=20.17.0"
   },
   "private": true,
   "author": "JW Player",
