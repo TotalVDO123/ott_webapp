@@ -125,8 +125,9 @@
     "weekly_subscription": "Suscripción semanal"
   },
   "subscription": {
-    "subscription_text": "",
-    "stripe_portal": "",
-    "goto_provider": ""
+    "stripe": {
+      "explanation": "",
+      "goto_provider": ""
+    }
   }
 }

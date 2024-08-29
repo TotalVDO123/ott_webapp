@@ -65,7 +65,7 @@ export default class JWPAccountService extends AccountService {
 
   private clientId = '';
 
-  accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
+  accessModel: AccessModel = ACCESS_MODEL.SVOD;
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;

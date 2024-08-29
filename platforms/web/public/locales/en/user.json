@@ -126,8 +126,9 @@
     "weekly_subscription": "Weekly subscription"
   },
   "subscription": {
-    "subscription_text": "This subscription is managed by {{provider}}. To update your subscription or billing details, click the button below to access {{provider_portal}}.",
-    "stripe_portal": "Stripe's Customer Portal",
-    "goto_provider": "Go to {{provider}}"
+    "stripe": {
+      "explanation": "This subscription is managed by Stripe. To update your subscription or billing details, click the button below to access Stripe's Customer Portal.",
+      "goto_provider": "Go to Stripe"
+    }
   }
 }

@@ -39,10 +39,10 @@ export default class JWPAPIService {
   };
 
   private getBaseUrl = (fromSimsClient = false) => {
-    const { API_BASE_URL, MIDDLEWARE_SITE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
+    const { API_BASE_URL, MIDDLEWARE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
 
     if (fromSimsClient) {
-      return MIDDLEWARE_SITE_BASE_URL(this.siteId);
+      return MIDDLEWARE_BASE_URL;
     }
 
     return API_BASE_URL;
@@ -122,7 +122,9 @@ export default class JWPAPIService {
       return formData.toString();
     })();
 
-    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl(fromSimsClient)}${path}`}${
+    const parsedPath = path.replace(':siteId', this.siteId);
+
+    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl(fromSimsClient)}${parsedPath}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 
