@@ -51,7 +51,7 @@ export default class ApiService {
 
     if (language !== defaultLanguage) {
       for (const [key, _] of Object.entries(newItem)) {
-        if (!key.endsWith(`-${language}`) && item[`${key}-${language}`]) {
+        if (item[`${key}-${language}`]) {
           newItem[key] = item[`${key}-${language}`] as string;
         }
       }
