@@ -309,7 +309,7 @@ export default class JWPCheckoutService extends CheckoutService {
       const { url } = await this.apiService.post<{ url: string }>(
         '/v2/sites/:siteId/billing-portal',
         { return_url: returnUrl },
-        { withAuthentication: true, fromSimsClient: true, contentType: 'json' },
+        { withAuthentication: true, useAccessBridge: true, contentType: 'json' },
       );
 
       return url;

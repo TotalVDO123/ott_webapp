@@ -19,7 +19,7 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
-  fromSimsClient?: boolean;
+  useAccessBridge?: boolean;
 };
 
 @injectable()
@@ -38,11 +38,11 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  private getBaseUrl = (fromSimsClient = false) => {
-    const { API_BASE_URL, MIDDLEWARE_BASE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
+  private getBaseUrl = (useAccessBridge = false) => {
+    const { API_BASE_URL, ACCESS_BRIDGE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
 
-    if (fromSimsClient) {
-      return MIDDLEWARE_BASE_URL;
+    if (useAccessBridge) {
+      return ACCESS_BRIDGE_URL;
     }
 
     return API_BASE_URL;
@@ -82,7 +82,7 @@ export default class JWPAPIService {
       withAuthentication = false,
       keepalive,
       includeFullResponse = false,
-      fromSimsClient = false,
+      useAccessBridge = false,
     }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
@@ -124,7 +124,7 @@ export default class JWPAPIService {
 
     const parsedPath = path.replace(':siteId', this.siteId);
 
-    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl(fromSimsClient)}${parsedPath}`}${
+    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl(useAccessBridge)}${parsedPath}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 
