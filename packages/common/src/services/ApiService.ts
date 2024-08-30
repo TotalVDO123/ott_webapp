@@ -51,7 +51,7 @@ export default class ApiService {
       return item;
     }
 
-    const defaultLanguage = env.APP_DEFAULT_LANGUAGE || 'en';
+    const defaultLanguage = env.APP_DEFAULT_LANGUAGE;
     const newItem = { ...item };
 
     if (language !== defaultLanguage) {
@@ -294,7 +294,7 @@ export default class ApiService {
   /**
    * Get playlist by id
    */
-  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}, language: string = env.APP_DEFAULT_LANGUAGE || 'en'): Promise<Playlist | undefined> => {
+  getPlaylistById = async (id?: string, params: GetPlaylistParams = {}, language: string = env.APP_DEFAULT_LANGUAGE): Promise<Playlist | undefined> => {
     if (!id) {
       return undefined;
     }

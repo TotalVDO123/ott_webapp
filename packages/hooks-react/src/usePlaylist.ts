@@ -72,7 +72,7 @@ export default function usePlaylist(
   enabled: boolean = true,
   usePlaceholderData: boolean = true,
   type: PlaylistMenuType = PLAYLIST_TYPE.playlist,
-  language: string = env.APP_DEFAULT_LANGUAGE || 'en',
+  language: string = env.APP_DEFAULT_LANGUAGE,
 ) {
   const queryClient = useQueryClient();
   const siteId = useConfigStore((state) => state.config.siteId);

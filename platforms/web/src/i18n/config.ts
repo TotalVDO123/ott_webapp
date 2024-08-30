@@ -24,7 +24,7 @@ export const DEFINED_LANGUAGES: LanguageDefinition[] = [
 
 const initI18n = async () => {
   const enabledLanguages = import.meta.env.APP_ENABLED_LANGUAGES?.split(',') || [];
-  const defaultLanguage = import.meta.env.APP_DEFAULT_LANGUAGE || 'en';
+  const defaultLanguage = import.meta.env.APP_DEFAULT_LANGUAGE;
 
   const supportedLanguages = filterSupportedLanguages(DEFINED_LANGUAGES, enabledLanguages);
 
