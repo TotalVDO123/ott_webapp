@@ -12,6 +12,7 @@ import useFirstRender from '@jwp/ott-hooks-react/src/useFirstRender';
 import useSearchQueryUpdater from '@jwp/ott-ui-react/src/hooks/useSearchQueryUpdater';
 import { useSearch } from '@jwp/ott-hooks-react/src/useSearch';
 import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
+import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import CardGrid from '../../components/CardGrid/CardGrid';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
@@ -24,12 +25,15 @@ const Search = () => {
   const { siteName, features } = config;
   const headingId = useOpaqueId('search_heading');
 
+  // Determine currently selected language
+  const language = useSelectedLanguage();
+
   const firstRender = useFirstRender();
   const searchQuery = useUIStore((state) => state.searchQuery);
   const { updateSearchQuery } = useSearchQueryUpdater();
   const params = useParams();
   const query = params['*'];
-  const { isFetching, error, data: playlist } = useSearch(query || '');
+  const { isFetching, error, data: playlist } = useSearch(query || '', language);
 
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
