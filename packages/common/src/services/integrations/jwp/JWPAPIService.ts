@@ -22,7 +22,6 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
-  useAccessBridge?: boolean;
 };
 
 @injectable()
