@@ -50,7 +50,15 @@ const LegacySeries = () => {
   const language = useSelectedLanguage();
 
   // Main data
-  const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId, {}, true, false);
+  const {
+    isLoading: isSeriesPlaylistLoading,
+    data: seriesPlaylist,
+    isError: isPlaylistError,
+  } = usePlaylist({
+    contentId: seriesId,
+    usePlaceholderData: false,
+    language,
+  });
   const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '', language });
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '', language });
 

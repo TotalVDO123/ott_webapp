@@ -66,14 +66,21 @@ export const getPlaylistQueryOptions = ({
   };
 };
 
-export default function usePlaylist(
-  contentId?: string,
-  params: GetPlaylistParams = {},
-  enabled: boolean = true,
-  usePlaceholderData: boolean = true,
-  type: PlaylistMenuType = PLAYLIST_TYPE.playlist,
-  language: string = env.APP_DEFAULT_LANGUAGE,
-) {
+export default function usePlaylist({
+  contentId,
+  params = {},
+  enabled = true,
+  usePlaceholderData = true,
+  type = PLAYLIST_TYPE.playlist,
+  language = env.APP_DEFAULT_LANGUAGE,
+}: {
+  contentId?: string;
+  params?: GetPlaylistParams;
+  enabled?: boolean;
+  usePlaceholderData?: boolean;
+  type?: PlaylistMenuType;
+  language?: string;
+}) {
   const queryClient = useQueryClient();
   const siteId = useConfigStore((state) => state.config.siteId);
 
