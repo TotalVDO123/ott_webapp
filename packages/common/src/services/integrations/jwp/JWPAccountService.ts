@@ -1,8 +1,8 @@
 import InPlayer, { Env } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
 import { inject, injectable, named } from 'inversify';
-import type { Passport } from 'packages/common/types/passport';
 
+import type { Passport } from '../../../../types/passport';
 import { formatConsentsToRegisterFields } from '../../../utils/collection';
 import type {
   AuthData,

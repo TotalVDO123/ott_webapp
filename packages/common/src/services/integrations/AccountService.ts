@@ -1,5 +1,4 @@
-import type { Passport } from 'packages/common/types/passport';
-
+import type { Passport } from '../../../types/passport';
 import type { AccessModel, Config } from '../../../types/config';
 import type {
   ChangePassword,

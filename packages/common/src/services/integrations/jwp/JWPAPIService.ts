@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
-import type { Passport } from 'packages/common/types/passport';
 
+import type { Passport } from '../../../../types/passport';
 import { JWPAPIServiceToUse } from '../../../constants';
 import StorageService from '../../StorageService';
 
