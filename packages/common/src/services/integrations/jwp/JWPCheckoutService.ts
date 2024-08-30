@@ -126,7 +126,7 @@ export default class JWPCheckoutService extends CheckoutService {
           success_url: successUrl,
           cancel_url: cancelUrl,
         },
-        { withAuthentication: true, fromSimsClient: true, contentType: 'json' },
+        { withAuthentication: true, useAccessBridge: true, contentType: 'json' },
       );
 
       return url;
@@ -152,7 +152,7 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async () => {
     try {
-      const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { fromSimsClient: true });
+      const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
 
       const offers: Offer[] = [];
 
