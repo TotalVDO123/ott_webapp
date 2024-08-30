@@ -44,7 +44,7 @@ const ChooseOffer = () => {
 
       if (!offer) return;
 
-      const baseUrl = window.location.href.split('?')[0].replace(/\/$/, '');
+      const baseUrl = window.location.origin;
 
       const url = await chooseOffer.mutateAsync({
         offer,
