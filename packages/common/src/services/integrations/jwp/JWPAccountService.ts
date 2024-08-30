@@ -405,6 +405,7 @@ export default class JWPAccountService extends AccountService {
       if (await this.apiService.isAuthenticated()) {
         await this.apiService.get<undefined>('/accounts/logout', { withAuthentication: true });
         await this.apiService.removeToken();
+        await this.apiService.removePassport();
       }
     } catch {
       throw new Error('Failed to sign out.');

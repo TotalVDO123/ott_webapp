@@ -75,7 +75,7 @@ export default class JWPAPIService {
   };
 
   setPassport = (passport: string, refreshToken: string) => {
-    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify({ passport, refreshToken }), false);
+    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify({ passport, refreshToken }), true);
   };
 
   getPassport = async (): Promise<Passport | null> => {
