@@ -1,5 +1,6 @@
-import { inject, injectable } from 'inversify';
+import { inject, injectable, named } from 'inversify';
 
+import { JWPAPIServiceToUse } from '../../../constants';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
   CardPaymentData,
@@ -38,7 +39,7 @@ export default class JWPCheckoutService extends CheckoutService {
 
   private readonly apiService;
 
-  constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
+  constructor(@inject(JWPAPIService) @named(JWPAPIServiceToUse.Sims) apiService: JWPAPIService) {
     super();
     this.apiService = apiService;
   }

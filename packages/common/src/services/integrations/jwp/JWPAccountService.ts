@@ -1,6 +1,7 @@
 import InPlayer, { Env } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
-import { injectable } from 'inversify';
+import { inject, injectable, named } from 'inversify';
+import type { Passport } from 'packages/common/types/passport';
 
 import { formatConsentsToRegisterFields } from '../../../utils/collection';
 import type {
@@ -27,13 +28,14 @@ import type {
   UpdateFavorites,
   UpdateWatchHistory,
   UpdateCustomer,
+  GeneratePassport,
 } from '../../../../types/account';
 import type { AccessModel, Config } from '../../../../types/config';
 import type { SerializedFavorite } from '../../../../types/favorite';
 import type { SerializedWatchHistoryItem } from '../../../../types/watchHistory';
 import AccountService from '../AccountService';
 import StorageService from '../../StorageService';
-import { ACCESS_MODEL } from '../../../constants';
+import { ACCESS_MODEL, JWPAPIServiceToUse } from '../../../constants';
 
 import type {
   JWPAuthData,
@@ -62,6 +64,7 @@ const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 export default class JWPAccountService extends AccountService {
   private readonly storageService;
   private readonly apiService;
+  private readonly accessBridgeService;
 
   private clientId = '';
 
@@ -69,8 +72,13 @@ export default class JWPAccountService extends AccountService {
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
+  siteId = '';
 
-  constructor(storageService: StorageService, apiService: JWPAPIService) {
+  constructor(
+    @inject(StorageService) storageService: StorageService,
+    @inject(JWPAPIService) @named(JWPAPIServiceToUse.Sims) apiService: JWPAPIService,
+    @inject(JWPAPIService) @named(JWPAPIServiceToUse.AccessBridge) accessBridgeService: JWPAPIService,
+  ) {
     super({
       canUpdateEmail: false,
       canSupportEmptyFullName: false,
@@ -88,6 +96,7 @@ export default class JWPAccountService extends AccountService {
 
     this.storageService = storageService;
     this.apiService = apiService;
+    this.accessBridgeService = accessBridgeService;
   }
 
   private parseJson = (value: string, fallback = {}) => {
@@ -141,6 +150,7 @@ export default class JWPAccountService extends AccountService {
   }
 
   initialize = async (config: Config, url: string, _logoutFn: () => Promise<void>) => {
+    this.siteId = config.siteId;
     const jwpConfig = config.integrations?.jwp;
 
     if (!jwpConfig?.clientId) {
@@ -153,7 +163,8 @@ export default class JWPAccountService extends AccountService {
     const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
     InPlayer.setConfig(env as Env);
 
-    this.apiService.setup(this.sandbox);
+    this.apiService.setup(this.sandbox, JWPAPIServiceToUse.Sims);
+    this.accessBridgeService.setup(this.sandbox, JWPAPIServiceToUse.AccessBridge);
 
     // calculate access model
     if (jwpConfig.clientId) {
@@ -302,6 +313,27 @@ export default class JWPAccountService extends AccountService {
     } catch {
       throw new Error('Failed to reset password.');
     }
+  };
+
+  generatePassport: GeneratePassport = async () => {
+    try {
+      const response: Passport = await this.accessBridgeService.put(
+        `/v2/sites/${this.siteId}/access/generate`,
+        {}, // no body params required
+        {
+          withAuthentication: await this.apiService.isAuthenticated(),
+        },
+      );
+      this.apiService.setPassport(response.passport, response.refresh_token);
+
+      return response;
+    } catch {
+      throw new Error('Failed to generate password.');
+    }
+  };
+
+  getPassport = async () => {
+    return await this.apiService.getPassport();
   };
 
   login: Login = async ({ email, password, referrer }) => {

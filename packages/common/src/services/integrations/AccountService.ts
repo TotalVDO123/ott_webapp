@@ -1,3 +1,5 @@
+import type { Passport } from 'packages/common/types/passport';
+
 import type { AccessModel, Config } from '../../../types/config';
 import type {
   ChangePassword,
@@ -22,6 +24,7 @@ import type {
   GetWatchHistory,
   GetFavorites,
   GetUser,
+  GeneratePassport,
 } from '../../../types/account';
 
 export type AccountServiceFeatures = {
@@ -94,4 +97,8 @@ export default abstract class AccountService {
   abstract exportAccountData?: ExportAccountData;
 
   abstract deleteAccount?: DeleteAccount;
+
+  abstract generatePassport?: GeneratePassport;
+
+  abstract getPassport?: () => Promise<Passport | null>;
 }

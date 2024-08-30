@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import { inject, injectable, named } from 'inversify';
 
+import { JWPAPIServiceToUse } from '../../../constants';
 import type {
   ChangeSubscription,
   GetActivePayment,
@@ -50,7 +51,7 @@ export default class JWPSubscriptionService extends SubscriptionService {
   private readonly accountService: JWPAccountService;
   private readonly apiService: JWPAPIService;
 
-  constructor(@named('JWP') accountService: AccountService, @inject(JWPAPIService) apiService: JWPAPIService) {
+  constructor(@named('JWP') accountService: AccountService, @inject(JWPAPIService) @named(JWPAPIServiceToUse.Sims) apiService: JWPAPIService) {
     super();
 
     this.accountService = accountService as JWPAccountService;

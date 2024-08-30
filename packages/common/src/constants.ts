@@ -3,6 +3,11 @@ export enum PersonalShelf {
   Favorites = 'favorites',
 }
 
+export enum JWPAPIServiceToUse {
+  Sims = 'sims',
+  AccessBridge = 'accessBridge',
+}
+
 export const PersonalShelves = [PersonalShelf.Favorites, PersonalShelf.ContinueWatching];
 
 export const INTEGRATION = {

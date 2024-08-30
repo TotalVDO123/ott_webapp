@@ -499,6 +499,22 @@ export default class AccountController {
     return this.accountService.getAuthData();
   };
 
+  generatePassport = async () => {
+    assertModuleMethod(this.accountService.generatePassport, 'generatePassport is not available in account service');
+
+    const passport = await this.getPassport();
+    if (passport) {
+      return passport;
+    }
+
+    return await this.accountService.generatePassport();
+  };
+
+  getPassport = async () => {
+    assertModuleMethod(this.accountService.getPassport, 'getPassport is not available in account service');
+    return await this.accountService.getPassport();
+  };
+
   subscribeToNotifications = async ({ uuid, onMessage }: SubscribeToNotificationsPayload) => {
     return this.accountService.subscribeToNotifications({ uuid, onMessage });
   };
@@ -514,6 +530,7 @@ export default class AccountController {
     });
 
     await Promise.allSettled([
+      this.generatePassport(),
       this.reloadSubscriptions(),
       this.getPublisherConsents(),
       // after registration, transfer the personal shelves to the account

@@ -1,7 +1,7 @@
 // To organize imports in a better way
 /* eslint-disable import/order */
 import 'reflect-metadata'; // include once in the app for inversify (see: https://github.com/inversify/InversifyJS/blob/master/README.md#-installation)
-import { INTEGRATION, EPG_TYPE } from '../constants';
+import { INTEGRATION, EPG_TYPE, JWPAPIServiceToUse } from '../constants';
 import { container } from './container';
 import { DETERMINE_INTEGRATION_TYPE, INTEGRATION_TYPE } from './types';
 
@@ -78,7 +78,8 @@ container.bind(SubscriptionService).to(CleengSubscriptionService).whenTargetName
 
 // JWP integration
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isJwpIntegrationType);
-container.bind(JWPAPIService).toSelf();
+container.bind(JWPAPIService).toSelf().whenTargetNamed(JWPAPIServiceToUse.Sims);
+container.bind(JWPAPIService).toSelf().whenTargetNamed(JWPAPIServiceToUse.AccessBridge);
 container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);

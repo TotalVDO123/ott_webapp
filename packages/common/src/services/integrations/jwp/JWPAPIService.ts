@@ -1,11 +1,15 @@
 import { inject, injectable } from 'inversify';
+import type { Passport } from 'packages/common/types/passport';
 
+import { JWPAPIServiceToUse } from '../../../constants';
 import StorageService from '../../StorageService';
 
 import type { JWPError } from './types';
 
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
 const INPLAYER_IOT_KEY = 'inplayer_iot';
+
+const PASSPORT_KEY = 'passport';
 
 const CONTENT_TYPES = {
   json: 'application/json',
@@ -18,23 +22,40 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
+  useAccessBridge?: boolean;
 };
 
 @injectable()
 export default class JWPAPIService {
   private readonly storageService: StorageService;
 
+  private service: JWPAPIServiceToUse = JWPAPIServiceToUse.Sims;
   private useSandboxEnv = true;
+
+  static readonly baseUrls = {
+    [JWPAPIServiceToUse.Sims]: {
+      sandbox: 'https://daily-sims.jwplayer.com',
+      prod: 'https://sims.jwplayer.com',
+    },
+    [JWPAPIServiceToUse.AccessBridge]: {
+      sandbox: 'https://access-bridge-57322003213.europe-west1.run.app',
+      prod: 'https://access-bridge-url',
+    },
+  } as const;
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
 
-  setup = (useSandboxEnv: boolean) => {
+  setup = (useSandboxEnv: boolean, service: JWPAPIServiceToUse = JWPAPIServiceToUse.Sims) => {
     this.useSandboxEnv = useSandboxEnv;
+    this.service = service;
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'https://sims.jwplayer.com');
+  private getBaseUrl = () => {
+    const environment = this.useSandboxEnv ? 'sandbox' : 'prod';
+    return JWPAPIService.baseUrls[this.service][environment];
+  };
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -52,6 +73,18 @@ export default class JWPAPIService {
 
   removeToken = async () => {
     await Promise.all([this.storageService.removeItem(INPLAYER_TOKEN_KEY), this.storageService.removeItem(INPLAYER_IOT_KEY)]);
+  };
+
+  setPassport = (passport: string, refreshToken: string) => {
+    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify({ passport, refreshToken }), false);
+  };
+
+  getPassport = async (): Promise<Passport | null> => {
+    return await this.storageService.getItem(PASSPORT_KEY, true, false);
+  };
+
+  removePassport = async () => {
+    return await this.storageService.removeItem(PASSPORT_KEY);
   };
 
   isAuthenticated = async () => {
