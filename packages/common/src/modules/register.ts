@@ -1,7 +1,7 @@
 // To organize imports in a better way
 /* eslint-disable import/order */
 import 'reflect-metadata'; // include once in the app for inversify (see: https://github.com/inversify/InversifyJS/blob/master/README.md#-installation)
-import { INTEGRATION, EPG_TYPE, JWPAPIServiceToUse } from '../constants';
+import { INTEGRATION, EPG_TYPE } from '../constants';
 import { container } from './container';
 import { DETERMINE_INTEGRATION_TYPE, INTEGRATION_TYPE } from './types';
 
@@ -16,6 +16,7 @@ import SettingsService from '../services/SettingsService';
 import WatchHistoryController from '../controllers/WatchHistoryController';
 import CheckoutController from '../controllers/CheckoutController';
 import AccountController from '../controllers/AccountController';
+import AccessControler from '../controllers/AccessControler';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';
@@ -43,6 +44,7 @@ import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService'
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
+import AccessService from '../services/AccessService';
 
 // Common services
 container.bind(ConfigService).toSelf();
@@ -51,6 +53,7 @@ container.bind(FavoriteService).toSelf();
 container.bind(GenericEntitlementService).toSelf();
 container.bind(ApiService).toSelf();
 container.bind(SettingsService).toSelf();
+container.bind(AccessService).toSelf();
 
 // Common controllers
 container.bind(AppController).toSelf();
@@ -60,6 +63,7 @@ container.bind(EpgController).toSelf();
 
 // Integration controllers
 container.bind(AccountController).toSelf();
+container.bind(AccessControler).toSelf();
 container.bind(CheckoutController).toSelf();
 
 // EPG services
@@ -78,8 +82,7 @@ container.bind(SubscriptionService).to(CleengSubscriptionService).whenTargetName
 
 // JWP integration
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isJwpIntegrationType);
-container.bind(JWPAPIService).toSelf().whenTargetNamed(JWPAPIServiceToUse.Sims);
-container.bind(JWPAPIService).toSelf().whenTargetNamed(JWPAPIServiceToUse.AccessBridge);
+container.bind(JWPAPIService).toSelf();
 container.bind(JWPEntitlementService).toSelf();
 container.bind(AccountService).to(JWPAccountService).whenTargetNamed(INTEGRATION.JWP);
 container.bind(CheckoutService).to(JWPCheckoutService).whenTargetNamed(INTEGRATION.JWP);

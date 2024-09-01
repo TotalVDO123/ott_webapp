@@ -353,8 +353,4 @@ export default class CleengAccountService extends AccountService {
   exportAccountData: undefined;
 
   deleteAccount: undefined;
-
-  generatePassport: undefined;
-
-  getPassport: undefined;
 }

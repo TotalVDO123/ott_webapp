@@ -1,6 +1,4 @@
-import { inject, injectable, named } from 'inversify';
-
-import { JWPAPIServiceToUse } from '../constants';
+import { inject, injectable } from 'inversify';
 
 import type { SignedMediaResponse } from './integrations/jwp/types';
 import JWPAPIService from './integrations/jwp/JWPAPIService';
@@ -9,7 +7,7 @@ import JWPAPIService from './integrations/jwp/JWPAPIService';
 export default class JWPEntitlementService {
   private readonly apiService;
 
-  constructor(@inject(JWPAPIService) @named(JWPAPIServiceToUse.Sims) apiService: JWPAPIService) {
+  constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
     this.apiService = apiService;
   }
 
