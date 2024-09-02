@@ -9,7 +9,6 @@ const useSelectedLanguage = (): string => {
   const supportedLanguages = useConfigStore((state) => state.supportedLanguages);
 
   const currentLanguage = useMemo(() => supportedLanguages.find(({ code }) => code === i18n.language), [i18n.language, supportedLanguages]);
-
   return currentLanguage?.code || env.APP_DEFAULT_LANGUAGE;
 };
 

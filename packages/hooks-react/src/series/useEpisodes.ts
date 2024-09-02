@@ -35,7 +35,7 @@ export const useEpisodes = (
     isLoading,
     hasNextPage = false,
   } = useInfiniteQuery(
-    [seriesId, seasonNumber],
+    [seriesId, seasonNumber, language],
     async ({ pageParam = 0 }) => {
       if (Number(seasonNumber)) {
         // Get episodes from a selected season using pagination

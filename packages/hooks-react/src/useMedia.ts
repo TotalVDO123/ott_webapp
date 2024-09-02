@@ -9,7 +9,7 @@ export type UseMediaResult<TData = PlaylistItem, TError = unknown> = UseBaseQuer
 export default function useMedia({ mediaId, enabled = true, language }: { mediaId: string; enabled?: boolean; language: string }): UseMediaResult {
   const apiService = getModule(ApiService);
 
-  return useQuery([`media-${language}`, mediaId], () => apiService.getMediaById(mediaId, language), {
+  return useQuery(['media', mediaId, language], () => apiService.getMediaById(mediaId, language), {
     enabled: !!mediaId && enabled,
     refetchInterval: (data, _) => {
       if (!data) return false;
