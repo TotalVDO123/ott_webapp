@@ -38,10 +38,11 @@ export default class AccessService {
   };
 
   setPassport = (passport: Passport) => {
-    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify(passport), true);
+    const expires = new Date(Date.now() + 3600 * 1000).getTime(); // Set expiration time to one hour from now
+    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify({ ...passport, expires }), true);
   };
 
-  getPassport = async (): Promise<Passport | null> => {
+  getPassport = async (): Promise<(Passport & { expires: string }) | null> => {
     return await this.storageService.getItem(PASSPORT_KEY, true, true);
   };
 
