@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 
 import type { IntegrationType } from '../../types/config';
-import type { AuthData } from '../../types/account';
 import { useConfigStore } from '../stores/ConfigStore';
 import AccessService from '../services/AccessService';
 import AccountService from '../services/integrations/AccountService';
@@ -23,20 +22,18 @@ export default class AccessController {
   initialize = async () => {
     const { accessModel } = useConfigStore.getState();
 
-    if (accessModel === 'AVOD') {
-      await this.generateOrRetrievePassport();
-    } else {
-      // If authentication is required (i.e., accessModel !== 'AVOD'),
-      // ensure the user is authenticated before generating the passport
-      // This prevents the need of generating a new passport post-login
-      const auth = await this.accountService.getAuthData();
-      if (auth) {
-        await this.generateOrRetrievePassport(auth);
-      }
+    // If the APP_API_ACCESS_BRIDGE_URL environment variable is defined, useAccessBridge will return true
+    // For the AVOD access model, signing and DRM are not supported, so passport generation is skipped
+    if (!this.useAccessBridge || accessModel === 'AVOD') {
+      return;
     }
+
+    // Not awaiting to avoid blocking the loading process,
+    // as the passport can be stored asynchronously without affecting the app's performance
+    this.generateOrRetrievePassport();
   };
 
-  generateOrRetrievePassport = async (auth: AuthData | null = null) => {
+  generateOrRetrievePassport = async () => {
     if (!this.useAccessBridge) {
       return;
     }
@@ -48,6 +45,7 @@ export default class AccessController {
 
     const { config } = useConfigStore.getState();
 
+    const auth = await this.accountService.getAuthData();
     const newPassport = await this.accessService.generatePassport(config.siteId, auth?.jwt);
     if (newPassport) {
       await this.accessService.setPassport(newPassport);

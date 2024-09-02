@@ -71,7 +71,6 @@ export default class AppController {
     const configSource = await this.settingsService.getConfigSource(settings, url);
     const config = await this.loadAndValidateConfig(configSource);
     const integrationType = this.calculateIntegrationType(config);
-    const useAccessBridge = useConfigStore.getState().useAccessBridge;
 
     // update the config store
     useConfigStore.setState({ config, loaded: true, integrationType });
@@ -83,9 +82,10 @@ export default class AppController {
     // update settings in the config store
     useConfigStore.setState({ settings });
 
-    // when an integration is set, we initialize AccountController
+    // when an integration is set, we initialize AccountController and AccessController
     if (integrationType) {
       await getModule(AccountController).initialize(url, refreshEntitlements);
+      await getModule(AccessController).initialize();
     }
 
     if (config.features?.continueWatchingList && config.content.some((el) => el.type === PersonalShelf.ContinueWatching)) {
@@ -94,11 +94,6 @@ export default class AppController {
 
     if (config.features?.favoritesList && config.content.some((el) => el.type === PersonalShelf.Favorites)) {
       await getModule(FavoritesController).initialize();
-    }
-
-    // useAccessBridge is enabled when the APP_API_ACCESS_BRIDGE_URL environment variable is configured
-    if (useAccessBridge) {
-      await getModule(AccessController).initialize();
     }
 
     return { config, settings, configSource };

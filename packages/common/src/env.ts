@@ -15,7 +15,7 @@ export type Env = {
 
 const env: Env = {
   APP_VERSION: '',
-  APP_API_BASE_URL: 'https://cdn.jwplayer.com',
+  APP_API_BASE_URL: 'https://cdn-dev.jwplayer.com',
   APP_API_ACCESS_BRIDGE_URL: 'https://access-bridge-prw2bfodfq-ew.a.run.app',
   APP_PLAYER_ID: 'M4qoGvUk',
   APP_FOOTER_TEXT: '',
