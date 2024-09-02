@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
-import type { IntegrationType } from 'packages/common/types/config';
-import type { AuthData } from 'packages/common/types/account';
 
+import type { IntegrationType } from '../../types/config';
+import type { AuthData } from '../../types/account';
 import { useConfigStore } from '../stores/ConfigStore';
 import AccessService from '../services/AccessService';
 import AccountService from '../services/integrations/AccountService';
