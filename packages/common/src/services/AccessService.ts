@@ -2,7 +2,6 @@ import { inject, injectable } from 'inversify';
 
 import env from '../env';
 import type { Passport } from '../../types/passport';
-import { getDataOrThrow } from '../utils/api';
 
 import StorageService from './StorageService';
 
@@ -16,7 +15,7 @@ export default class AccessService {
     this.storageService = storageService;
   }
 
-  generatePassport = async (siteId: string, jwt?: string): Promise<Passport> => {
+  generatePassport = async (siteId: string, jwt?: string): Promise<Passport | null> => {
     if (!siteId) {
       throw new Error('Site ID is required');
     }
@@ -31,7 +30,11 @@ export default class AccessService {
       },
     });
 
-    return (await getDataOrThrow(response)) as Passport;
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as Passport;
   };
 
   setPassport = (passport: Passport) => {
@@ -39,7 +42,7 @@ export default class AccessService {
   };
 
   getPassport = async (): Promise<Passport | null> => {
-    return await this.storageService.getItem(PASSPORT_KEY, true, false);
+    return await this.storageService.getItem(PASSPORT_KEY, true, true);
   };
 
   removePassport = async () => {

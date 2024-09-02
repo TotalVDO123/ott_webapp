@@ -16,7 +16,7 @@ import SettingsService from '../services/SettingsService';
 import WatchHistoryController from '../controllers/WatchHistoryController';
 import CheckoutController from '../controllers/CheckoutController';
 import AccountController from '../controllers/AccountController';
-import AccessControler from '../controllers/AccessControler';
+import AccessControler from '../controllers/AccessController';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';

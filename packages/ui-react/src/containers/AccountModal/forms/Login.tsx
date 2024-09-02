@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
+import AccessController from '@jwp/ott-common/src/controllers/AccessController';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useSocialLoginUrls from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
@@ -15,6 +16,7 @@ import { useAriaAnnouncer } from '../../AnnouncementProvider/AnnoucementProvider
 
 const Login = () => {
   const accountController = getModule(AccountController);
+  const accessController = getModule(AccessController);
 
   const { siteName } = useConfigStore((s) => s.config);
   const navigate = useNavigate();
@@ -34,8 +36,8 @@ const Login = () => {
     }),
     onSubmit: ({ email, password }) => accountController.login(email, password, window.location.href),
     onSubmitSuccess: () => {
+      accessController.generatePassport();
       announce(t('login.sign_in_success'), 'success');
-
       navigate(modalURLFromLocation(location, null));
     },
     onSubmitError: ({ resetValue }) => resetValue('password'),
