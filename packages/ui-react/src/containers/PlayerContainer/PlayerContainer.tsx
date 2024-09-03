@@ -4,7 +4,7 @@ import { useWatchHistory } from '@jwp/ott-hooks-react/src/useWatchHistory';
 import { usePlaylistItemCallback } from '@jwp/ott-hooks-react/src/usePlaylistItemCallback';
 import { useAds } from '@jwp/ott-hooks-react/src/useAds';
 import useProtectedMedia from '@jwp/ott-hooks-react/src/useProtectedMedia';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
+import { useTranslation } from 'react-i18next';
 
 import type { JWPlayer } from '../../../types/jwplayer';
 import Player from '../../components/Player/Player';
@@ -46,7 +46,8 @@ const PlayerContainer: React.FC<Props> = ({
   autostart,
 }: Props) => {
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   // data
   const { data: adsData, isLoading: isAdsLoading } = useAds({ mediaId: item?.mediaid });

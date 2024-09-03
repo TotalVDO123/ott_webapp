@@ -9,8 +9,7 @@ import type { ApiError } from '@jwp/ott-common/src/utils/api';
 import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
 import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-
-import env from '../../common/src/env';
+import env from '@jwp/ott-common/src/env';
 
 const placeholderData = generatePlaylistPlaceholder(30);
 

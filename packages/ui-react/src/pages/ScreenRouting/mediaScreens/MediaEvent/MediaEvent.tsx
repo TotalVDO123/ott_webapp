@@ -14,7 +14,6 @@ import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 import { useLiveEvent } from '@jwp/ott-hooks-react/src/useLiveEvent';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
@@ -34,6 +33,7 @@ import Icon from '../../../../components/Icon/Icon';
 
 const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) => {
   const { t, i18n } = useTranslation('video');
+  const { i18n: i18nl } = useTranslation('menu');
 
   const [playTrailer, setPlayTrailer] = useState<boolean>(false);
   const breakpoint = useBreakpoint();
@@ -54,7 +54,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const language = i18nl.language;
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: media?.trailerId || '', language });

@@ -12,7 +12,6 @@ import useFirstRender from '@jwp/ott-hooks-react/src/useFirstRender';
 import useSearchQueryUpdater from '@jwp/ott-ui-react/src/hooks/useSearchQueryUpdater';
 import { useSearch } from '@jwp/ott-hooks-react/src/useSearch';
 import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import CardGrid from '../../components/CardGrid/CardGrid';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
@@ -26,7 +25,8 @@ const Search = () => {
   const headingId = useOpaqueId('search_heading');
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   const firstRender = useFirstRender();
   const searchQuery = useUIStore((state) => state.searchQuery);

@@ -15,7 +15,6 @@ import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import PlayTrailer from '@jwp/ott-theme/assets/icons/play_trailer.svg?react';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import type { ScreenComponent } from '../../../../../types/screens';
 import VideoLayout from '../../../../components/VideoLayout/VideoLayout';
@@ -51,7 +50,8 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '', language });

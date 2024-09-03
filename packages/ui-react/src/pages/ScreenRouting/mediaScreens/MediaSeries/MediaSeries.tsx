@@ -16,7 +16,6 @@ import { buildLegacySeriesUrlFromMediaItem, mediaURL } from '@jwp/ott-common/src
 import { VideoProgressMinMax } from '@jwp/ott-common/src/constants';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 import { useSeries } from '@jwp/ott-hooks-react/src/series/useSeries';
 import { useEpisodes } from '@jwp/ott-hooks-react/src/series/useEpisodes';
 import { useSeriesLookup } from '@jwp/ott-hooks-react/src/series/useSeriesLookup';
@@ -52,7 +51,8 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   const episodeId = searchParams.get('e');
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   // Main data
   const { isLoading: isSeriesDataLoading, data: series, error: seriesError } = useSeries(seriesId);

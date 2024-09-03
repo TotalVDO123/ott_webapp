@@ -12,7 +12,6 @@ import { formatSeriesMetaString } from '@jwp/ott-common/src/utils/formatting';
 import { legacySeriesURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
@@ -36,6 +35,11 @@ import { filterSeries, generateLegacyEpisodeJSONLD, getEpisodesInSeason, getFilt
 const LegacySeries = () => {
   const breakpoint = useBreakpoint();
   const { t } = useTranslation('video');
+
+  // Determine currently selected language
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
+
   const [playTrailer, setPlayTrailer] = useState<boolean>(false);
 
   // Navigation
@@ -45,9 +49,6 @@ const LegacySeries = () => {
   const play = useQueryParam('play') === '1';
   const feedId = useQueryParam('r');
   const episodeId = useQueryParam('e');
-
-  // Determine currently selected language
-  const language = useSelectedLanguage();
 
   // Main data
   const {

@@ -6,7 +6,6 @@ import { PLAYLIST_TYPE, PLAYLIST_CONTENT_TYPE } from '@jwp/ott-common/src/consta
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import Loading from '../Loading/Loading';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
@@ -30,7 +29,8 @@ const PlaylistScreenRouter = ({ type }: { type: PlaylistMenuType }) => {
   const id = params.id || '';
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   const { isLoading, isFetching, error, data } = usePlaylist({
     contentId: id,

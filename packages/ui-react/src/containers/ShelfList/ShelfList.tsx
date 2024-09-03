@@ -12,7 +12,6 @@ import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/col
 import { testId } from '@jwp/ott-common/src/utils/common';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import Shelf from '../../components/Shelf/Shelf';
 import InfiniteScrollLoader from '../../components/InfiniteScrollLoader/InfiniteScrollLoader';
@@ -38,7 +37,8 @@ const ShelfList = ({ rows }: Props) => {
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   const playlists = usePlaylists(rows, rowsToLoad, language);
 

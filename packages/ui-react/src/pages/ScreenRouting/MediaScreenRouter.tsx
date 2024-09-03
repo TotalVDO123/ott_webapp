@@ -6,7 +6,6 @@ import { isEpisode, isLegacySeriesFlow } from '@jwp/ott-common/src/utils/media';
 import { MEDIA_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
-import useSelectedLanguage from '@jwp/ott-hooks-react/src/useSelectedLanguage';
 
 import type { ScreenComponent } from '../../../types/screens';
 import Loading from '../Loading/Loading';
@@ -38,7 +37,8 @@ const MediaScreenRouter = () => {
   const id = params.id || '';
 
   // Determine currently selected language
-  const language = useSelectedLanguage();
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   const { isLoading, isFetching, error, data } = useMedia({ mediaId: id, language });
   const { t } = useTranslation('error');
