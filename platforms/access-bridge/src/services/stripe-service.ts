@@ -1,9 +1,7 @@
 import Stripe from 'stripe';
 import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
 
-import { handleStripeError } from '../errors.js';
 import { STRIPE_SECRET } from '../app-config.js';
-import logger from '../logger.js';
 
 import { Viewer } from './identity-service.js';
 
@@ -27,52 +25,40 @@ export class StripeService {
    * Retrieves Stripe products with prices and filters them based on the provided productIds.
    * @param productIds The array of product IDs to filter the products.
    * @returns A Promise resolving to an array of filtered ProductsWithMetadata objects.
-   * @throws Error if there is an issue fetching products or parsing the response.
    */
   async getProductsWithPrices(productIds: string[]): Promise<StripeProduct[]> {
-    try {
-      if (!productIds.length) {
-        return [];
-      }
-
-      // Fetch all products (pagination might be necessary for large datasets)
-      const allProducts = await this.stripe.products.list();
-      const filteredProducts = allProducts.data.filter((product) => productIds.includes(product.id));
-
-      if (filteredProducts.length === 0) {
-        return [];
-      }
-
-      // Retrieve prices for each filtered product
-      const productsWithPrices = await Promise.all(
-        filteredProducts.map(async (product) => {
-          try {
-            const prices = await this.stripe.prices.list({ product: product.id });
-            return {
-              ...product,
-              prices: prices.data,
-            };
-          } catch (priceError) {
-            logger.error(
-              `StripeService: getProductsWithPrices: Failed to fetch prices for product ${product.id}:`,
-              priceError
-            );
-            return {
-              ...product,
-              prices: [], // Return an empty array if price retrieval fails
-            };
-          }
-        })
-      );
-
-      return productsWithPrices;
-    } catch (e) {
-      if (e instanceof Stripe.errors.StripeError) {
-        handleStripeError(e);
-      }
-      logger.error(`StripeService: getProductsWithPrices: Unexpected error:`, e);
-      throw e;
+    if (!productIds.length) {
+      return [];
     }
+
+    // Fetch all products (pagination might be necessary for large datasets)
+    const allProducts = await this.stripe.products.list();
+    const filteredProducts = allProducts.data.filter((product) => productIds.includes(product.id));
+
+    if (filteredProducts.length === 0) {
+      return [];
+    }
+
+    // Retrieve prices for each filtered product
+    const productsWithPrices = await Promise.all(
+      filteredProducts.map(async (product) => {
+        try {
+          const prices = await this.stripe.prices.list({ product: product.id });
+          return {
+            ...product,
+            prices: prices.data,
+          };
+        } catch (priceError) {
+          console.error(`Failed to fetch prices for product ${product.id}:`, priceError);
+          return {
+            ...product,
+            prices: [], // Return an empty array if price retrieval fails
+          };
+        }
+      })
+    );
+
+    return productsWithPrices;
   }
 
   /**
@@ -80,45 +66,34 @@ export class StripeService {
    * @param viewer Email address and viewer id from the auth token used for creating the checkout session.
    * @param params Stripe checkout params to use for creating the checkout session.
    * @returns A Promise resolving to a Stripe Checkout Session object, including a URL for the checkout page.
-   * @throws Error if there is an issue creating the checkout session or if the price ID is invalid.
    */
   async createCheckoutSession(viewer: Viewer, params: StripeCheckoutParams): Promise<Stripe.Checkout.Session> {
-    try {
-      const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: params.price_id,
-            quantity: 1,
-          },
-        ],
-        metadata: {
-          viewer_id: viewer.id,
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: params.price_id,
+          quantity: 1,
         },
-        customer_email: viewer.email,
-        mode: params.mode,
-        success_url: params.success_url,
-        cancel_url: params.cancel_url,
+      ],
+      metadata: {
+        viewer_id: viewer.id,
+      },
+      customer_email: viewer.email,
+      mode: params.mode,
+      success_url: params.success_url,
+      cancel_url: params.cancel_url,
 
-        // Conditionally include `subscription_data` only if mode is `subscription`
-        ...(params.mode === 'subscription' && {
-          subscription_data: {
-            metadata: {
-              viewer_id: viewer.id,
-            },
+      // Conditionally include `subscription_data` only if mode is `subscription`
+      ...(params.mode === 'subscription' && {
+        subscription_data: {
+          metadata: {
+            viewer_id: viewer.id,
           },
-        }),
-      };
+        },
+      }),
+    };
 
-      const session = await this.stripe.checkout.sessions.create(sessionParams);
-
-      return session;
-    } catch (e) {
-      if (e instanceof Stripe.errors.StripeError) {
-        handleStripeError(e);
-      }
-      logger.error(`StripeService: createCheckoutSession: Unexpected error:`, e);
-      throw e;
-    }
+    return await this.stripe.checkout.sessions.create(sessionParams);
   }
 }
