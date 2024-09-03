@@ -20,12 +20,16 @@ describe('AccessController tests', () => {
       app.put(ENDPOINTS.GENERATE_PASSPORT, (req: Request, res: Response, next: NextFunction) => {
         accessController.generatePassport(req, res, next);
       });
+
+      app.put(ENDPOINTS.REFRESH_PASSPORT, (req: Request, res: Response, next: NextFunction) => {
+        accessController.refreshPassport(req, res, next);
+      });
     };
 
     mockServer = await MockServer.create(registerEndpoints);
   });
 
-  const testCases = [
+  const generatePassportTestCases = [
     {
       description: 'should generate passport access tokens without authorization',
       requestOptions: {
@@ -73,13 +77,80 @@ describe('AccessController tests', () => {
     },
   ];
 
-  it.each(testCases)(
+  const refreshPassportTestCases = [
+    {
+      description: 'should refresh passport access tokens with valid refresh_token',
+      requestOptions: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+        path: ENDPOINTS.REFRESH_PASSPORT.replace(':site_id', SITE_ID.VALID),
+        body: JSON.stringify({
+          refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID,
+        }),
+      },
+      expectedStatusCode: 200,
+      expectedResponse: {
+        passport: ACCESS_TOKENS.PASSPORT.VALID,
+        refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID,
+      },
+    },
+    {
+      description: 'should not passport access tokens with invalid site_id',
+      requestOptions: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+        path: ENDPOINTS.REFRESH_PASSPORT.replace(':site_id', SITE_ID.INVALID),
+        body: JSON.stringify({
+          refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID,
+        }),
+      },
+      expectedStatusCode: 400,
+      expectedError: ErrorDefinitions.ParameterInvalidError.code,
+    },
+    {
+      description: 'should fail with forbidden for invalid refresh_token provided',
+      requestOptions: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+        path: ENDPOINTS.REFRESH_PASSPORT.replace(':site_id', SITE_ID.VALID),
+        body: JSON.stringify({
+          refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.INVALID,
+        }),
+      },
+      expectedStatusCode: 403,
+      expectedError: ErrorDefinitions.ForbiddenError.code,
+    },
+    {
+      description: 'should return ParameterMissingError for missing refresh_token',
+      requestOptions: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+        path: ENDPOINTS.REFRESH_PASSPORT.replace(':site_id', SITE_ID.VALID),
+        body: JSON.stringify({
+          // missing refresh_token
+        }),
+      },
+      expectedStatusCode: 400,
+      expectedError: ErrorDefinitions.ParameterMissingError.code,
+    },
+  ];
+
+  const allTestCases = [...generatePassportTestCases, ...refreshPassportTestCases];
+
+  it.each(allTestCases)(
     '$description',
     async ({ requestOptions, expectedStatusCode, expectedResponse, expectedError }) => {
       const response = await new Promise<http.IncomingMessage>((resolve) => {
         mockServer.request(requestOptions, resolve).end();
       });
-
       expect(response.statusCode).toBe(expectedStatusCode);
 
       const body = await new Promise<string>((resolve) => {
