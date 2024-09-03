@@ -3,7 +3,7 @@ import { Server as HTTPServer } from 'http';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from './errors.js';
+import { AccessBridgeError, ErrorDefinitions, handleJWError, isJWError, sendErrors } from './errors.js';
 
 /**
  * Server class that initializes and manages an Express application with error handling.
@@ -65,6 +65,14 @@ export class Server {
       sendErrors(res, err);
       return;
     }
+
+    if (isJWError(err)) {
+      const jwError = err.errors[0];
+      const accessBridgeError = handleJWError(jwError);
+      sendErrors(res, accessBridgeError);
+      return;
+    }
+
     console.error('Unexpected error:', err);
     sendErrors(res, ErrorDefinitions.InternalError.create());
   };

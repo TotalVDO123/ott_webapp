@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { ErrorDefinitions, sendErrors } from '../errors.js';
 import { PassportService } from '../services/passport-service.js';
 import { PlansService } from '../services/plans-service.js';
 import { isValidSiteId } from '../utils.js';
@@ -69,11 +69,7 @@ export class AccessController {
 
       res.json(passport);
     } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
-        return;
-      }
-      console.error('Controller: failed to generate passport.', error);
+      console.error('AccessController: failed to generate passport:', error);
       next(error);
     }
   }
