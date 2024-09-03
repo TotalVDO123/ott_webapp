@@ -52,8 +52,8 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
 
   // Main data
   const { isLoading: isSeriesDataLoading, data: series, error: seriesError } = useSeries(seriesId);
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '' });
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '' });
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia(episodeId || '');
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(episode?.trailerId || '');
   const { data: episodeInSeries, isLoading: isSeriesDictionaryLoading } = useSeriesLookup(episode?.mediaid);
 
   // Whether we show series or episode information

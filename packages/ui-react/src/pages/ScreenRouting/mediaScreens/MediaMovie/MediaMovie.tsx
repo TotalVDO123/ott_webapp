@@ -50,7 +50,7 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '' });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(data?.trailerId || '');
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(features?.recommendationsPlaylist || '', { related_media_id: id });
 
   // User, entitlement

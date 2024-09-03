@@ -19,7 +19,7 @@ const MediaEpisode: ScreenComponent<PlaylistItem> = ({ data: media, isLoading: i
   const feedId = searchParams.get('r');
 
   const { data: episodeInSeries, isLoading: isSeriesIdLoading } = useSeriesLookup(media.mediaid);
-  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia({ mediaId: episodeInSeries?.series_id || '' });
+  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia(episodeInSeries?.series_id || '');
 
   // Prevent rendering multiple times when we are loading data
   if (isMediaLoading || isSeriesIdLoading || isSeriesMediaLoading) {

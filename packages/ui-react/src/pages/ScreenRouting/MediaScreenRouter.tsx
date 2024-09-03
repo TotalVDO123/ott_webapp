@@ -36,7 +36,7 @@ const MediaScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
 
-  const { isLoading, isFetching, error, data } = useMedia({ mediaId: id });
+  const { isLoading, isFetching, error, data } = useMedia(id);
   const { t } = useTranslation('error');
 
   if (isLoading) {

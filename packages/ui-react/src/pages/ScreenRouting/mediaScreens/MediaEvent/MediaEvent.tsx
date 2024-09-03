@@ -53,7 +53,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: media?.trailerId || '' });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia(media?.trailerId || '');
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(playlistId || '');
 
   // Event

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 export type UseMediaResult<TData = PlaylistItem, TError = unknown> = UseBaseQueryResult<TData, TError>;
 
-export default function useMedia({ mediaId, enabled = true }: { mediaId: string; enabled?: boolean }): UseMediaResult {
+export default function useMedia(mediaId: string, enabled: boolean = true): UseMediaResult {
   const apiService = getModule(ApiService);
 
   // Determine currently selected language
