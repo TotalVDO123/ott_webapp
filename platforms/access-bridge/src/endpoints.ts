@@ -11,6 +11,10 @@ export function registerEndpoints(app: Express) {
     accessController.generatePassport(req, res, next)
   );
 
+  app.put('/v2/sites/:site_id/access/refresh', (req: Request, res: Response, next: NextFunction) =>
+    accessController.refreshPassport(req, res, next)
+  );
+
   app.get('/v2/sites/:site_id/products', (req: Request, res: Response, next: NextFunction) =>
     productsController.getProducts(req, res, next)
   );

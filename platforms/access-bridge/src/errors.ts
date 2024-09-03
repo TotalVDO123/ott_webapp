@@ -31,22 +31,34 @@ export const ErrorDefinitions = {
   ParameterMissingError: {
     code: 'parameter_missing',
     statusCode: 400,
-    description: 'Required parameter {value} is missing.',
-    create: (context: Partial<ParameterMissingContext>) =>
-      new AccessBridgeError('ParameterMissingError', {
+    description: 'Required parameter is missing.',
+    create: (context: Partial<ParameterMissingContext>) => {
+      const description = context.description
+        ? context.description
+        : context.parameterName
+        ? `Required parameter ${context.parameterName} is missing.`
+        : 'Required parameter is missing.';
+
+      return new AccessBridgeError('ParameterMissingError', {
         ...context,
-        description: `Required parameter ${context.parameterName || ''} is missing.`,
-      }),
+        description,
+      });
+    },
   },
   ParameterInvalidError: {
     code: 'parameter_invalid',
     statusCode: 400,
-    description: 'Parameter {value} is invalid. {reason}.',
-    create: (context: Partial<ParameterInvalidContext>) =>
-      new AccessBridgeError('ParameterInvalidError', {
+    description: 'Parameter is invalid.',
+    create: (context: Partial<ParameterInvalidContext>) => {
+      const parameterName = context.parameterName ? `Parameter ${context.parameterName}` : 'Parameter';
+      const reason = context.reason ? ` ${context.reason}` : '';
+      const description = `${parameterName} is invalid.${reason}`;
+
+      return new AccessBridgeError('ParameterInvalidError', {
         ...context,
-        description: `Parameter ${context.parameterName || ''} is invalid. ${context.reason || ''}.`,
-      }),
+        description,
+      });
+    },
   },
   UnauthorizedError: {
     code: 'unauthorized',
@@ -108,24 +120,17 @@ export class AccessBridgeError extends Error {
   }
 }
 
-// Send one or more errors
+// Send errors
 export function sendErrors(res: Response, error: AccessBridgeError): void {
   const statusCode = error.statusCode;
-
-  // Set the response status code
-  res.status(statusCode);
-
-  // Construct and send the JSON response body
-  const body = {
+  res.status(statusCode).json({
     errors: [
       {
         code: error.code,
         description: error.description,
       },
     ],
-  };
-
-  res.json(body);
+  });
 }
 
 // Type guard to check if the error is a JWErrorResponse
@@ -144,13 +149,15 @@ export function isJWError(error: unknown): error is JWErrorResponse {
 // Utility function to handle JW errors
 export function handleJWError(error: JWError): AccessBridgeError {
   const { code, description } = error;
-  const errorDefinition = Object.keys(ErrorDefinitions).find((key) => ErrorDefinitions[key as ErrorCode].code === code);
+  const errorDefinition = Object.keys(ErrorDefinitions).find(
+    (key) => ErrorDefinitions[key as keyof typeof ErrorDefinitions].code === code
+  );
   if (errorDefinition) {
-    throw ErrorDefinitions[errorDefinition as ErrorCode].create({ description });
+    return ErrorDefinitions[errorDefinition as keyof typeof ErrorDefinitions].create({ description });
   }
 
   // Fallback to a generic BadRequestError if no specific match is found
-  throw ErrorDefinitions.BadRequestError.create({ description });
+  return ErrorDefinitions.BadRequestError.create({ description });
 }
 
 // Utility function to handle Stripe errors
