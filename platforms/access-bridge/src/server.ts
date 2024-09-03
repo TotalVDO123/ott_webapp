@@ -67,8 +67,7 @@ export class Server {
     }
 
     if (isJWError(err)) {
-      const jwError = err.errors[0];
-      const accessBridgeError = handleJWError(jwError);
+      const accessBridgeError = handleJWError(err);
       sendErrors(res, accessBridgeError);
       return;
     }

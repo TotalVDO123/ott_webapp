@@ -146,8 +146,9 @@ export function isJWError(error: unknown): error is JWErrorResponse {
 }
 
 // Utility function to handle JW errors
-export function handleJWError(error: JWError): AccessBridgeError {
-  const { code, description } = error;
+export function handleJWError(error: JWErrorResponse): AccessBridgeError {
+  const jwError = error.errors[0];
+  const { code, description } = jwError;
   const errorDefinition = Object.keys(ErrorDefinitions).find(
     (key) => ErrorDefinitions[key as keyof typeof ErrorDefinitions].code === code
   );
