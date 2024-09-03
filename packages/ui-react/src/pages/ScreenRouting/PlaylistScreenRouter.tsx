@@ -28,10 +28,7 @@ const PlaylistScreenRouter = ({ type }: { type: PlaylistMenuType }) => {
   const params = useParams();
   const id = params.id || '';
 
-  const { isLoading, isFetching, error, data } = usePlaylist({
-    contentId: id,
-    type,
-  });
+  const { isLoading, isFetching, error, data } = usePlaylist(id);
   const { t } = useTranslation('error');
 
   if (isLoading) {

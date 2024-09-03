@@ -51,10 +51,7 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
 
   // Media
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '' });
-  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({
-    contentId: features?.recommendationsPlaylist || '',
-    params: { related_media_id: id },
-  });
+  const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist(features?.recommendationsPlaylist || '', { related_media_id: id });
 
   // User, entitlement
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);

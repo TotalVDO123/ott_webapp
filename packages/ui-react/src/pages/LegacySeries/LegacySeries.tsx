@@ -47,14 +47,7 @@ const LegacySeries = () => {
   const episodeId = useQueryParam('e');
 
   // Main data
-  const {
-    isLoading: isSeriesPlaylistLoading,
-    data: seriesPlaylist,
-    isError: isPlaylistError,
-  } = usePlaylist({
-    contentId: seriesId,
-    usePlaceholderData: false,
-  });
+  const { isLoading: isSeriesPlaylistLoading, data: seriesPlaylist, isError: isPlaylistError } = usePlaylist(seriesId);
   const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '' });
   const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '' });
 

@@ -65,19 +65,13 @@ export const getPlaylistQueryOptions = ({
   };
 };
 
-export default function usePlaylist({
-  contentId,
-  params = {},
-  enabled = true,
-  usePlaceholderData = true,
-  type = PLAYLIST_TYPE.playlist,
-}: {
-  contentId?: string;
-  params?: GetPlaylistParams;
-  enabled?: boolean;
-  usePlaceholderData?: boolean;
-  type?: PlaylistMenuType;
-}) {
+export default function usePlaylist(
+  contentId?: string,
+  params: GetPlaylistParams = {},
+  enabled: boolean = true,
+  usePlaceholderData: boolean = true,
+  type: PlaylistMenuType = PLAYLIST_TYPE.playlist,
+) {
   // Determine currently selected language
   const { i18n } = useTranslation('menu');
   const language = i18n.language;
