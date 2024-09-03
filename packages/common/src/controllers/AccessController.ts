@@ -33,16 +33,20 @@ export default class AccessController {
 
     // Not awaiting to avoid blocking the loading process,
     // as the passport can be stored asynchronously without affecting the app's performance
-    this.generateOrRetrievePassport();
+    this.generateOrRefreshPassport();
   };
 
-  generateOrRetrievePassport = async () => {
+  generateOrRefreshPassport = async () => {
     if (!this.apiAccessBridgeUrl) {
       return;
     }
 
     const existingPassport = await this.accessService.getPassport();
-    if (existingPassport) {
+    const shouldRefresh = existingPassport && Date.now() > existingPassport.expires;
+
+    if (shouldRefresh) {
+      return await this.refreshPassport();
+    } else if (existingPassport) {
       return existingPassport;
     }
 
@@ -58,10 +62,25 @@ export default class AccessController {
       return;
     }
 
-    const { config } = useConfigStore.getState();
     const auth = await this.accountService.getAuthData();
 
-    const passport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, config.siteId, auth?.jwt);
+    const passport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, this.siteId, auth?.jwt);
+    if (passport) {
+      await this.accessService.setPassport(passport);
+    }
+  };
+
+  refreshPassport = async () => {
+    if (!this.apiAccessBridgeUrl) {
+      return;
+    }
+
+    const existingPassport = await this.accessService.getPassport();
+    if (!existingPassport) {
+      return;
+    }
+
+    const passport = await this.accessService.refreshPassport(this.apiAccessBridgeUrl, this.siteId, existingPassport.refresh_token);
     if (passport) {
       await this.accessService.setPassport(passport);
     }
