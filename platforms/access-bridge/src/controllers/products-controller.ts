@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
 import { StripeService } from '../services/stripe-service.js';
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { ErrorDefinitions, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
 
 /**
@@ -42,10 +42,6 @@ export class ProductsController {
       const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
       res.json(products);
     } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
-        return;
-      }
       console.error('Controller: failed to get Stripe products.', error);
       next(error);
     }
