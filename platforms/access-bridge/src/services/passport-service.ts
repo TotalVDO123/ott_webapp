@@ -11,6 +11,11 @@ type GeneratePassportParams = {
   plans: AccessControlPlan[];
 };
 
+type RefreshPassportParams = {
+  siteId: string;
+  refreshToken: string;
+};
+
 /**
  * PassportService handles interactions with the passport APIs.
  * It provides methods to generating access tokens (passport and refresh token).
@@ -30,6 +35,21 @@ export class PassportService {
         email: viewerId,
         plans,
       },
+    };
+
+    return await put<PassportResponse, typeof payload>(url, payload);
+  }
+
+  /**
+   * Refresh access tokens for a specific site using a refresh token.
+   * @param siteId The ID of the site.
+   * @param refreshToken The refresh token to use for token refresh.
+   * @returns A Promise resolving to an AccessTokensResponse.
+   */
+  async refreshPassport({ siteId, refreshToken }: RefreshPassportParams): Promise<PassportResponse> {
+    const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/refresh`);
+    const payload = {
+      refresh_token: refreshToken,
     };
 
     return await put<PassportResponse, typeof payload>(url, payload);

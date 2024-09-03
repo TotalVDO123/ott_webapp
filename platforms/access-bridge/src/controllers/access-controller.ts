@@ -73,4 +73,35 @@ export class AccessController {
       next(error);
     }
   }
+
+  /**
+   * Service handler for refreshing access tokens based on the provided site ID
+   * and refresh token. Sends appropriate error responses for invalid requests.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
+   */
+  async refreshPassport(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
+        return;
+      }
+
+      const { refresh_token: refreshToken } = req.body;
+      if (!refreshToken) {
+        sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: 'refresh_token' }));
+        return;
+      }
+
+      const passport = await this.passportService.refreshPassport({ siteId, refreshToken });
+
+      res.json(passport);
+    } catch (error) {
+      console.error('AccessController: failed to refresh passport:', error);
+      next(error);
+    }
+  }
 }

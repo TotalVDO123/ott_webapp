@@ -43,6 +43,25 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
   }
   ```
 
+#### URL: `/v2/sites/{site_id}/access/refresh`
+
+- **Method:** PUT
+- **Authorization:** Valid SIMS token
+- **Summary:** Regenerates an existing passport with a new expiry and a new refresh token.
+- **Request:**
+  ```json
+  {
+    "refresh_token": "string"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "passport": "encrypted_passport",
+    "refresh_token": "random_string"
+  }
+  ```
+
 ## Developer guidelines
 
 - Read the workspace guidelines here [../../docs/developer-guidelines.md](../../docs/developer-guidelines.md).
