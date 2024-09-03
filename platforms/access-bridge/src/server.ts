@@ -3,9 +3,17 @@ import { Server as HTTPServer } from 'http';
 import * as Sentry from '@sentry/node';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import Stripe from 'stripe';
 
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from './errors.js';
 import logger from './logger.js';
+import {
+  AccessBridgeError,
+  ErrorDefinitions,
+  handleJWError,
+  handleStripeError,
+  isJWError,
+  sendErrors,
+} from './errors.js';
 
 /**
  * Server class that initializes and manages an Express application with error handling.
@@ -78,7 +86,18 @@ export class Server {
       return;
     }
 
-    logger.error('globalErrorHandler:', err);
+    if (err instanceof Stripe.errors.StripeError) {
+      const accessBridgeError = handleStripeError(err);
+      sendErrors(res, accessBridgeError);
+    }
+
+    if (isJWError(err)) {
+      const accessBridgeError = handleJWError(err);
+      sendErrors(res, accessBridgeError);
+      return;
+    }
+
+    console.error('Unexpected error:', err);
     sendErrors(res, ErrorDefinitions.InternalError.create());
   };
 

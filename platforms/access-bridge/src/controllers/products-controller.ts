@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
 import { StripeService } from '../services/stripe-service.js';
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { ErrorDefinitions, sendErrors } from '../errors.js';
 import { isValidSiteId } from '../utils.js';
 import logger from '../logger.js';
 
@@ -43,10 +43,6 @@ export class ProductsController {
       const products = await this.stripeService.getProductsWithPrices({ productIds: stripeProductIds });
       res.json(products);
     } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
-        return;
-      }
       logger.error('ProductsController: getProducts: failed to fetch products.', error);
       next(error);
     }

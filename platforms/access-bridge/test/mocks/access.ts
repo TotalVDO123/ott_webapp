@@ -23,6 +23,13 @@ class MockPassportService extends PassportService {
   async generatePassport() {
     return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
   }
+
+  async refreshPassport({ siteId, refreshToken }: { siteId: string; refreshToken: string }) {
+    if (refreshToken === ACCESS_TOKENS.REFRESH_TOKEN.INVALID) {
+      throw ErrorDefinitions.ForbiddenError.create({ description: 'Invalid refresh_token provided' });
+    }
+    return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
+  }
 }
 
 // Mock PlansService

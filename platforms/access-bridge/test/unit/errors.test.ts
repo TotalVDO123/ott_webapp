@@ -14,7 +14,7 @@ describe('AccessBridgeError', () => {
       expect(error.statusCode).toBe(statusCode);
 
       // Test default description
-      const expectedDescription = description.replace('{value}', '').replace('{reason}', '');
+      const expectedDescription = description.replace('{parameterName}', '').replace('{reason}', '');
       expect(error.description).toBe(expectedDescription);
     });
 
@@ -37,7 +37,7 @@ describe('AccessBridgeError', () => {
           case 'ParameterMissingError':
             return `Required parameter ${context.parameterName} is missing.`;
           case 'ParameterInvalidError':
-            return `Parameter ${context.parameterName || 'dummy'} is invalid. ${context.reason}.`;
+            return `Parameter ${context.parameterName} is invalid. ${context.reason || ''}`;
           default:
             return description;
         }

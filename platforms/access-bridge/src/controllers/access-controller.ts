@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../errors.js';
+import { ErrorDefinitions, sendErrors } from '../errors.js';
 import { PassportService } from '../services/passport-service.js';
 import { PlansService } from '../services/plans-service.js';
 import { isValidSiteId } from '../utils.js';
@@ -70,11 +70,38 @@ export class AccessController {
 
       res.json(passport);
     } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
+      logger.error('AccessController: generatePassport: failed to generate passport:', error);
+      next(error);
+    }
+  }
+
+  /**
+   * Service handler for refreshing access tokens based on the provided site ID
+   * and refresh token. Sends appropriate error responses for invalid requests.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   * @param next - Express next middleware function
+   */
+  async refreshPassport(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const siteId = req.params.site_id;
+      if (!isValidSiteId(siteId)) {
+        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
         return;
       }
-      logger.error('AccessController: generatePassport: failed to generate passport:', error);
+
+      const { refresh_token: refreshToken } = req.body;
+      if (!refreshToken) {
+        sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: 'refresh_token' }));
+        return;
+      }
+
+      const passport = await this.passportService.refreshPassport({ siteId, refreshToken });
+
+      res.json(passport);
+    } catch (error) {
+      logger.error('AccessController: refreshPassport: failed to refresh passport:', error);
       next(error);
     }
   }
