@@ -103,6 +103,7 @@ export default class SettingsService {
     settings.defaultConfigSource ||= env.APP_DEFAULT_CONFIG_SOURCE;
     settings.playerId ||= env.APP_PLAYER_ID || OTT_GLOBAL_PLAYER_ID;
     settings.playerLicenseKey ||= env.APP_PLAYER_LICENSE_KEY;
+    settings.apiAccessBridgeUrl ||= env.APP_API_ACCESS_BRIDGE_URL;
 
     // The player key should be set if using the global ott player
     if (settings.playerId === OTT_GLOBAL_PLAYER_ID && !settings.playerLicenseKey) {

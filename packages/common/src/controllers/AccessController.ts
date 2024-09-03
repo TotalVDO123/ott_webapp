@@ -11,20 +11,23 @@ import { getNamedModule } from '../modules/container';
 export default class AccessController {
   private readonly accessService: AccessService;
   private readonly accountService: AccountService;
-  private readonly useAccessBridge: boolean;
+
+  private siteId: string = '';
+  private apiAccessBridgeUrl: string | undefined = '';
 
   constructor(@inject(INTEGRATION_TYPE) integrationType: IntegrationType, @inject(AccessService) accessService: AccessService) {
     this.accessService = accessService;
     this.accountService = getNamedModule(AccountService, integrationType);
-    this.useAccessBridge = useConfigStore.getState().useAccessBridge;
   }
 
   initialize = async () => {
-    const { accessModel } = useConfigStore.getState();
+    const { config, settings, accessModel } = useConfigStore.getState();
+    this.siteId = config.siteId;
+    this.apiAccessBridgeUrl = settings?.apiAccessBridgeUrl;
 
     // If the APP_API_ACCESS_BRIDGE_URL environment variable is defined, useAccessBridge will return true
     // For the AVOD access model, signing and DRM are not supported, so passport generation is skipped
-    if (!this.useAccessBridge || accessModel === 'AVOD') {
+    if (!this.apiAccessBridgeUrl || accessModel === 'AVOD') {
       return;
     }
 
@@ -34,7 +37,7 @@ export default class AccessController {
   };
 
   generateOrRetrievePassport = async () => {
-    if (!this.useAccessBridge) {
+    if (!this.apiAccessBridgeUrl) {
       return;
     }
 
@@ -43,24 +46,22 @@ export default class AccessController {
       return existingPassport;
     }
 
-    const { config } = useConfigStore.getState();
-
     const auth = await this.accountService.getAuthData();
-    const newPassport = await this.accessService.generatePassport(config.siteId, auth?.jwt);
+    const newPassport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, this.siteId, auth?.jwt);
     if (newPassport) {
       await this.accessService.setPassport(newPassport);
     }
   };
 
   generatePassport = async () => {
-    if (!this.useAccessBridge) {
+    if (!this.apiAccessBridgeUrl) {
       return;
     }
 
     const { config } = useConfigStore.getState();
     const auth = await this.accountService.getAuthData();
 
-    const passport = await this.accessService.generatePassport(config.siteId, auth?.jwt);
+    const passport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, config.siteId, auth?.jwt);
     if (passport) {
       await this.accessService.setPassport(passport);
     }

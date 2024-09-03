@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 
-import env from '../env';
 import type { Passport } from '../../types/passport';
 
 import StorageService from './StorageService';
@@ -15,13 +14,13 @@ export default class AccessService {
     this.storageService = storageService;
   }
 
-  generatePassport = async (siteId: string, jwt?: string): Promise<Passport | null> => {
+  generatePassport = async (host: string, siteId: string, jwt?: string): Promise<Passport | null> => {
     if (!siteId) {
       throw new Error('Site ID is required');
     }
 
     const pathname = `/v2/sites/${siteId}/access/generate`;
-    const url = `${env.APP_API_ACCESS_BRIDGE_URL}${pathname}`;
+    const url = `${host}${pathname}`;
 
     const response = await fetch(url, {
       method: 'PUT',

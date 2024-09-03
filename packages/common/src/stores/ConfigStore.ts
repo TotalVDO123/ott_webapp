@@ -2,7 +2,6 @@ import { ACCESS_MODEL, OTT_GLOBAL_PLAYER_ID } from '../constants';
 import type { AccessModel, Config } from '../../types/config';
 import type { Settings } from '../../types/settings';
 import type { LanguageDefinition } from '../../types/i18n';
-import env from '../env';
 
 import { createStore } from './utils';
 
@@ -13,7 +12,6 @@ type ConfigState = {
   settings: Settings;
   integrationType: string | null;
   supportedLanguages: LanguageDefinition[];
-  useAccessBridge: boolean;
 };
 
 export const useConfigStore = createStore<ConfigState>('ConfigStore', () => ({
@@ -46,5 +44,4 @@ export const useConfigStore = createStore<ConfigState>('ConfigStore', () => ({
   supportedLanguages: [],
   accessModel: ACCESS_MODEL.AVOD,
   integrationType: null,
-  useAccessBridge: !!env.APP_API_ACCESS_BRIDGE_URL,
 }));
