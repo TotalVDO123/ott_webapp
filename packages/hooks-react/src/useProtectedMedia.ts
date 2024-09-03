@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next';
 import useContentProtection from './useContentProtection';
 
 export default function useProtectedMedia(item: PlaylistItem) {
+  // Determine currently selected language
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
+
   const apiService = getModule(ApiService);
   const contentProtectionQuery = useContentProtection('media', item.mediaid, (token, drmPolicyId) =>
     apiService.getMediaById(item.mediaid, language, token, drmPolicyId),
   );
-
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
 
   const { isLoading, data: isGeoBlocked } = useQuery(
     ['media', 'geo', item.mediaid, language],
