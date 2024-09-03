@@ -19,6 +19,7 @@ const PAST_EXPIRY = getTimestamp(-30); // 30 days ago
 // API endpoints constant
 export const ENDPOINTS = {
   GENERATE_PASSPORT: '/v2/sites/:site_id/access/generate',
+  REFRESH_PASSPORT: '/v2/sites/:site_id/access/refresh',
   PRODUCTS: '/v2/sites/:site_id/products',
   CHECKOUT: '/v2/sites/:site_id/checkout',
 };
