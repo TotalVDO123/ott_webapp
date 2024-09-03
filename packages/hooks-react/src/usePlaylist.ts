@@ -9,7 +9,7 @@ import type { ApiError } from '@jwp/ott-common/src/utils/api';
 import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
 import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import env from '@jwp/ott-common/src/env';
+import { useTranslation } from 'react-i18next';
 
 const placeholderData = generatePlaylistPlaceholder(30);
 
@@ -71,15 +71,17 @@ export default function usePlaylist({
   enabled = true,
   usePlaceholderData = true,
   type = PLAYLIST_TYPE.playlist,
-  language = env.APP_DEFAULT_LANGUAGE,
 }: {
   contentId?: string;
   params?: GetPlaylistParams;
   enabled?: boolean;
   usePlaceholderData?: boolean;
   type?: PlaylistMenuType;
-  language?: string;
 }) {
+  // Determine currently selected language
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
+
   const queryClient = useQueryClient();
   const siteId = useConfigStore((state) => state.config.siteId);
 

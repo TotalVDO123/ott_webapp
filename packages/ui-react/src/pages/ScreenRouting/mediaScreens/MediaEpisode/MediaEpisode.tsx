@@ -4,7 +4,6 @@ import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { buildLegacySeriesUrlFromMediaItem, mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { useSeriesLookup } from '@jwp/ott-hooks-react/src/series/useSeriesLookup';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
-import { useTranslation } from 'react-i18next';
 
 import Loading from '../../../Loading/Loading';
 import type { ScreenComponent } from '../../../../../types/screens';
@@ -19,12 +18,8 @@ const MediaEpisode: ScreenComponent<PlaylistItem> = ({ data: media, isLoading: i
   const play = searchParams.get('play') === '1';
   const feedId = searchParams.get('r');
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   const { data: episodeInSeries, isLoading: isSeriesIdLoading } = useSeriesLookup(media.mediaid);
-  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia({ mediaId: episodeInSeries?.series_id || '', language });
+  const { isLoading: isSeriesMediaLoading, data: seriesMedia } = useMedia({ mediaId: episodeInSeries?.series_id || '' });
 
   // Prevent rendering multiple times when we are loading data
   if (isMediaLoading || isSeriesIdLoading || isSeriesMediaLoading) {

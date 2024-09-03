@@ -33,7 +33,7 @@ const useAppContentSearch = ({ siteId, enabled, query }: { query: string; siteId
   return appContentSearchQuery;
 };
 
-export const useSearch = (query: string, language: string) => {
+export const useSearch = (query: string) => {
   const { config } = useConfigStore(({ config }) => ({ config }), shallow);
 
   const siteId = config?.siteId;
@@ -45,7 +45,6 @@ export const useSearch = (query: string, language: string) => {
     params: { search: query || '' },
     enabled: !hasAppContentSearch,
     usePlaceholderData: !!query,
-    language,
   });
 
   // New app content search flow

@@ -36,11 +36,7 @@ const ShelfList = ({ rows }: Props) => {
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
-  const playlists = usePlaylists(rows, rowsToLoad, language);
+  const playlists = usePlaylists(rows, rowsToLoad);
 
   useEffect(() => {
     // reset row count when the page changes

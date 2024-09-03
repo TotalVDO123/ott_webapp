@@ -24,16 +24,12 @@ const Search = () => {
   const { siteName, features } = config;
   const headingId = useOpaqueId('search_heading');
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   const firstRender = useFirstRender();
   const searchQuery = useUIStore((state) => state.searchQuery);
   const { updateSearchQuery } = useSearchQueryUpdater();
   const params = useParams();
   const query = params['*'];
-  const { isFetching, error, data: playlist } = useSearch(query || '', language);
+  const { isFetching, error, data: playlist } = useSearch(query || '');
 
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);

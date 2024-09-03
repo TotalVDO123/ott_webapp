@@ -28,14 +28,9 @@ const PlaylistScreenRouter = ({ type }: { type: PlaylistMenuType }) => {
   const params = useParams();
   const id = params.id || '';
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   const { isLoading, isFetching, error, data } = usePlaylist({
     contentId: id,
     type,
-    language,
   });
   const { t } = useTranslation('error');
 

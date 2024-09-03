@@ -49,16 +49,11 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
   const isFavoritesEnabled: boolean = Boolean(features?.favoritesList);
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '', language });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: data?.trailerId || '' });
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({
     contentId: features?.recommendationsPlaylist || '',
     params: { related_media_id: id },
-    language,
   });
 
   // User, entitlement

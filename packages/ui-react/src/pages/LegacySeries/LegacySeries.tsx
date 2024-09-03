@@ -36,10 +36,6 @@ const LegacySeries = () => {
   const breakpoint = useBreakpoint();
   const { t } = useTranslation('video');
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   const [playTrailer, setPlayTrailer] = useState<boolean>(false);
 
   // Navigation
@@ -58,10 +54,9 @@ const LegacySeries = () => {
   } = usePlaylist({
     contentId: seriesId,
     usePlaceholderData: false,
-    language,
   });
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '', language });
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '', language });
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '' });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '' });
 
   const episodeMetadata = useMemo(() => ({ episodeNumber: episode?.episodeNumber || '0', seasonNumber: episode?.seasonNumber || '0' }), [episode]);
 

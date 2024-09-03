@@ -5,6 +5,7 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import type { Content, PlaylistMenuType, PlaylistType } from '@jwp/ott-common/types/config';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { useQueries, useQueryClient } from 'react-query';
+import { useTranslation } from 'react-i18next';
 
 import { getPlaylistQueryOptions } from './usePlaylist';
 
@@ -17,13 +18,17 @@ type UsePlaylistResult = {
 
 const isPlaylistType = (type: PlaylistType): type is PlaylistMenuType => !PersonalShelves.some((pType) => pType === type);
 
-const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined, language: string) => {
+const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined) => {
   const page_limit = PLAYLIST_LIMIT.toString();
   const queryClient = useQueryClient();
 
   const siteId = useConfigStore((state) => state.config.siteId);
   const favorites = useFavoritesStore((state) => state.getPlaylist());
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
+
+  // Determine currently selected language
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   const playlistQueries = useQueries(
     content.map(({ contentId, type }, index) => {

@@ -33,7 +33,6 @@ import Icon from '../../../../components/Icon/Icon';
 
 const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) => {
   const { t, i18n } = useTranslation('video');
-  const { i18n: i18nl } = useTranslation('menu');
 
   const [playTrailer, setPlayTrailer] = useState<boolean>(false);
   const breakpoint = useBreakpoint();
@@ -53,14 +52,10 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const isFavoritesEnabled: boolean = Boolean(features?.favoritesList);
   const inlineLayout = Boolean(custom?.inlinePlayer);
 
-  // Determine currently selected language
-  const language = i18nl.language;
-
   // Media
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: media?.trailerId || '', language });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: media?.trailerId || '' });
   const { isLoading: isPlaylistLoading, data: playlist } = usePlaylist({
     contentId: playlistId || '',
-    language,
   });
 
   // Event

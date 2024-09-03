@@ -3,11 +3,16 @@ import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { isScheduledOrLiveMedia } from '@jwp/ott-common/src/utils/liveEvent';
+import { useTranslation } from 'react-i18next';
 
 export type UseMediaResult<TData = PlaylistItem, TError = unknown> = UseBaseQueryResult<TData, TError>;
 
-export default function useMedia({ mediaId, enabled = true, language }: { mediaId: string; enabled?: boolean; language: string }): UseMediaResult {
+export default function useMedia({ mediaId, enabled = true }: { mediaId: string; enabled?: boolean }): UseMediaResult {
   const apiService = getModule(ApiService);
+
+  // Determine currently selected language
+  const { i18n } = useTranslation('menu');
+  const language = i18n.language;
 
   return useQuery(['media', mediaId, language], () => apiService.getMediaById(mediaId, language), {
     enabled: !!mediaId && enabled,

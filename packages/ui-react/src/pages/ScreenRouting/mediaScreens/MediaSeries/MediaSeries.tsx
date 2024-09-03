@@ -50,14 +50,10 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   const feedId = searchParams.get('r');
   const episodeId = searchParams.get('e');
 
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   // Main data
   const { isLoading: isSeriesDataLoading, data: series, error: seriesError } = useSeries(seriesId);
-  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '', language });
-  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '', language });
+  const { isLoading: isEpisodeLoading, data: episode } = useMedia({ mediaId: episodeId || '' });
+  const { isLoading: isTrailerLoading, data: trailerItem } = useMedia({ mediaId: episode?.trailerId || '' });
   const { data: episodeInSeries, isLoading: isSeriesDictionaryLoading } = useSeriesLookup(episode?.mediaid);
 
   // Whether we show series or episode information
@@ -78,7 +74,7 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
     data: episodes,
     fetchNextPage: fetchNextEpisodes,
     hasNextPage: hasNextEpisodesPage,
-  } = useEpisodes(seriesId, seasonFilter, { enabled: seasonFilter !== undefined && !!series }, language);
+  } = useEpisodes(seriesId, seasonFilter, { enabled: seasonFilter !== undefined && !!series });
 
   const firstEpisode = useMemo(() => episodes?.[0]?.episodes?.[0], [episodes]);
   const episodeMetadata = useMemo(
@@ -100,7 +96,7 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   );
 
   const episodesInSeason = getEpisodesInSeason(episodeMetadata, series);
-  const { data: nextItem } = useNextEpisode({ series, episodeId: episode?.mediaid || firstEpisode?.mediaid, language });
+  const { data: nextItem } = useNextEpisode({ series, episodeId: episode?.mediaid || firstEpisode?.mediaid });
 
   // Watch history
   const watchHistoryArray = useWatchHistoryStore((state) => state.watchHistory);

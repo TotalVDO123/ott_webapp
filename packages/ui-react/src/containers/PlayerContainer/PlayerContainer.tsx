@@ -4,7 +4,6 @@ import { useWatchHistory } from '@jwp/ott-hooks-react/src/useWatchHistory';
 import { usePlaylistItemCallback } from '@jwp/ott-hooks-react/src/usePlaylistItemCallback';
 import { useAds } from '@jwp/ott-hooks-react/src/useAds';
 import useProtectedMedia from '@jwp/ott-hooks-react/src/useProtectedMedia';
-import { useTranslation } from 'react-i18next';
 
 import type { JWPlayer } from '../../../types/jwplayer';
 import Player from '../../components/Player/Player';
@@ -45,13 +44,9 @@ const PlayerContainer: React.FC<Props> = ({
   liveStartDateTime,
   autostart,
 }: Props) => {
-  // Determine currently selected language
-  const { i18n } = useTranslation('menu');
-  const language = i18n.language;
-
   // data
   const { data: adsData, isLoading: isAdsLoading } = useAds({ mediaId: item?.mediaid });
-  const { data: playableItem, isLoading, isGeoBlocked } = useProtectedMedia(item, language);
+  const { data: playableItem, isLoading, isGeoBlocked } = useProtectedMedia(item);
   // state
   const [playerInstance, setPlayerInstance] = useState<JWPlayer>();
 
