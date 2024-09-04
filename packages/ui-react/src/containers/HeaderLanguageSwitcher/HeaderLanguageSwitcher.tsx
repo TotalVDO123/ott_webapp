@@ -15,6 +15,7 @@ const HeaderLanguageSwitcher = () => {
 
   const languageClickHandler = (code: string) => {
     i18n.changeLanguage(code);
+    window.location.reload();
   };
 
   const currentLanguage = useMemo(() => supportedLanguages.find(({ code }) => code === i18n.language), [i18n.language, supportedLanguages]);
