@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { array, object, string } from 'yup';
+import i18next from 'i18next';
 
 import type { Favorite, SerializedFavorite } from '../../types/favorite';
 import type { PlaylistItem } from '../../types/playlist';
@@ -56,14 +57,13 @@ export default class FavoriteService {
   getFavorites = async (user: Customer | null, favoritesList: string) => {
     const savedItems = user ? await this.getFavoritesFromAccount(user) : await this.getFavoritesFromStorage();
     const mediaIds = savedItems.map(({ mediaid }) => mediaid);
-    const language = await this.storageService.getItem('language', false, true);
 
     if (!mediaIds) {
       return [];
     }
 
     try {
-      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds, language as string);
+      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds, i18next.language);
 
       return (playlistItems || []).map((item) => this.createFavorite(item));
     } catch (error: unknown) {

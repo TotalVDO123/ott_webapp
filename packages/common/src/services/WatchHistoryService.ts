@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { array, number, object, string } from 'yup';
+import i18next from 'i18next';
 
 import type { PlaylistItem } from '../../types/playlist';
 import type { SerializedWatchHistoryItem, WatchHistoryItem } from '../../types/watchHistory';
@@ -36,8 +37,7 @@ export default class WatchHistoryService {
 
   // Retrieve watch history media items info using a provided watch list
   private getWatchHistoryItems = async (continueWatchingList: string, ids: string[]): Promise<Record<string, PlaylistItem>> => {
-    const language = await this.storageService.getItem('language', false, true);
-    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, language as string);
+    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, i18next.language);
     const watchHistoryItemsDict = Object.fromEntries((watchHistoryItems || []).map((item) => [item.mediaid, item]));
 
     return watchHistoryItemsDict;
@@ -50,9 +50,7 @@ export default class WatchHistoryService {
       .map((key) => mediaWithSeries?.[key]?.[0]?.series_id)
       .filter(Boolean) as string[];
     const uniqueSerieIds = [...new Set(seriesIds)];
-
-    const language = await this.storageService.getItem('language', false, true);
-    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, language as string);
+    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, i18next.language);
     const seriesItemsDict = Object.keys(mediaWithSeries || {}).reduce((acc, key) => {
       const seriesItemId = mediaWithSeries?.[key]?.[0]?.series_id;
       if (seriesItemId) {
