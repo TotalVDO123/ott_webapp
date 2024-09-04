@@ -80,17 +80,17 @@ const getTokenExpiration = (token: string) => {
 
 @injectable()
 export default class CleengService {
-  private readonly storageService;
-  private readonly getCustomerIP;
-  private readonly channel: BroadcastChannel<MessageData>;
-  private readonly queue = new PromiseQueue();
-  private isRefreshing = false;
-  private expiration = -1;
+  protected readonly storageService;
+  protected readonly getCustomerIP;
+  protected readonly channel: BroadcastChannel<MessageData>;
+  protected readonly queue = new PromiseQueue();
+  protected isRefreshing = false;
+  protected expiration = -1;
 
   sandbox = false;
   tokens: Tokens | null = null;
 
-  constructor(storageService: StorageService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
+  constructor(@inject(StorageService) storageService: StorageService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
     this.storageService = storageService;
     this.getCustomerIP = getCustomerIP;
 

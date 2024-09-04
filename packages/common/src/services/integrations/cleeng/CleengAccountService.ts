@@ -49,17 +49,17 @@ import type { Response } from './types/api';
 
 @injectable()
 export default class CleengAccountService extends AccountService {
-  private readonly cleengService;
-  private readonly getCustomerIP;
-  private publisherId = '';
+  protected readonly cleengService;
+  protected readonly getCustomerIP;
+  protected publisherId = '';
 
-  private externalData: Record<string, unknown> = {};
+  protected externalData: Record<string, unknown> = {};
 
   accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
   svodOfferIds: string[] = [];
   sandbox = false;
 
-  constructor(cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
+  constructor(@inject(CleengService) cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
     super({
       canUpdateEmail: true,
       canSupportEmptyFullName: true,
