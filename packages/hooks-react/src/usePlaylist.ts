@@ -36,7 +36,7 @@ export const getPlaylistQueryOptions = ({
 
   return {
     enabled: !!contentId && enabled,
-    queryKey: ['playlist', type, contentId, language],
+    queryKey: ['playlist', type, contentId, params, language],
     queryFn: async () => {
       if (type === PLAYLIST_TYPE.playlist) {
         const playlist = await apiService.getPlaylistById(contentId, params, language);

@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import ini from 'ini';
 import { getI18n } from 'react-i18next';
 
@@ -12,9 +12,9 @@ import StorageService from './StorageService';
 
 @injectable()
 export default class SettingsService {
-  private readonly storageService;
+  protected readonly storageService;
 
-  constructor(storageService: StorageService) {
+  constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
 

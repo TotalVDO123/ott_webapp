@@ -22,20 +22,24 @@ const schema = array(
 
 @injectable()
 export default class WatchHistoryService {
-  private PERSIST_KEY_WATCH_HISTORY = 'history';
+  protected PERSIST_KEY_WATCH_HISTORY = 'history';
 
-  private readonly apiService;
-  private readonly storageService;
-  private readonly accountService;
+  protected readonly apiService;
+  protected readonly storageService;
+  protected readonly accountService;
 
-  constructor(@inject(INTEGRATION_TYPE) integrationType: string, apiService: ApiService, storageService: StorageService) {
+  constructor(
+    @inject(INTEGRATION_TYPE) integrationType: string,
+    @inject(ApiService) apiService: ApiService,
+    @inject(StorageService) storageService: StorageService,
+  ) {
     this.apiService = apiService;
     this.storageService = storageService;
     this.accountService = getNamedModule(AccountService, integrationType);
   }
 
   // Retrieve watch history media items info using a provided watch list
-  private getWatchHistoryItems = async (continueWatchingList: string, ids: string[], language?: string): Promise<Record<string, PlaylistItem>> => {
+  protected getWatchHistoryItems = async (continueWatchingList: string, ids: string[], language?: string): Promise<Record<string, PlaylistItem>> => {
     const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, language);
     const watchHistoryItemsDict = Object.fromEntries((watchHistoryItems || []).map((item) => [item.mediaid, item]));
 
@@ -43,7 +47,7 @@ export default class WatchHistoryService {
   };
 
   // We store separate episodes in the watch history and to show series card in the Continue Watching shelf we need to get their parent media items
-  private getWatchHistorySeriesItems = async (
+  protected getWatchHistorySeriesItems = async (
     continueWatchingList: string,
     ids: string[],
     language?: string,
@@ -65,7 +69,7 @@ export default class WatchHistoryService {
     return seriesItemsDict;
   };
 
-  private validateWatchHistory(history: unknown) {
+  protected validateWatchHistory(history: unknown) {
     if (history && schema.validateSync(history)) {
       return history as SerializedWatchHistoryItem[];
     }
@@ -73,13 +77,13 @@ export default class WatchHistoryService {
     return [];
   }
 
-  private async getWatchHistoryFromAccount(user: Customer) {
+  protected async getWatchHistoryFromAccount(user: Customer) {
     const history = await this.accountService.getWatchHistory({ user });
 
     return this.validateWatchHistory(history);
   }
 
-  private async getWatchHistoryFromStorage() {
+  protected async getWatchHistoryFromStorage() {
     const history = await this.storageService.getItem(this.PERSIST_KEY_WATCH_HISTORY, true);
 
     return this.validateWatchHistory(history);
