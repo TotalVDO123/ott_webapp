@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import { array, number, object, string } from 'yup';
-import i18next from 'i18next';
 
 import type { PlaylistItem } from '../../types/playlist';
 import type { SerializedWatchHistoryItem, WatchHistoryItem } from '../../types/watchHistory';
@@ -36,21 +35,25 @@ export default class WatchHistoryService {
   }
 
   // Retrieve watch history media items info using a provided watch list
-  private getWatchHistoryItems = async (continueWatchingList: string, ids: string[]): Promise<Record<string, PlaylistItem>> => {
-    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, i18next.language);
+  private getWatchHistoryItems = async (continueWatchingList: string, ids: string[], language?: string): Promise<Record<string, PlaylistItem>> => {
+    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, language);
     const watchHistoryItemsDict = Object.fromEntries((watchHistoryItems || []).map((item) => [item.mediaid, item]));
 
     return watchHistoryItemsDict;
   };
 
   // We store separate episodes in the watch history and to show series card in the Continue Watching shelf we need to get their parent media items
-  private getWatchHistorySeriesItems = async (continueWatchingList: string, ids: string[]): Promise<Record<string, PlaylistItem | undefined>> => {
+  private getWatchHistorySeriesItems = async (
+    continueWatchingList: string,
+    ids: string[],
+    language?: string,
+  ): Promise<Record<string, PlaylistItem | undefined>> => {
     const mediaWithSeries = await this.apiService.getSeriesByMediaIds(ids);
     const seriesIds = Object.keys(mediaWithSeries || {})
       .map((key) => mediaWithSeries?.[key]?.[0]?.series_id)
       .filter(Boolean) as string[];
     const uniqueSerieIds = [...new Set(seriesIds)];
-    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, i18next.language);
+    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, language);
     const seriesItemsDict = Object.keys(mediaWithSeries || {}).reduce((acc, key) => {
       const seriesItemId = mediaWithSeries?.[key]?.[0]?.series_id;
       if (seriesItemId) {
@@ -82,7 +85,7 @@ export default class WatchHistoryService {
     return this.validateWatchHistory(history);
   }
 
-  getWatchHistory = async (user: Customer | null, continueWatchingList: string) => {
+  getWatchHistory = async (user: Customer | null, continueWatchingList: string, language?: string) => {
     const savedItems = user ? await this.getWatchHistoryFromAccount(user) : await this.getWatchHistoryFromStorage();
 
     // When item is an episode of the new flow -> show the card as a series one, but keep episode to redirect in a right way
@@ -93,8 +96,8 @@ export default class WatchHistoryService {
     }
 
     try {
-      const watchHistoryItems = await this.getWatchHistoryItems(continueWatchingList, ids);
-      const seriesItems = await this.getWatchHistorySeriesItems(continueWatchingList, ids);
+      const watchHistoryItems = await this.getWatchHistoryItems(continueWatchingList, ids, language);
+      const seriesItems = await this.getWatchHistorySeriesItems(continueWatchingList, ids, language);
 
       return savedItems
         .map((item) => {
