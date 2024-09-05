@@ -15,7 +15,7 @@ export default class FavoritesController {
     this.favoritesService = favoritesService;
   }
 
-  initialize = async (language?: string) => {
+  initialize = async (language: string) => {
     await this.restoreFavorites(language);
   };
 

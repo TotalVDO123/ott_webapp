@@ -28,7 +28,6 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
 
   // Determine currently selected language
   const { i18n } = useTranslation('menu');
-  const language = i18n.language;
 
   const playlistQueries = useQueries(
     content.map(({ contentId, type }, index) => {
@@ -41,7 +40,7 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
           queryClient,
           usePlaceholderData: true,
           params: { page_limit },
-          language,
+          language: i18n.language,
         });
       }
 

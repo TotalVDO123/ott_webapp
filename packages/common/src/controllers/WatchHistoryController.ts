@@ -15,7 +15,7 @@ export default class WatchHistoryController {
     this.watchHistoryService = watchHistoryService;
   }
 
-  initialize = async (language?: string) => {
+  initialize = async (language: string) => {
     await this.restoreWatchHistory(language);
   };
 
