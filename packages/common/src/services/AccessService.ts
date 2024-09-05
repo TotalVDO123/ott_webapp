@@ -16,6 +16,10 @@ export default class AccessService {
     this.storageService = storageService;
   }
 
+  // getProtectedMediaById = async (mediaId: string) => {
+
+  // }
+
   generatePassport = async (host: string, siteId: string, jwt?: string): Promise<Passport | null> => {
     if (!siteId) {
       throw new Error('Site ID is required');

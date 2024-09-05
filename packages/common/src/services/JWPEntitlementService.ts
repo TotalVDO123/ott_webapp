@@ -1,5 +1,8 @@
 import { inject, injectable } from 'inversify';
 
+import type { GetEntitledPlans } from '../../types/checkout';
+import type { PlansResponse } from '../../types/plans';
+
 import type { SignedMediaResponse } from './integrations/jwp/types';
 import JWPAPIService from './integrations/jwp/JWPAPIService';
 
@@ -27,6 +30,17 @@ export default class JWPEntitlementService {
       return data.token;
     } catch {
       throw new Error('Unauthorized');
+    }
+  };
+
+  getEntitledPlans: GetEntitledPlans = async ({ siteId }) => {
+    try {
+      const data = await this.apiService.get<PlansResponse>(`/v3/sites/${siteId}/entitlements`, {
+        withAuthentication: await this.apiService.isAuthenticated(),
+      });
+      return data;
+    } catch {
+      throw new Error('Failed to get entitled plans');
     }
   };
 }
