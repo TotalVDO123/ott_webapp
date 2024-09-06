@@ -1,4 +1,4 @@
-name: Test - Unit, Snapshot
+name: Test - Unit and Snapshot
 
 on:
   push:
