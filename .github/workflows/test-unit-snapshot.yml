@@ -1,4 +1,4 @@
-name: Test - Unit, Integration, Snapshot
+name: Test - Unit, Snapshot
 
 on:
   push:
@@ -21,10 +21,3 @@ jobs:
           yarn test
         env:
           CI: true
-          # Dummy environment variables for testing the access-bridge service
-          APP_API_SECRET: dummy_secret
-          APP_STRIPE_SECRET: dummy_stripe_secret
-          APP_BIND_ADDR: localhost
-          APP_BIND_PORT: 3000
-          APP_ACCESS_CONTROL_API_HOST: https://test-cdn.jwplayer.com
-          APP_SIMS_API_HOST: https://test-sims.jwplayer.com

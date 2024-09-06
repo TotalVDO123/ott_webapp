@@ -33,8 +33,7 @@
     "prepare": "husky install",
     "test": "TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
     "test-watch": "TZ=UTC LC_ALL=en_US.UTF-8 vitest",
-    "web": "yarn --cwd platforms/web",
-    "access-bridge": "yarn --cwd platforms/access-bridge"
+    "web": "yarn --cwd platforms/web"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",
