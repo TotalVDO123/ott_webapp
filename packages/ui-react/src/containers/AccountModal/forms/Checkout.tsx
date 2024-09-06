@@ -6,6 +6,7 @@ import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { FormValidationError } from '@jwp/ott-common/src/errors/FormValidationError';
 import { useTranslation } from 'react-i18next';
 import { createURL } from '@jwp/ott-common/src/utils/urlFormatting';
+import { findDefaultCardMethodId } from '@jwp/ott-common/src/utils/payments';
 
 import CheckoutForm from '../../../components/CheckoutForm/CheckoutForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
@@ -53,7 +54,7 @@ const Checkout = () => {
     handleChange,
     handleSubmit,
   } = useForm({
-    initialValues: { couponCode: '', paymentMethodId: paymentMethods?.[0]?.id?.toString() || '' },
+    initialValues: { couponCode: '', paymentMethodId: findDefaultCardMethodId(paymentMethods) },
     onSubmit: ({ couponCode, paymentMethodId }) => {
       setShowCouponCodeSuccess(false);
 
@@ -84,7 +85,7 @@ const Checkout = () => {
   useEffect(() => {
     if (!paymentMethods?.length) return;
 
-    setValue('paymentMethodId', paymentMethods[0].id.toString());
+    setValue('paymentMethodId', findDefaultCardMethodId(paymentMethods));
   }, [paymentMethods, setValue]);
 
   // clear after closing the checkout modal
