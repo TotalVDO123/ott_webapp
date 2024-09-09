@@ -6,7 +6,7 @@ import AppController from '@jwp/ott-common/src/controllers/AppController';
 import type { AppError } from '@jwp/ott-common/src/utils/error';
 import { CACHE_TIME, STALE_TIME } from '@jwp/ott-common/src/constants';
 import { logDebug } from '@jwp/ott-common/src/logger';
-import { useTranslation } from 'react-i18next';
+import { getI18n } from 'react-i18next';
 
 const applicationController = getModule(AppController);
 
@@ -20,7 +20,7 @@ export type OnReadyCallback = (config: Config | undefined) => void;
 
 export const useBootstrapApp = (url: string, onReady: OnReadyCallback) => {
   const queryClient = useQueryClient();
-  const { i18n } = useTranslation('menu');
+  const i18n = getI18n();
 
   const refreshEntitlements = () => queryClient.invalidateQueries({ queryKey: ['entitlements'] });
 
