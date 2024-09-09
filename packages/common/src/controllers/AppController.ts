@@ -1,5 +1,6 @@
 import merge from 'lodash.merge';
 import { inject, injectable } from 'inversify';
+import { getI18n } from 'react-i18next';
 
 import { PersonalShelf } from '../constants';
 import SettingsService from '../services/SettingsService';
@@ -63,9 +64,10 @@ export default class AppController {
     return config;
   };
 
-  initializeApp = async (url: string, language: string, refreshEntitlements?: () => Promise<void>) => {
+  initializeApp = async (url: string, refreshEntitlements?: () => Promise<void>) => {
     logDebug('AppController', 'Initializing app', { url });
-
+    const i18n = getI18n();
+    const language = i18n.language;
     const settings = await this.settingsService.initialize();
     const configSource = await this.settingsService.getConfigSource(settings, url);
     const config = await this.loadAndValidateConfig(configSource);
