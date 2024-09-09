@@ -52,17 +52,17 @@ export default class ApiService {
     }
 
     const defaultLanguage = env.APP_DEFAULT_LANGUAGE;
-    const newItem = { ...item };
+    const transformedItem = { ...item };
 
     if (language !== defaultLanguage) {
-      for (const [key, _] of Object.entries(newItem)) {
+      for (const [key, _] of Object.entries(transformedItem)) {
         if (item[`${key}-${language}`]) {
-          newItem[key] = item[`${key}-${language}`] as string;
+          transformedItem[key] = item[`${key}-${language}`] as string;
         }
       }
     }
 
-    return newItem;
+    return transformedItem;
   };
 
   /**
