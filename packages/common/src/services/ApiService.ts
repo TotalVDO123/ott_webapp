@@ -175,10 +175,18 @@ export default class ApiService {
   /**
    * Get media by id
    * @param {string} id
-   * @param {string} [token]
-   * @param {string} [drmPolicyId]
    */
-  getMediaById = async (id: string, token?: string, drmPolicyId?: string, language?: string): Promise<PlaylistItem | undefined> => {
+  getMediaById = async ({
+    id,
+    token,
+    drmPolicyId,
+    language,
+  }: {
+    id: string;
+    token?: string;
+    drmPolicyId?: string;
+    language?: string;
+  }): Promise<PlaylistItem | undefined> => {
     const pathname = drmPolicyId ? `/v2/media/${id}/drm/${drmPolicyId}` : `/v2/media/${id}`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { token });
     const response = await fetch(url);

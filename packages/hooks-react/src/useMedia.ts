@@ -14,7 +14,7 @@ export default function useMedia(mediaId: string, enabled: boolean = true): UseM
   const i18n = getI18n();
   const language = i18n.language;
 
-  return useQuery(['media', mediaId, language], () => apiService.getMediaById(mediaId, language), {
+  return useQuery(['media', mediaId, language], () => apiService.getMediaById({ id: mediaId, language }), {
     enabled: !!mediaId && enabled,
     refetchInterval: (data, _) => {
       if (!data) return false;
