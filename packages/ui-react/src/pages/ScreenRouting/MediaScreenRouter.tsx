@@ -35,7 +35,6 @@ mediaScreenMap.register(MediaSeries, (item) => !!item && isLegacySeriesFlow(item
 const MediaScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
-
   const { isLoading, isFetching, error, data } = useMedia(id);
   const { t } = useTranslation('error');
 

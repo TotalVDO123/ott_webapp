@@ -35,7 +35,6 @@ import { filterSeries, generateLegacyEpisodeJSONLD, getEpisodesInSeason, getFilt
 const LegacySeries = () => {
   const breakpoint = useBreakpoint();
   const { t } = useTranslation('video');
-
   const [playTrailer, setPlayTrailer] = useState<boolean>(false);
 
   // Navigation

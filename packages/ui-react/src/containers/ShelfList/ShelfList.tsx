@@ -36,6 +36,8 @@ const ShelfList = ({ rows }: Props) => {
   // User
   const { user, subscription } = useAccountStore(({ user, subscription }) => ({ user, subscription }), shallow);
 
+  // Todo: move to more common package?
+
   const playlists = usePlaylists(rows, rowsToLoad);
 
   useEffect(() => {

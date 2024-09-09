@@ -5,8 +5,8 @@ import { buildLegacySeriesUrlFromMediaItem, mediaURL } from '@jwp/ott-common/src
 import { useSeriesLookup } from '@jwp/ott-hooks-react/src/series/useSeriesLookup';
 import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 
-import Loading from '../../../Loading/Loading';
 import type { ScreenComponent } from '../../../../../types/screens';
+import Loading from '../../../Loading/Loading';
 
 /**
  * This media series episode screen is used to redirect an episode item to the series page.

@@ -41,7 +41,6 @@ export const useSearch = (query: string) => {
   const hasAppContentSearch = isTruthyCustomParamValue(config?.custom?.appContentSearch);
 
   const playlistQuery = usePlaylist(searchPlaylist || '', { search: query || '' }, !hasAppContentSearch, !!query);
-
   // New app content search flow
   const appContentSearchQuery = useAppContentSearch({ siteId, enabled: hasAppContentSearch, query });
 
