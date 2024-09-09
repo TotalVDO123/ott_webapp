@@ -1,4 +1,5 @@
 import { injectable } from 'inversify';
+import { getI18n } from 'react-i18next';
 
 import WatchHistoryService from '../services/WatchHistoryService';
 import type { PlaylistItem } from '../../types/playlist';
@@ -15,8 +16,9 @@ export default class WatchHistoryController {
     this.watchHistoryService = watchHistoryService;
   }
 
-  initialize = async (language: string) => {
-    await this.restoreWatchHistory(language);
+  initialize = async () => {
+    const i18n = getI18n();
+    await this.restoreWatchHistory(i18n.language);
   };
 
   restoreWatchHistory = async (language?: string) => {
