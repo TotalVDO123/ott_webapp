@@ -46,7 +46,7 @@ export default class ApiService {
     return date ? parseISO(date) : undefined;
   };
 
-  private getTranslatedFields = (item: PlaylistItem, language?: string) => {
+  protected getTranslatedFields = (item: PlaylistItem, language?: string) => {
     if (!language) {
       return item;
     }
@@ -178,7 +178,7 @@ export default class ApiService {
    * @param {string} [token]
    * @param {string} [drmPolicyId]
    */
-  getMediaById = async (id: string, language?: string, token?: string, drmPolicyId?: string): Promise<PlaylistItem | undefined> => {
+  getMediaById = async (id: string, token?: string, drmPolicyId?: string, language?: string): Promise<PlaylistItem | undefined> => {
     const pathname = drmPolicyId ? `/v2/media/${id}/drm/${drmPolicyId}` : `/v2/media/${id}`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { token });
     const response = await fetch(url);
