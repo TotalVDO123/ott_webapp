@@ -66,7 +66,7 @@ export default class FavoriteService {
     }
 
     try {
-      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds, language);
+      const playlistItems = await this.apiService.getMediaByWatchlist({ playlistId: favoritesList, mediaIds, language });
 
       return (playlistItems || []).map((item) => this.createFavorite(item));
     } catch (error: unknown) {

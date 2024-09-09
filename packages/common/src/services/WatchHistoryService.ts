@@ -40,7 +40,7 @@ export default class WatchHistoryService {
 
   // Retrieve watch history media items info using a provided watch list
   protected getWatchHistoryItems = async (continueWatchingList: string, ids: string[], language?: string): Promise<Record<string, PlaylistItem>> => {
-    const watchHistoryItems = await this.apiService.getMediaByWatchlist(continueWatchingList, ids, language);
+    const watchHistoryItems = await this.apiService.getMediaByWatchlist({ playlistId: continueWatchingList, mediaIds: ids, language });
     const watchHistoryItemsDict = Object.fromEntries((watchHistoryItems || []).map((item) => [item.mediaid, item]));
 
     return watchHistoryItemsDict;
@@ -57,7 +57,7 @@ export default class WatchHistoryService {
       .map((key) => mediaWithSeries?.[key]?.[0]?.series_id)
       .filter(Boolean) as string[];
     const uniqueSerieIds = [...new Set(seriesIds)];
-    const seriesItems = await this.apiService.getMediaByWatchlist(continueWatchingList, uniqueSerieIds, language);
+    const seriesItems = await this.apiService.getMediaByWatchlist({ playlistId: continueWatchingList, mediaIds: uniqueSerieIds, language });
     const seriesItemsDict = Object.keys(mediaWithSeries || {}).reduce((acc, key) => {
       const seriesItemId = mediaWithSeries?.[key]?.[0]?.series_id;
       if (seriesItemId) {

@@ -157,7 +157,17 @@ export default class ApiService {
   /**
    * Get watchlist by playlistId
    */
-  getMediaByWatchlist = async (playlistId: string, mediaIds: string[], language?: string, token?: string): Promise<PlaylistItem[] | undefined> => {
+  getMediaByWatchlist = async ({
+    playlistId,
+    mediaIds,
+    token,
+    language,
+  }: {
+    playlistId: string;
+    mediaIds: string[];
+    token?: string;
+    language?: string;
+  }): Promise<PlaylistItem[] | undefined> => {
     if (!mediaIds?.length) {
       return [];
     }
@@ -174,7 +184,6 @@ export default class ApiService {
 
   /**
    * Get media by id
-   * @param {string} id
    */
   getMediaById = async ({
     id,
