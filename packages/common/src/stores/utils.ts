@@ -1,5 +1,5 @@
 import type { State, StateCreator } from 'zustand';
-import create from 'zustand';
+import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 
 import { IS_DEVELOPMENT_BUILD, IS_TEST_MODE } from '../utils/common';
