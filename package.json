@@ -57,6 +57,7 @@
   },
   "resolutions": {
     "codeceptjs/**/fast-xml-parser": "^4.4.1",
+    "micromatch": ">=4.0.8",
     "ws": ">=5.2.4"
   }
 }
