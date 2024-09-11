@@ -13,10 +13,10 @@ import env from '../env';
 
 @injectable()
 export default class ConfigService {
-  private CONFIG_HOST = env.APP_API_BASE_URL;
+  protected CONFIG_HOST = env.APP_API_BASE_URL;
   // Explicitly set default config here as a local variable,
   // otherwise if it's a module level const, the merge below causes changes to nested properties
-  private DEFAULT_CONFIG: Config = {
+  protected DEFAULT_CONFIG: Config = {
     id: '',
     siteName: '',
     description: '',
@@ -33,7 +33,7 @@ export default class ConfigService {
     features: {},
   };
 
-  private enrichConfig = (config: Config): Config => {
+  protected enrichConfig = (config: Config): Config => {
     const { content, siteName } = config;
     const updatedContent = content.map((content) => Object.assign({ featured: false }, content));
 
