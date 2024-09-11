@@ -1,6 +1,6 @@
 import http from 'http';
 
-import { Express, NextFunction, Response, Request } from 'express';
+import { Express } from 'express';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
 import { AccessController } from '../../src/controllers/access-controller.js';
@@ -8,6 +8,7 @@ import { MockServer } from '../mock-server.js';
 import { ACCESS_TOKENS, AUTHORIZATION, ENDPOINTS, SITE_ID } from '../fixtures.js';
 import { MockAccessController } from '../mocks/access.js';
 import { ErrorDefinitions } from '../../src/errors.js';
+import { addRoute } from '../../src/pipeline/routes.js';
 
 describe('AccessController passport generate/refresh tests', () => {
   let mockServer: MockServer;
@@ -16,17 +17,12 @@ describe('AccessController passport generate/refresh tests', () => {
   beforeAll(async () => {
     accessController = new MockAccessController();
 
-    const registerEndpoints = (app: Express) => {
-      app.put(ENDPOINTS.GENERATE_PASSPORT, (req: Request, res: Response, next: NextFunction) => {
-        accessController.generatePassport(req, res, next);
-      });
-
-      app.put(ENDPOINTS.REFRESH_PASSPORT, (req: Request, res: Response, next: NextFunction) => {
-        accessController.refreshPassport(req, res, next);
-      });
+    const initializeRoutes = (app: Express) => {
+      addRoute(app, 'put', ENDPOINTS.GENERATE_PASSPORT, accessController.generatePassport.bind(accessController), []);
+      addRoute(app, 'put', ENDPOINTS.REFRESH_PASSPORT, accessController.refreshPassport.bind(accessController), []);
     };
 
-    mockServer = await MockServer.create(registerEndpoints);
+    mockServer = await MockServer.create(initializeRoutes);
   });
 
   const generatePassportTestCases = [
@@ -97,7 +93,7 @@ describe('AccessController passport generate/refresh tests', () => {
       },
     },
     {
-      description: 'should not passport access tokens with invalid site_id',
+      description: 'should not generate access tokens with invalid site_id',
       requestOptions: {
         headers: {
           'Content-Type': 'application/json',

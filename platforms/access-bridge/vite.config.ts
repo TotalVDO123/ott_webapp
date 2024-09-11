@@ -21,6 +21,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   return defineConfig({
     define: {
       'process.env': {
+        APP_SITE_ID: env.APP_SITE_ID,
         APP_BIND_PORT: env.APP_BIND_PORT,
         APP_BIND_ADDR: env.APP_BIND_ADDR,
         APP_API_SECRET: env.APP_API_SECRET,

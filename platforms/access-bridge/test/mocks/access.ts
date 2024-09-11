@@ -24,7 +24,7 @@ class MockPassportService extends PassportService {
     return { passport: ACCESS_TOKENS.PASSPORT.VALID, refresh_token: ACCESS_TOKENS.REFRESH_TOKEN.VALID };
   }
 
-  async refreshPassport({ siteId, refreshToken }: { siteId: string; refreshToken: string }) {
+  async refreshPassport({ refreshToken }: { refreshToken: string }) {
     if (refreshToken === ACCESS_TOKENS.REFRESH_TOKEN.INVALID) {
       throw ErrorDefinitions.ForbiddenError.create({ description: 'Invalid refresh_token provided' });
     }
@@ -34,11 +34,11 @@ class MockPassportService extends PassportService {
 
 // Mock PlansService
 class MockPlansService extends PlansService {
-  async getAvailablePlans({ siteId }: { siteId: string }): Promise<Plan[]> {
+  async getAvailablePlans(): Promise<Plan[]> {
     return PLANS.VALID;
   }
 
-  async getEntitledPlans({ siteId, authorization }: { siteId: string; authorization: string }): Promise<Plan[]> {
+  async getEntitledPlans({ authorization }: { authorization: string }): Promise<Plan[]> {
     if (!authorization) {
       // if no auth, only free plans available
       return PLANS.FREE;

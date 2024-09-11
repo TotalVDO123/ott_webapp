@@ -5,6 +5,8 @@ import { Express } from 'express';
 
 import { Server } from '../src/server.js';
 
+import { validateSiteId } from './mocks/middleware.js';
+
 interface ExtendedRequestOptions extends RequestOptions {
   body?: string;
 }
@@ -18,8 +20,12 @@ export class MockServer {
     this.port = port;
   }
 
-  static async create(registerEndpoints: (app: Express) => void): Promise<MockServer> {
-    const server = new Server('localhost', 3000, registerEndpoints);
+  static async create(initializeRoutes: (app: Express) => void): Promise<MockServer> {
+    const server = new Server('localhost', 3000, (app) => {
+      // Apply the mocked middleware for testing
+      app.use('/v2/sites/:site_id', validateSiteId);
+      initializeRoutes(app);
+    });
     const port = await server.listen();
     return new this(server, port);
   }

@@ -6,6 +6,9 @@ function requireEnvVar(env: string | undefined, name: string): string {
   return env;
 }
 
+// SITE_ID specifies the property that the customer is using
+export const SITE_ID = requireEnvVar(process.env.APP_SITE_ID, 'APP_SITE_ID');
+
 // BIND_ADDR specifies the network address or IP address on which the server listens for incoming connections.
 // This could be an IP address (e.g., '127.0.0.1' for localhost) or a hostname.
 export const BIND_ADDR = requireEnvVar(process.env.APP_BIND_ADDR, 'APP_BIND_ADDR');
