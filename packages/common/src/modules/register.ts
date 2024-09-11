@@ -26,6 +26,10 @@ import EpgService from '../services/EpgService';
 import ViewNexaEpgService from '../services/epg/ViewNexaEpgService';
 import JWEpgService from '../services/epg/JWEpgService';
 
+// Access integration
+import AccessService from '../services/AccessService';
+import { getApiAccessBridgeUrl } from './functions/getApiAccessBridgeUrl';
+
 // Integration interfaces
 import AccountService from '../services/integrations/AccountService';
 import CheckoutService from '../services/integrations/CheckoutService';
@@ -44,8 +48,6 @@ import JWPCheckoutService from '../services/integrations/jwp/JWPCheckoutService'
 import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscriptionService';
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
-import AccessService from '../services/AccessService';
-import { getApiAccessBridgeUrl } from './functions/getApiAccessBridgeUrl';
 
 // Common services
 container.bind(ConfigService).toSelf();
