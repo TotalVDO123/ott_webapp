@@ -25,6 +25,9 @@ class MockPassportService extends PassportService {
   }
 
   async refreshPassport({ refreshToken }: { refreshToken: string }) {
+    if (!refreshToken) {
+      throw ErrorDefinitions.ParameterMissingError.create({});
+    }
     if (refreshToken === ACCESS_TOKENS.REFRESH_TOKEN.INVALID) {
       throw ErrorDefinitions.ForbiddenError.create({ description: 'Invalid refresh_token provided' });
     }
