@@ -3,7 +3,7 @@ import { PassportResponse } from '@jwp/ott-common/types/passport.js';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
 import { ACCESS_CONTROL_API_HOST, API_SECRET, SITE_ID } from '../app-config.js';
-import { put } from '../utils/http.js';
+import { put } from '../http.js';
 
 type GeneratePassportParams = {
   viewerId: string;

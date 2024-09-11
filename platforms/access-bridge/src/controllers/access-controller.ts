@@ -23,11 +23,6 @@ export class AccessController {
   /**
    * Service handler for generating passport access tokens based on the provided authorization token.
    * Retrieves access control plans and generates access tokens.
-   * Sends appropriate error responses for invalid requests.
-   *
-   * @param req - Express request object
-   * @param res - Express response object
-   * @param next - Express next middleware function
    */
   async generatePassport(req: Request, res: Response, next: NextFunction): Promise<void> {
     // Anonymous is default for not authenticated viewers.
@@ -58,19 +53,9 @@ export class AccessController {
 
   /**
    * Service handler for refreshing access tokens based on the provided refresh token.
-   * Sends appropriate error responses for invalid requests.
-   *
-   * @param req - Express request object
-   * @param res - Express response object
-   * @param next - Express next middleware function
    */
   async refreshPassport(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { refresh_token: refreshToken } = req.body;
-    if (!refreshToken) {
-      sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: 'refresh_token' }));
-      return;
-    }
-
     const passport = await this.passportService.refreshPassport({ refreshToken });
 
     res.json(passport);

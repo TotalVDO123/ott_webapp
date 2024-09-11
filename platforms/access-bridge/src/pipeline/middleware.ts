@@ -34,6 +34,12 @@ export class Middleware {
    * This handles AccessBridge-specific errors and other unexpected errors.
    */
   globalErrorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
+    // Handles SyntaxError in request body by responding with a ParameterInvalidError.
+    if (err instanceof SyntaxError && 'body' in err) {
+      sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'body' }));
+      return;
+    }
+
     if (err instanceof AccessBridgeError) {
       sendErrors(res, err);
       return;
@@ -61,7 +67,7 @@ export class Middleware {
    * Registers global middlewares.
    * @param app The Express application.
    */
-  registerGlobalMiddlewares(app: Express) {
+  initializeCoreMiddleware(app: Express) {
     // Middleware to enable Cross-Origin Resource Sharing (CORS)
     app.use(cors());
     // Middleware for parsing JSON request bodies
@@ -73,7 +79,7 @@ export class Middleware {
    * This should be called after all routes are defined to catch errors and handle 404 responses.
    * @param app The Express application.
    */
-  registerErrorHandlers(app: Express) {
+  initializeErrorMiddleware(app: Express) {
     app.use(this.notFoundErrorHandler); // Handle 404 errors
     app.use(this.globalErrorHandler); // Handle all other errors
   }

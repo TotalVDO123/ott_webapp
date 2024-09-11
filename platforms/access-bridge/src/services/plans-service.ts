@@ -1,7 +1,7 @@
 import { Plan, PlansResponse } from '@jwp/ott-common/types/plans.js';
 
 import { SIMS_API_HOST, SITE_ID } from '../app-config.js';
-import { get } from '../utils/http.js';
+import { get } from '../http.js';
 
 /**
  * Service class responsible for interacting with the Plans API.

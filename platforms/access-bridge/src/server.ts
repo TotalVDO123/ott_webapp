@@ -34,14 +34,14 @@ export class Server {
    * @param initializeRoutes - Function to initialize the defined routes
    */
   private initialize(initializeRoutes: (app: Express) => void) {
-    // Register global middlewares like CORS and JSON parsing
-    this.middleware.registerGlobalMiddlewares(this.app);
+    // Initialize core middleware, e.g., CORS, JSON parsing.
+    this.middleware.initializeCoreMiddleware(this.app);
 
     // Initialize the defined routes
     initializeRoutes(this.app);
 
-    // Register error handlers after all routes are registered
-    this.middleware.registerErrorHandlers(this.app);
+    // Initialize error middleware after all routes are registered
+    this.middleware.initializeErrorMiddleware(this.app);
   }
 
   /**
