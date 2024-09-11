@@ -16,7 +16,7 @@ import SettingsService from '../services/SettingsService';
 import WatchHistoryController from '../controllers/WatchHistoryController';
 import CheckoutController from '../controllers/CheckoutController';
 import AccountController from '../controllers/AccountController';
-import AccessControler from '../controllers/AccessController';
+import AccessController from '../controllers/AccessController';
 import FavoritesController from '../controllers/FavoritesController';
 import AppController from '../controllers/AppController';
 import EpgController from '../controllers/EpgController';
@@ -65,7 +65,7 @@ container.bind(EpgController).toSelf();
 // Integration controllers
 container.bind(AccountController).toSelf();
 container.bind(CheckoutController).toSelf();
-container.bind(AccessControler).toSelf();
+container.bind(AccessController).toSelf();
 
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
