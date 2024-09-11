@@ -69,7 +69,6 @@ export default class JWPAccountService extends AccountService {
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
-  siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService, @inject(JWPAPIService) apiService: JWPAPIService) {
     super({
@@ -142,7 +141,6 @@ export default class JWPAccountService extends AccountService {
   }
 
   initialize = async (config: Config, url: string, _logoutFn: () => Promise<void>) => {
-    this.siteId = config.siteId;
     const jwpConfig = config.integrations?.jwp;
 
     if (!jwpConfig?.clientId) {

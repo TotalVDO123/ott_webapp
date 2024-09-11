@@ -6,64 +6,81 @@ import AccessService from '../services/AccessService';
 import AccountService from '../services/integrations/AccountService';
 import { INTEGRATION_TYPE } from '../modules/types';
 import { getNamedModule } from '../modules/container';
+import StorageService from '../services/StorageService';
+import type { AccessTokens } from '../../types/access';
+
+const ACCESS_TOKENS = 'access_tokens';
 
 @injectable()
 export default class AccessController {
   private readonly accessService: AccessService;
   private readonly accountService: AccountService;
+  private readonly storageService: StorageService;
 
   private siteId: string = '';
-  private apiAccessBridgeUrl: string | undefined = '';
 
-  constructor(@inject(INTEGRATION_TYPE) integrationType: IntegrationType, @inject(AccessService) accessService: AccessService) {
+  constructor(
+    @inject(INTEGRATION_TYPE) integrationType: IntegrationType,
+    @inject(StorageService) storageService: StorageService,
+    @inject(AccessService) accessService: AccessService,
+  ) {
     this.accessService = accessService;
+    this.storageService = storageService;
     this.accountService = getNamedModule(AccountService, integrationType);
   }
 
   initialize = async () => {
-    const { config, settings, accessModel } = useConfigStore.getState();
+    const { config, accessModel } = useConfigStore.getState();
     this.siteId = config.siteId;
-    this.apiAccessBridgeUrl = settings?.apiAccessBridgeUrl;
 
-    // If the APP_API_ACCESS_BRIDGE_URL environment variable is defined, useAccessBridge will return true
-    // For the AVOD access model, signing and DRM are not supported, so passport generation is skipped
-    if (!this.apiAccessBridgeUrl || accessModel === 'AVOD') {
+    // For the AVOD access model, signing and DRM are not supported, so access tokens generation is skipped
+    if (accessModel === 'AVOD') {
       return;
     }
 
     // Not awaiting to avoid blocking the loading process,
-    // as the passport can be stored asynchronously without affecting the app's performance
-    this.generateOrRetrievePassport();
+    // as the access tokens can be stored asynchronously without affecting the app's performance
+    void this.generateOrRefreshAccessTokens();
   };
 
-  generateOrRetrievePassport = async () => {
-    if (!this.apiAccessBridgeUrl) {
+  generateOrRefreshAccessTokens = async () => {
+    const existing = await this.getAccessTokens();
+    if (existing) {
+      // do nothing if passport exists
       return;
     }
 
-    const existingPassport = await this.accessService.getPassport();
-    if (existingPassport) {
-      return existingPassport;
-    }
+    // TODO: the next PR will address the refreshment
+    // https://jwplayer.atlassian.net/browse/IDM-173
 
-    const auth = await this.accountService.getAuthData();
-    const newPassport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, this.siteId, auth?.jwt);
-    if (newPassport) {
-      await this.accessService.setPassport(newPassport);
-    }
+    await this.generateAccessTokens();
   };
 
-  generatePassport = async () => {
-    if (!this.apiAccessBridgeUrl) {
+  generateAccessTokens = async () => {
+    if (!this.siteId) {
       return;
     }
 
-    const { config } = useConfigStore.getState();
     const auth = await this.accountService.getAuthData();
 
-    const passport = await this.accessService.generatePassport(this.apiAccessBridgeUrl, config.siteId, auth?.jwt);
-    if (passport) {
-      await this.accessService.setPassport(passport);
+    const accessTokens = await this.accessService.generateAccessTokens(this.siteId, auth?.jwt);
+    if (accessTokens) {
+      await this.setAccessTokens(accessTokens);
     }
+  };
+
+  setAccessTokens = async (accessTokens: AccessTokens) => {
+    // Since the actual valid time for a passport token is 1 hour, set the expires to one hour from now.
+    // The expires field here is used as a helper to manage the passport's validity and refresh process.
+    const expires = new Date(Date.now() + 3600 * 1000).getTime();
+    return await this.storageService.setItem(ACCESS_TOKENS, JSON.stringify({ ...accessTokens, expires }), true);
+  };
+
+  getAccessTokens = async (): Promise<(AccessTokens & { expires: string }) | null> => {
+    return await this.storageService.getItem(ACCESS_TOKENS, true, true);
+  };
+
+  removeAccessTokens = async () => {
+    return await this.storageService.removeItem(ACCESS_TOKENS);
   };
 }
