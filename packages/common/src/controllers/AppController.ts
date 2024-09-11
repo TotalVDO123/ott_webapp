@@ -82,9 +82,13 @@ export default class AppController {
     // update settings in the config store
     useConfigStore.setState({ settings });
 
-    // when an integration is set, we initialize AccountController and AccessController
+    // when an integration is set, we initialize the AccountController
     if (integrationType) {
       await getModule(AccountController).initialize(url, refreshEntitlements);
+    }
+
+    // when the apiAccessBridgeUrl is set up in the .ini file, we initialize the AccessController
+    if (settings?.apiAccessBridgeUrl) {
       await getModule(AccessController).initialize();
     }
 
@@ -121,5 +125,12 @@ export default class AppController {
     if (!configState.loaded) throw new Error('A call to `AppController#getIntegrationType()` was made before loading the config');
 
     return configState.integrationType;
+  };
+
+  getApiAccessBridgeUrl = (): string | undefined => {
+    const configState = useConfigStore.getState();
+
+    if (!configState.loaded) throw new Error('A call to `AppController#getApiAccessBridgeUrl()` was made before loading the config');
+    return configState.settings?.apiAccessBridgeUrl || undefined;
   };
 }

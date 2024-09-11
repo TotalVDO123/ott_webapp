@@ -16,9 +16,10 @@ import {
   extractExternalFonts,
   getFileCopyTargets,
   getGoogleFontTags,
-  getGoogleVerificationTag,
   getGtmTags,
   generateIconTags,
+  getMetaTags,
+  getRelatedApplications,
 } from './scripts/build-tools/buildTools';
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
@@ -42,12 +43,22 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     description: process.env.APP_DESCRIPTION || 'JW OTT Webapp is an open-source, dynamically generated video website.',
   };
 
+  // Fonts
   const bodyFonts = extractExternalFonts(env.APP_BODY_FONT_FAMILY);
   const bodyAltFonts = extractExternalFonts(env.APP_BODY_ALT_FONT_FAMILY);
-
-  const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
   const bodyFontsString = bodyFonts.map((font) => font.fontFamily).join(', ');
   const bodyAltFontsString = bodyAltFonts.map((font) => font.fontFamily).join(', ');
+
+  // Head tags
+  const fontTags = getGoogleFontTags([bodyFonts, bodyAltFonts].flat());
+  const metaTags = getMetaTags({
+    'apple-itunes-app': env.APP_APPLE_ITUNES_APP ? `app-id=${env.APP_APPLE_ITUNES_APP}` : undefined,
+    'google-site-verification': env.APP_GOOGLE_SITE_VERIFICATION_ID,
+  });
+  const tags = [fontTags, metaTags, getGtmTags(env)].flat();
+
+  const related_applications = getRelatedApplications({ appleAppId: env.APP_APPLE_ITUNES_APP, googleAppId: env.APP_GOOGLE_RELATED_APPLICATION_ID });
+
   const favicons = generateIconTags(basePath, favIconSizes, appleIconSizes);
 
   return defineConfig({
@@ -72,8 +83,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           theme_color: '#DD0000',
           orientation: 'any',
           background_color: '#000',
-          related_applications: [],
-          prefer_related_applications: false,
+          related_applications,
+          prefer_related_applications: !!env.APP_GOOGLE_RELATED_APPLICATION_ID,
           icons: [
             {
               src: 'images/icons/pwa-192x192.png',
@@ -91,7 +102,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       createHtmlPlugin({
         minify: true,
         inject: {
-          tags: [getGoogleVerificationTag(env), fontTags, getGtmTags(env)].flat(),
+          tags,
           data: { ...app, favicons },
         },
       }),

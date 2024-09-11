@@ -60,16 +60,15 @@ const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 
 @injectable()
 export default class JWPAccountService extends AccountService {
-  private readonly storageService;
-  private readonly apiService;
+  protected readonly storageService;
+  protected readonly apiService;
 
-  private clientId = '';
+  protected clientId = '';
 
   accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
-  siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService, @inject(JWPAPIService) apiService: JWPAPIService) {
     super({
@@ -142,7 +141,6 @@ export default class JWPAccountService extends AccountService {
   }
 
   initialize = async (config: Config, url: string, _logoutFn: () => Promise<void>) => {
-    this.siteId = config.siteId;
     const jwpConfig = config.integrations?.jwp;
 
     if (!jwpConfig?.clientId) {

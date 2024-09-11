@@ -6,10 +6,13 @@ import IconButton from '../IconButton/IconButton';
 import Icon from '../Icon/Icon';
 import Modal, { type AnimationProps } from '../Modal/Modal';
 import Slide from '../Animation/Slide/Slide';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './Sidebar.module.scss';
 
-type SidebarProps = {
+export const SidebarIdentifier = Symbol(`SIDEBAR`);
+
+export type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
   children?: ReactNode;
@@ -40,4 +43,4 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, children }) => {
   );
 };
 
-export default Sidebar;
+export default createInjectableComponent(SidebarIdentifier, Sidebar);

@@ -52,17 +52,18 @@ container.bind<LogTransporter>(LogTransporter).toDynamicValue(() => new ConsoleT
  *
  * @example
  * ```ts
- * // Define in types.ts (from `ui-react` for example)
- * const TAG_IDENTIFIER = 'TAG_IDENTIFIER';
+ * // Define an identifier from the component (from `ui-react` for example):
+ * export const CardIdentifier = Symbol('CARD');
  *
- * // Bind custom component
- * container.bind(TAG_IDENTIFIER).toConstantValue(CustomTag);
+ * // Make sure the component is wrapped in the HOC:
+ * export default createInjectableComponent(CardIdentifier, Card);
  *
- * // Then wrap the component in a HOC, from the component file itself
- * export default createInjectableComponent(TAG_IDENTIFIER, DefaultTag);
+ * // Override the component into the associated container, from register.ts:
+ * import { container as uiComponentContainer } from '@jwp/ott-ui-react/src/modules/container';
  *
+ * uiComponentContainer.bind<React.FC<CardProps>>(CardIdentifier).toConstantValue(CustomCard);
  * ```
  */
 
 // Override ui-react component
-// uiComponentContainer.bind<React.FC<TagProps>>(TAG_IDENTIFIER).toConstantValue(Tag);
+// uiComponentContainer.bind<React.FC<CardProps>>(CardIdentifier).toConstantValue(CustomCard);

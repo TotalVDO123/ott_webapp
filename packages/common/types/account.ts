@@ -2,7 +2,6 @@ import type { Config } from './config';
 import type { PromiseRequest } from './service';
 import type { SerializedWatchHistoryItem } from './watchHistory';
 import type { SerializedFavorite } from './favorite';
-import type { Passport } from './passport';
 
 export type AuthData = {
   jwt: string;
@@ -334,4 +333,3 @@ export type GetWatchHistory = PromiseRequest<GetWatchHistoryArgs, SerializedWatc
 export type GetFavorites = PromiseRequest<GetFavoritesArgs, SerializedFavorite[]>;
 export type ExportAccountData = PromiseRequest<undefined, CommonAccountResponse>;
 export type DeleteAccount = PromiseRequest<DeleteAccountPayload, CommonAccountResponse>;
-export type GeneratePassport = () => Promise<Passport>;

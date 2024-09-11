@@ -3,7 +3,7 @@
 import 'reflect-metadata'; // include once in the app for inversify (see: https://github.com/inversify/InversifyJS/blob/master/README.md#-installation)
 import { INTEGRATION, EPG_TYPE } from '../constants';
 import { container } from './container';
-import { DETERMINE_INTEGRATION_TYPE, INTEGRATION_TYPE } from './types';
+import { API_ACCESS_BRIDGE_URL, DETERMINE_INTEGRATION_TYPE, INTEGRATION_TYPE } from './types';
 
 import ApiService from '../services/ApiService';
 import WatchHistoryService from '../services/WatchHistoryService';
@@ -45,6 +45,7 @@ import JWPSubscriptionService from '../services/integrations/jwp/JWPSubscription
 import { getIntegrationType } from './functions/getIntegrationType';
 import { isCleengIntegrationType, isJwpIntegrationType } from './functions/calculateIntegrationType';
 import AccessService from '../services/AccessService';
+import { getApiAccessBridgeUrl } from './functions/getApiAccessBridgeUrl';
 
 // Common services
 container.bind(ConfigService).toSelf();
@@ -63,8 +64,8 @@ container.bind(EpgController).toSelf();
 
 // Integration controllers
 container.bind(AccountController).toSelf();
-container.bind(AccessControler).toSelf();
 container.bind(CheckoutController).toSelf();
+container.bind(AccessControler).toSelf();
 
 // EPG services
 container.bind(EpgService).to(JWEpgService).whenTargetNamed(EPG_TYPE.jwp);
@@ -72,6 +73,7 @@ container.bind(EpgService).to(ViewNexaEpgService).whenTargetNamed(EPG_TYPE.viewN
 
 // Functions
 container.bind(INTEGRATION_TYPE).toDynamicValue(getIntegrationType);
+container.bind(API_ACCESS_BRIDGE_URL).toDynamicValue(getApiAccessBridgeUrl);
 
 // Cleeng integration
 container.bind(DETERMINE_INTEGRATION_TYPE).toConstantValue(isCleengIntegrationType);

@@ -28,14 +28,14 @@ export default class ApiService {
    * We use playlistLabel prop to define the label used for all media items inside.
    * That way we can change the behavior of the same media items being in different playlists
    */
-  private generateAlternateImageURL = ({ mediaId, label, playlistLabel }: { mediaId: string; label: string; playlistLabel?: string }) => {
+  protected generateAlternateImageURL = ({ mediaId, label, playlistLabel }: { mediaId: string; label: string; playlistLabel?: string }) => {
     const pathname = `/v2/media/${mediaId}/images/${playlistLabel || label}.webp`;
     const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { poster_fallback: 1, fallback: playlistLabel ? label : null });
 
     return url;
   };
 
-  private parseDate = (item: PlaylistItem, prop: string) => {
+  protected parseDate = (item: PlaylistItem, prop: string) => {
     const date = item[prop] as string | undefined;
 
     if (date && !isValid(new Date(date))) {
@@ -49,7 +49,7 @@ export default class ApiService {
   /**
    * Transform incoming content lists
    */
-  private transformContentList = (contentList: ContentList): Playlist => {
+  protected transformContentList = (contentList: ContentList): Playlist => {
     const { list, ...rest } = contentList;
 
     const playlist: Playlist = { ...rest, playlist: [] };
@@ -80,7 +80,7 @@ export default class ApiService {
   /**
    * Transform incoming playlists
    */
-  private transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
+  protected transformPlaylist = (playlist: Playlist, relatedMediaId?: string) => {
     playlist.playlist = playlist.playlist.map((item) => this.transformMediaItem(item, playlist));
 
     // remove the related media item (when this is a recommendations playlist)
