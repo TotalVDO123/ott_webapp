@@ -3,7 +3,7 @@ import { Plan } from '@jwp/ott-common/types/plans.js';
 
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors.js';
 import { PlansService } from '../../src/services/plans-service.js';
-import { StripeService } from '../../src/services/stripe-service.js';
+import { StripePaymentService } from '../../src/services/stripe-service.js';
 import { PLANS, STRIPE_PRODUCT } from '../fixtures.js';
 
 export type MockBehavior = 'default' | 'empty' | 'error';
@@ -16,7 +16,7 @@ export class MockPlansService extends PlansService {
 }
 
 // Mock StripeService
-export class MockStripeService extends StripeService {
+export class MockStripeService extends StripePaymentService {
   private mockBehavior: MockBehavior = 'default';
   private mockError: AccessBridgeError | null = null;
 

@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { Plan } from '@jwp/ott-common/types/plans.js';
+import { Price, Product } from '@jwp/ott-common/types/payment.js';
 
-import { StripeProduct } from '../src/services/stripe-service.js';
 import { Viewer } from '../src/services/identity-service';
 import { ErrorDefinitions } from '../src/errors.js';
 
@@ -153,56 +153,23 @@ export const AUTHORIZATION = {
 };
 
 // Stripe price mock
-export const STRIPE_PRICE: Stripe.Price = {
+export const STRIPE_PRICE: Price = {
   id: 'price_123456789',
-  object: 'price',
-  active: true,
-  billing_scheme: 'per_unit',
-  created: PAST_EXPIRY,
   currency: 'usd',
-  custom_unit_amount: null,
-  livemode: false,
-  lookup_key: 'mock_lookup_key',
-  metadata: {},
-  nickname: 'Standard Price',
   product: 'prod_123456789',
   recurring: {
     interval: 'month',
-    meter: null,
-    interval_count: 1,
-    usage_type: 'licensed',
-    aggregate_usage: null,
     trial_period_days: 1,
   },
-  tax_behavior: 'exclusive',
-  tiers_mode: 'graduated',
-  transform_quantity: {
-    divide_by: 1,
-    round: 'up',
-  },
-  type: 'recurring',
   unit_amount: 1000,
-  unit_amount_decimal: '10.00',
 };
 
 // Stripe product mock
-export const STRIPE_PRODUCT: StripeProduct = {
+export const STRIPE_PRODUCT: Product = {
   id: 'prod_123456789',
-  object: 'product',
-  active: true,
-  created: PAST_EXPIRY,
-  updated: PAST_EXPIRY,
-  description: 'A high-quality product description',
-  images: ['https://example.com/image1.png'],
-  livemode: false,
-  marketing_features: [{ name: 'Test' }, { name: 'Mock' }],
-  metadata: {},
   name: 'Sample Product',
-  package_dimensions: null,
-  shippable: true,
-  tax_code: 'txcd_123456',
-  type: 'good',
-  url: 'https://example.com/product_page',
+  description: 'A high-quality product description',
+  default_price: 'price_123456789',
   prices: [STRIPE_PRICE],
 };
 

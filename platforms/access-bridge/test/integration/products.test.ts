@@ -19,7 +19,7 @@ describe('ProductsController tests', () => {
   beforeAll(async () => {
     productsController = new ProductsController();
     mockStripeService = new MockStripeService();
-    productsController['stripeService'] = mockStripeService;
+    productsController['paymentService'] = mockStripeService;
     productsController['plansService'] = new MockPlansService();
 
     const initializeRoutes = (app: Express) => {
