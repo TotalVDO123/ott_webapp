@@ -1,6 +1,6 @@
 import { SIMS_API_HOST } from '../app-config.js';
 import { ErrorDefinitions } from '../errors.js';
-import { get } from '../utils/http.js';
+import { get } from '../http.js';
 
 export type Viewer = {
   id: string;
