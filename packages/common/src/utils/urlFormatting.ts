@@ -117,6 +117,10 @@ export const mediaURL = ({
   );
 };
 
+export const singleMediaURL = (id: string, title?: string) => {
+  return createPath(PATH_MEDIA, { id, title: title ? slugify(title) : undefined });
+};
+
 export const playlistURL = (id: string, title?: string) => {
   return createPath(PATH_PLAYLIST, { id, title: title ? slugify(title) : undefined });
 };

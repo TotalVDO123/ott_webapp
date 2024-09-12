@@ -91,4 +91,5 @@ export const PLAYLIST_TYPE = {
   continue_watching: 'continue_watching',
   favorites: 'favorites',
   content_list: 'content_list',
+  media: 'media',
 } as const;

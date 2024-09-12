@@ -44,13 +44,13 @@ export type Drm = {
 };
 
 export type PlaylistType = keyof typeof PLAYLIST_TYPE;
-
-export type PlaylistMenuType = Extract<PlaylistType, 'playlist' | 'content_list'>;
+export type PlaylistMenuType = Extract<PlaylistType, 'playlist' | 'content_list' | 'media'>;
+export type PlaylistShelfType = Extract<PlaylistType, 'playlist' | 'content_list' | 'continue_watching' | 'favorites'>;
 
 export type Content = {
   contentId?: string;
   title?: string;
-  type: PlaylistType;
+  type: PlaylistShelfType;
   featured?: boolean;
   backgroundColor?: string | null;
 };
@@ -78,11 +78,13 @@ export type Cleeng = {
   yearlyOffer?: string | null;
   useSandbox?: boolean;
 };
+
 export type JWP = {
   clientId?: string | null;
   assetId?: number | null;
   useSandbox?: boolean;
 };
+
 export type Features = {
   recommendationsPlaylist?: string | null;
   searchPlaylist?: string | null;
