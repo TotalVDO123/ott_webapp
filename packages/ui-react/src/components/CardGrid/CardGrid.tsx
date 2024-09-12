@@ -10,6 +10,7 @@ import useBreakpoint, { Breakpoint, type Breakpoints } from '@jwp/ott-ui-react/s
 import Card from '../Card/Card';
 import InfiniteScrollLoader from '../InfiniteScrollLoader/InfiniteScrollLoader';
 import LayoutGrid from '../LayoutGrid/LayoutGrid';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './CardGrid.module.scss';
 
@@ -26,7 +27,9 @@ const defaultCols: Breakpoints = {
   [Breakpoint.xl]: 5,
 };
 
-type CardGridProps = {
+export const CardGridIdentifier = Symbol(`CARD_GRID`);
+
+export type CardGridProps = {
   playlist: Playlist;
   watchHistory?: { [key: string]: number };
   isLoading: boolean;
@@ -104,4 +107,4 @@ function CardGrid({
   );
 }
 
-export default CardGrid;
+export default createInjectableComponent(CardGridIdentifier, CardGrid);

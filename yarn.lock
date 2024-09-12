@@ -2702,7 +2702,7 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@rollup/pluginutils@^4.2.0", "@rollup/pluginutils@^4.2.1":
+"@rollup/pluginutils@^4.1.1", "@rollup/pluginutils@^4.2.0", "@rollup/pluginutils@^4.2.1":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-4.2.1.tgz#e6c6c3aba0744edce3fb2074922d3776c0af2a6d"
   integrity sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==
@@ -6093,7 +6093,7 @@ dotenv-expand@^8.0.2:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-8.0.3.tgz#29016757455bcc748469c83a19b36aaf2b83dd6e"
   integrity sha512-SErOMvge0ZUyWd5B0NXMQlDkN+8r+HhVUsxgOO7IoPDOdDRD2JjExpN6y3KnFR66jsJMwSn1pqIivhU5rcJiNg==
 
-dotenv@^16.0.0, dotenv@^16.4.2:
+dotenv@^16.0.0, dotenv@^16.4.2, dotenv@^16.4.5:
   version "16.4.5"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
   integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
@@ -14109,6 +14109,15 @@ vite-plugin-html@^3.2.2:
     html-minifier-terser "^6.1.0"
     node-html-parser "^5.3.3"
     pathe "^0.2.0"
+
+vite-plugin-node@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-node/-/vite-plugin-node-3.1.0.tgz#e8f695f1634475f2e816ff8a734e6f844e6fd250"
+  integrity sha512-LN9byKedZaokEWcH+DTdeV7YLN34dWH7Em2ldHZ77oVGvC/uxHnK43AGPrV9+9CoOh1x9X3Yc55vW/OQYssFDQ==
+  dependencies:
+    "@rollup/pluginutils" "^4.1.1"
+    chalk "^4.1.2"
+    debug "^4.3.2"
 
 vite-plugin-pwa@^0.19.8:
   version "0.19.8"

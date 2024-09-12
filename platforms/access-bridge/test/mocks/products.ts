@@ -10,7 +10,7 @@ export type MockBehavior = 'default' | 'empty' | 'error';
 
 // Mock PlansService
 export class MockPlansService extends PlansService {
-  async getAvailablePlans({ siteId }: { siteId: string }): Promise<Plan[]> {
+  async getAvailablePlans(): Promise<Plan[]> {
     return PLANS.VALID;
   }
 }

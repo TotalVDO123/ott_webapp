@@ -2,9 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
 import { StripeService } from '../services/stripe-service.js';
-import { ErrorDefinitions, sendErrors } from '../errors.js';
-import { isValidSiteId } from '../utils.js';
-
 /**
  * Controller class responsible for handling Stripe-related services.
  */
@@ -18,32 +15,16 @@ export class ProductsController {
   }
 
   /**
-   * Service handler for fetching and returning Stripe products with prices based on available plans
-   * for a given site ID. Validates the site ID, retrieves and filters plans, and matches them with
-   * Stripe products via external provider IDs. Sends appropriate error responses for invalid requests.
-   *
-   * @param req - Express request object
-   * @param res - Express response object
-   * @param next - Express next middleware function
+   * Service handler for fetching and returning Stripe products with prices based on available plans.
+   * Retrieves and filters plans, and matches them with Stripe products via external provider IDs.
    */
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const siteId = req.params.site_id;
-    if (!isValidSiteId(siteId)) {
-      sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
-      return;
-    }
+    const availablePlans = await this.plansService.getAvailablePlans();
+    const stripeProductIds: string[] = availablePlans
+      .map((plan) => plan.metadata.external_providers?.stripe ?? [])
+      .flat();
 
-    try {
-      const availablePlans = await this.plansService.getAvailablePlans({ siteId });
-      const stripeProductIds: string[] = availablePlans
-        .map((plan) => plan.metadata.external_providers?.stripe ?? [])
-        .flat();
-
-      const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
-      res.json(products);
-    } catch (error) {
-      console.error('Controller: failed to get Stripe products.', error);
-      next(error);
-    }
+    const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
+    res.json(products);
   }
 }
