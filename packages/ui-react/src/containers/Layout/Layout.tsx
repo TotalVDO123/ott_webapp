@@ -8,7 +8,7 @@ import { contentListURL, singleMediaURL, playlistURL } from '@jwp/ott-common/src
 import env from '@jwp/ott-common/src/env';
 import { useUIStore } from '@jwp/ott-common/src/stores/UIStore';
 import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
-import type { PlaylistMenuType } from 'packages/common/types/config';
+import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
