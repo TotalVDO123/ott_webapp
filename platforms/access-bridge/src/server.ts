@@ -2,7 +2,7 @@ import { Server as HTTPServer } from 'http';
 
 import express, { Express } from 'express';
 
-import { Middleware } from './pipeline/middleware'; // Import the Middleware class
+import { Middleware } from './pipeline/middleware.js';
 
 /**
  * Server class that initializes and manages an Express application with error handling.

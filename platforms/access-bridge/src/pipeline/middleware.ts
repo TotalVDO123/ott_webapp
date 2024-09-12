@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction, Express } from 'express';
 import cors from 'cors';
 
-import { AccessBridgeError, ErrorDefinitions, handleJWError, isJWError, sendErrors } from '../errors';
-import { SITE_ID } from '../app-config';
+import { AccessBridgeError, ErrorDefinitions, handleJWError, isJWError, sendErrors } from '../errors.js';
+import { SITE_ID } from '../app-config.js';
 
 /**
  * Middleware class encapsulates global and route-specific middleware.

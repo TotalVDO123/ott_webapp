@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { BIND_ADDR, BIND_PORT } from './app-config.js';
 import { initializeRoutes } from './pipeline/routes.js';
 import { Server } from './server.js';

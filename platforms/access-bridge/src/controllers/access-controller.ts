@@ -10,9 +10,9 @@ import { IdentityService, Viewer } from '../services/identity-service.js';
  * The controller interacts with services for identity management, plans management, and passport generation.
  */
 export class AccessController {
-  private identityService: IdentityService;
-  private passportService: PassportService;
-  private plansService: PlansService;
+  private readonly identityService: IdentityService;
+  private readonly passportService: PassportService;
+  private readonly plansService: PlansService;
 
   constructor() {
     this.identityService = new IdentityService();
