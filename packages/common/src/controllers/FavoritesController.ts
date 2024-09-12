@@ -1,6 +1,5 @@
 import i18next from 'i18next';
 import { injectable } from 'inversify';
-import { getI18n } from 'react-i18next';
 
 import FavoriteService from '../services/FavoriteService';
 import type { PlaylistItem } from '../../types/playlist';
@@ -16,9 +15,8 @@ export default class FavoritesController {
     this.favoritesService = favoritesService;
   }
 
-  initialize = async () => {
-    const i18n = getI18n();
-    await this.restoreFavorites(i18n.language);
+  initialize = async (language: string) => {
+    await this.restoreFavorites(language);
   };
 
   restoreFavorites = async (language?: string) => {

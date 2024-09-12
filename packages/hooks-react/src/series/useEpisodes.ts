@@ -4,7 +4,7 @@ import type { Pagination } from '@jwp/ott-common/types/pagination';
 import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { CACHE_TIME, STALE_TIME } from '@jwp/ott-common/src/constants';
-import { getI18n } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const getNextPageParam = (pagination: Pagination) => {
   const { page, page_limit, total } = pagination;
@@ -30,7 +30,7 @@ export const useEpisodes = (
   const apiService = getModule(ApiService);
 
   // Determine currently selected language
-  const i18n = getI18n();
+  const { i18n } = useTranslation('menu');
   const language = i18n.language;
 
   const {
