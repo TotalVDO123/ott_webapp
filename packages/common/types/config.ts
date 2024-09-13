@@ -53,6 +53,7 @@ export type Content = {
   type: PlaylistType;
   featured?: boolean;
   backgroundColor?: string | null;
+  custom?: Record<string, unknown>;
 };
 
 export type Menu = {
@@ -60,6 +61,7 @@ export type Menu = {
   contentId: string;
   type?: PlaylistMenuType;
   filterTags?: string;
+  custom?: Record<string, unknown>;
 };
 
 export type Styling = {

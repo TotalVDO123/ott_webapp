@@ -30,6 +30,10 @@ const ShelfList = ({ rows }: Props) => {
   const { accessModel } = useConfigStore(({ accessModel }) => ({ accessModel }), shallow);
   const [rowsToLoad, setRowsToLoad] = useState(INITIAL_ROWS_TO_LOAD);
   const { t } = useTranslation('error');
+  const { i18n } = useTranslation('menu');
+
+  // Determine currently selected language
+  const language = i18n.language;
 
   const watchHistoryDictionary = useWatchHistoryStore((state) => state.getDictionaryWithSeries());
 
@@ -61,7 +65,7 @@ const ShelfList = ({ rows }: Props) => {
         loader={<InfiniteScrollLoader key="loader" />}
         useWindow={false}
       >
-        {rows.slice(0, rowsToLoad).map(({ type, featured, title }, index) => {
+        {rows.slice(0, rowsToLoad).map(({ type, featured, title, custom }, index) => {
           const { data: playlist, isPlaceholderData, error } = playlists[index];
 
           if (!playlist?.playlist?.length) return null;
@@ -69,12 +73,15 @@ const ShelfList = ({ rows }: Props) => {
           const posterAspect = parseAspectRatio(playlist.cardImageAspectRatio || playlist.shelfImageAspectRatio);
           const visibleTilesDelta = parseTilesDelta(posterAspect);
 
+          const translatedKey = custom?.[`title-${language}`];
+          const translatedTitle = translatedKey ? (translatedKey as string) : title || playlist?.title;
+
           return (
             <section
               key={`${index}_${playlist.id}`}
               className={classNames(styles.shelfContainer, { [styles.featured]: featured })}
-              data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
-              aria-label={title || playlist?.title}
+              data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
+              aria-label={translatedTitle}
             >
               <Shelf
                 loading={isPlaceholderData}
@@ -82,7 +89,7 @@ const ShelfList = ({ rows }: Props) => {
                 type={type}
                 playlist={playlist}
                 watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
-                title={title || playlist?.title}
+                title={translatedTitle}
                 featured={featured}
                 accessModel={accessModel}
                 isLoggedIn={!!user}

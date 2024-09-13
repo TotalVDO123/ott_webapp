@@ -26,6 +26,10 @@ import styles from './Layout.module.scss';
 
 const Layout = () => {
   const { t } = useTranslation('common');
+  const { i18n } = useTranslation('menu');
+
+  // Determine currently selected language
+  const language = i18n.language;
 
   const { config } = useConfigStore(
     ({ config, accessModel, supportedLanguages }) => ({
@@ -49,10 +53,14 @@ const Layout = () => {
 
   const navItems = [
     { label: t('home'), to: '/' },
-    ...menu.map(({ label, contentId, type }) => ({
-      label,
-      to: type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId),
-    })),
+    ...menu.map(({ label, contentId, type, custom }) => {
+      const translatedKey = custom?.[`label-${language}`];
+      const translatedLabel = translatedKey ? translatedKey : label;
+      return {
+        label: translatedLabel as string,
+        to: type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId),
+      };
+    }),
   ];
 
   const containerProps = { inert: sideBarOpen ? '' : undefined }; // inert is not yet officially supported in react
