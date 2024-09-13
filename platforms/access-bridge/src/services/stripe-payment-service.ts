@@ -79,6 +79,7 @@ export class StripePaymentService implements PaymentService {
         },
       ],
       metadata: {
+        // This is very important as it's our only way of connecting the payment back to the viewer
         viewer_id: viewer.id,
       },
       customer_email: viewer.email,
@@ -90,6 +91,7 @@ export class StripePaymentService implements PaymentService {
       ...(params.mode === 'subscription' && {
         subscription_data: {
           metadata: {
+            // This is very important as it's our only way of connecting the payment back to the viewer
             viewer_id: viewer.id,
           },
         },

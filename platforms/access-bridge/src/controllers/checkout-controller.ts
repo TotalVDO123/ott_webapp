@@ -6,11 +6,11 @@ import { PaymentService } from '../services/payment-service.js';
 import { StripePaymentService } from '../services/stripe-payment-service.js';
 
 /**
- * Controller class responsible for handling Stripe Checkout sessions.
+ * Controller class responsible for handling payment checkout session URLs, where the viewers can complete the payment.
  */
 export class CheckoutController {
-  private identityService: IdentityService;
-  private paymentService: PaymentService;
+  private readonly identityService: IdentityService;
+  private readonly paymentService: PaymentService;
 
   constructor() {
     this.identityService = new IdentityService();
