@@ -1,14 +1,14 @@
 import { BIND_ADDR, BIND_PORT } from './app-config.js';
-import { registerEndpoints } from './endpoints.js';
-import logger from './logger.js';
+import { initializeRoutes } from './pipeline/routes.js';
 import { Server } from './server.js';
+import logger from './pipeline/logger.js';
 
 if (BIND_PORT <= 0 || BIND_PORT > 65535) {
-  logger.warn('Error: BIND_PORT must be a valid port number between 1 and 65535.');
+  logger.error('Error: BIND_PORT must be a valid port number between 1 and 65535.');
   process.exit(1);
 }
 
-const server = new Server(BIND_ADDR, BIND_PORT, registerEndpoints);
+const server = new Server(BIND_ADDR, BIND_PORT, initializeRoutes);
 
 async function startServer() {
   try {

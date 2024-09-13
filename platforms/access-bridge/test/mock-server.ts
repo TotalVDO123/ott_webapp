@@ -18,9 +18,9 @@ export class MockServer {
     this.port = port;
   }
 
-  static async create(registerEndpoints: (app: Express) => void): Promise<MockServer> {
+  static async create(initializeRoutes: (app: Express) => void): Promise<MockServer> {
     // Use port 0 to let the OS select an available port for testing
-    const server = new Server('localhost', 0, registerEndpoints);
+    const server = new Server('localhost', 0, initializeRoutes);
     const port = await server.listen();
     return new this(server, port);
   }

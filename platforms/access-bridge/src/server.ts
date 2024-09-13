@@ -1,25 +1,16 @@
 import { Server as HTTPServer } from 'http';
 
-import * as Sentry from '@sentry/node';
-import express, { Express, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import Stripe from 'stripe';
+import express, { Express } from 'express';
 
-import logger from './logger.js';
-import {
-  AccessBridgeError,
-  ErrorDefinitions,
-  handleJWError,
-  handleStripeError,
-  isJWError,
-  sendErrors,
-} from './errors.js';
+import { Middleware } from './pipeline/middleware.js';
+import logger from './pipeline/logger.js';
 
 /**
  * Server class that initializes and manages an Express application with error handling.
  */
 export class Server {
   private app: Express;
+  private middleware: Middleware;
   private httpServer: HTTPServer | null;
   private address: string;
   private port: number;
@@ -28,78 +19,34 @@ export class Server {
    * Creates an instance of the Server class.
    * @param address - Address to bind the server to
    * @param port - Port to bind the server to
-   * @param registerEndpoints - Function to register routes and endpoints
+   * @param initializeRoutes - Function to register routes
    */
-  constructor(address: string, port: number, registerEndpoints: (app: Express) => void) {
+  constructor(address: string, port: number, initializeRoutes: (app: Express) => void) {
     this.app = express();
+    this.middleware = new Middleware();
     this.httpServer = null;
     this.address = address;
     this.port = port;
-    this.initialize(registerEndpoints);
+    this.initialize(initializeRoutes);
   }
 
   /**
-   * Initializes the server with middleware and endpoints.
-   * @param registerEndpoints - Function to register routes and endpoints
+   * Initializes the server with middlewares and routes.
+   * @param initializeRoutes - Function to initialize the defined routes
    */
-  private initialize(registerEndpoints: (app: Express) => void) {
-    // Middleware to enable Cross-Origin Resource Sharing (CORS)
-    this.app.use(cors());
+  private initialize(initializeRoutes: (app: Express) => void) {
+    // Initialize core middleware, e.g., CORS, JSON parsing.
+    this.middleware.initializeCoreMiddleware(this.app);
 
-    // Middleware for parsing JSON request bodies
-    this.app.use(express.json());
+    // Initialize the defined routes
+    initializeRoutes(this.app);
 
-    // Register custom endpoints
-    registerEndpoints(this.app);
+    // Initialize Sentry error handler for Expresss
+    this.middleware.initializeSentryMiddleware(this.app);
 
-    // The error handler must be registered before any other error middleware and after all controllers
-    if (Sentry.getClient()) {
-      Sentry.setupExpressErrorHandler(this.app);
-    }
-
-    // Handle 404 Not Found errors
-    this.app.use(this.notFoundErrorHandler);
-
-    // Global error handling middleware
-    this.app.use(this.globalErrorHandler);
+    // Initialize error middleware after all routes are registered
+    this.middleware.initializeErrorMiddleware(this.app);
   }
-
-  /**
-   * Middleware to handle 404 Not Found errors.
-   */
-  private notFoundErrorHandler = (req: Request, res: Response, next: NextFunction) => {
-    sendErrors(res, ErrorDefinitions.NotFoundError.create());
-    return;
-  };
-
-  /**
-   * Global error handler middleware for the server.
-   */
-  private globalErrorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
-    if (err instanceof SyntaxError && 'body' in err) {
-      sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'body' }));
-      return;
-    }
-
-    if (err instanceof AccessBridgeError) {
-      sendErrors(res, err);
-      return;
-    }
-
-    if (err instanceof Stripe.errors.StripeError) {
-      const accessBridgeError = handleStripeError(err);
-      sendErrors(res, accessBridgeError);
-    }
-
-    if (isJWError(err)) {
-      const accessBridgeError = handleJWError(err);
-      sendErrors(res, accessBridgeError);
-      return;
-    }
-
-    console.error('Unexpected error:', err);
-    sendErrors(res, ErrorDefinitions.InternalError.create());
-  };
 
   /**
    * Starts the server and listens on the specified port.

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as Sentry from '@sentry/node';
 
-import logger from '../../src/logger.js';
+import logger from '../../src/pipeline/logger.js';
 
 describe('Logger Tests', () => {
   beforeEach(() => {

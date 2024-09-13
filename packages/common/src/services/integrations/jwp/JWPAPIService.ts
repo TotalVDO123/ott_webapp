@@ -22,9 +22,9 @@ type RequestOptions = {
 
 @injectable()
 export default class JWPAPIService {
-  private readonly storageService: StorageService;
+  protected readonly storageService: StorageService;
 
-  private useSandboxEnv = true;
+  protected useSandboxEnv = true;
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
@@ -34,7 +34,7 @@ export default class JWPAPIService {
     this.useSandboxEnv = useSandboxEnv;
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'https://sims.jwplayer.com');
+  private getBaseUrl = () => (this.useSandboxEnv ? 'https://daily-sims.jwplayer.com' : 'https://sims.jwplayer.com');
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);

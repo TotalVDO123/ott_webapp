@@ -15,15 +15,21 @@
 /src                    - Source code for the application
   /controllers          - Controller modules containing the core logic for handling requests and responses
   /services             - Services which connect external data sources to the application
-  /app-config.ts        - Configuration settings for the application
-  /endpoints.ts         - Definitions for the exposed endpoints
+  /pipeline             - Middleware and routing logic
+    /middleware.ts      - Middleware functions and error handling
+    /routes.ts          - Route definitions and route registration
+    /logger.ts          - Logger class that integrates with Sentry if defined with fallback as a development logger
   /errors.ts            - Custom error classes and error handling logic
   /http.ts              - HTTP utility functions and setup
+  /app-config.ts        - Configuration settings for the application
   /main.ts              - Main entry point of the application
   /server.ts            - Server initialization and configuration
 /test                   - Data and scripts for testing
 /.env<.mode>            - Environment variables for different modes (e.g., development, production)
 /package.json           - Yarn file for dependencies and scripts
+
+
+
 
 * = Generated directories, not in source control
 

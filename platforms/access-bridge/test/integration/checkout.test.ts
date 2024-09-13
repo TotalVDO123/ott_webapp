@@ -1,6 +1,6 @@
 import http from 'http';
 
-import { Express, NextFunction, Request, Response } from 'express';
+import { Express } from 'express';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
 import { MockServer } from '../mock-server.js';
@@ -15,6 +15,8 @@ import {
   SITE_ID,
 } from '../fixtures.js';
 import { MockCheckoutController } from '../mocks/checkout.js';
+import { addRoute } from '../../src/pipeline/routes.js';
+import { validateSiteId } from '../mocks/middleware.js';
 
 describe('CheckoutController tests', () => {
   let mockServer: MockServer;
@@ -23,16 +25,20 @@ describe('CheckoutController tests', () => {
   beforeAll(async () => {
     checkoutController = new MockCheckoutController();
 
-    const registerEndpoints = (app: Express) => {
-      app.post(ENDPOINTS.CHECKOUT, (req: Request, res: Response, next: NextFunction) => {
-        checkoutController.initiateCheckout(req, res, next);
-      });
-      app.post(ENDPOINTS.BILLING_PORTAL, (req: Request, res: Response, next: NextFunction) => {
-        checkoutController.generateBillingPortalURL(req, res, next);
-      });
+    const initializeRoutes = (app: Express) => {
+      addRoute(app, 'post', ENDPOINTS.CHECKOUT, checkoutController.initiateCheckout.bind(checkoutController), [
+        validateSiteId,
+      ]);
+      addRoute(
+        app,
+        'post',
+        ENDPOINTS.BILLING_PORTAL,
+        checkoutController.generateBillingPortalURL.bind(checkoutController),
+        [validateSiteId]
+      );
     };
 
-    mockServer = await MockServer.create(registerEndpoints);
+    mockServer = await MockServer.create(initializeRoutes);
   });
 
   const checkoutTestCases = [
@@ -208,7 +214,7 @@ describe('CheckoutController tests', () => {
 
   STRIPE_ERRORS.forEach(({ error, expectedCode, statusCode }) => {
     it(`should handle ${error.type} correctly`, async () => {
-      checkoutController['stripeService'].setMockBehavior('error', error);
+      checkoutController['paymentService'].setMockBehavior('error', error);
 
       const requestBody = JSON.stringify({
         access_plan_id: VALID_PLAN_ID,

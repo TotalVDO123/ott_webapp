@@ -1,32 +1,29 @@
 import http from 'http';
 
-import { Express, NextFunction, Response, Request } from 'express';
+import { Express } from 'express';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
-import { ProductsController } from '../../src/controllers/products-controller.js';
 import { MockServer } from '../mock-server.js';
 import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT } from '../fixtures.js';
 import { ErrorDefinitions } from '../../src/errors.js';
-import { MockBehavior, MockPlansService, MockStripeService } from '../mocks/products.js';
+import { MockBehavior, MockPaymentService, MockProductsController } from '../mocks/products.js';
+import { addRoute } from '../../src/pipeline/routes.js';
+import { validateSiteId } from '../mocks/middleware.js';
 
 describe('ProductsController tests', () => {
   let mockServer: MockServer;
-  let productsController: ProductsController;
-  let mockStripeService: MockStripeService;
+  let productsController: MockProductsController;
 
   beforeAll(async () => {
-    productsController = new ProductsController();
-    mockStripeService = new MockStripeService();
-    productsController['stripeService'] = mockStripeService;
-    productsController['plansService'] = new MockPlansService();
+    productsController = new MockProductsController();
 
-    const registerEndpoints = (app: Express) => {
-      app.get(ENDPOINTS.PRODUCTS, (req: Request, res: Response, next: NextFunction) => {
-        productsController.getProducts(req, res, next);
-      });
+    const initializeRoutes = (app: Express) => {
+      addRoute(app, 'get', ENDPOINTS.PRODUCTS, productsController.getProducts.bind(productsController), [
+        validateSiteId,
+      ]);
     };
 
-    mockServer = await MockServer.create(registerEndpoints);
+    mockServer = await MockServer.create(initializeRoutes);
   });
 
   const testCases = [
@@ -74,7 +71,7 @@ describe('ProductsController tests', () => {
     '$description',
     async ({ requestOptions, mockBehavior, expectedStatusCode, expectedResponse, expectedError }) => {
       if (mockBehavior) {
-        mockStripeService.setMockBehavior(mockBehavior);
+        (productsController['paymentService'] as MockPaymentService).setMockBehavior(mockBehavior);
       }
 
       const response = await new Promise<http.IncomingMessage>((resolve) => {
@@ -105,7 +102,7 @@ describe('ProductsController tests', () => {
 
   STRIPE_ERRORS.forEach(({ error, expectedCode, statusCode }) => {
     it(`should handle ${error.type} correctly`, async () => {
-      mockStripeService.setMockBehavior('error', error);
+      (productsController['paymentService'] as MockPaymentService).setMockBehavior('error', error);
 
       const requestOptions = {
         method: 'GET',

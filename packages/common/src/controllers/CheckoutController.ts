@@ -27,6 +27,7 @@ import { useCheckoutStore } from '../stores/CheckoutStore';
 import { useAccountStore } from '../stores/AccountStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { determineSwitchDirection } from '../utils/subscription';
+import { findDefaultCardMethodId } from '../utils/payments';
 
 @injectable()
 export default class CheckoutController {
@@ -70,7 +71,7 @@ export default class CheckoutController {
     const { customer } = getAccountInfo();
 
     const paymentMethods = await this.getPaymentMethods();
-    const paymentMethodId = paymentMethods[0]?.id;
+    const paymentMethodId = parseInt(findDefaultCardMethodId(paymentMethods));
 
     const createOrderArgs: CreateOrderArgs = {
       offer,

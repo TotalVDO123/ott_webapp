@@ -1,10 +1,6 @@
-export type StripeCheckoutParams = {
-  price_id: string;
-  mode: 'payment' | 'setup' | 'subscription';
-  success_url: string;
-  cancel_url: string;
-};
+import type { CheckoutParams } from './payment';
 
-export type StripeCheckoutResponse = {
-  url: string;
+// Extend the CheckoutParams type with Stripe-specific fields
+export type StripeCheckoutParams = CheckoutParams & {
+  mode: 'payment' | 'subscription';
 };
