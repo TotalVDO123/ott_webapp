@@ -1,6 +1,6 @@
 import InPlayer, { Env } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
 import { formatConsentsToRegisterFields } from '../../../utils/collection';
 import type {
@@ -60,17 +60,17 @@ const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 
 @injectable()
 export default class JWPAccountService extends AccountService {
-  private readonly storageService;
-  private readonly apiService;
+  protected readonly storageService;
+  protected readonly apiService;
 
-  private clientId = '';
+  protected clientId = '';
 
   accessModel: AccessModel = ACCESS_MODEL.AUTHVOD;
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
 
-  constructor(storageService: StorageService, apiService: JWPAPIService) {
+  constructor(@inject(StorageService) storageService: StorageService, @inject(JWPAPIService) apiService: JWPAPIService) {
     super({
       canUpdateEmail: false,
       canSupportEmptyFullName: false,

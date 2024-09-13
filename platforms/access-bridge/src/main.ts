@@ -1,5 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { BIND_ADDR, BIND_PORT } from './app-config.js';
-import { registerEndpoints } from './endpoints.js';
+import { initializeRoutes } from './pipeline/routes.js';
 import { Server } from './server.js';
 
 if (BIND_PORT <= 0 || BIND_PORT > 65535) {
@@ -7,7 +10,7 @@ if (BIND_PORT <= 0 || BIND_PORT > 65535) {
   process.exit(1);
 }
 
-const server = new Server(BIND_ADDR, BIND_PORT, registerEndpoints);
+const server = new Server(BIND_ADDR, BIND_PORT, initializeRoutes);
 
 async function startServer() {
   try {

@@ -15,6 +15,7 @@ import '@videodock/tile-slider/lib/style.css';
 
 import Card from '../Card/Card';
 import Icon from '../Icon/Icon';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './Shelf.module.scss';
 
@@ -33,6 +34,8 @@ export const featuredTileBreakpoints: Breakpoints = {
   [Breakpoint.lg]: 1,
   [Breakpoint.xl]: 1,
 };
+
+export const ShelfIdentifier = Symbol(`SHELF`);
 
 export type ShelfProps = {
   playlist: Playlist;
@@ -151,4 +154,4 @@ const Shelf = ({
   );
 };
 
-export default Shelf;
+export default createInjectableComponent(ShelfIdentifier, Shelf);

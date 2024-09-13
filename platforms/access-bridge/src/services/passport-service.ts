@@ -2,18 +2,12 @@ import jwt from 'jsonwebtoken';
 import { PassportResponse } from '@jwp/ott-common/types/passport.js';
 import { AccessControlPlan } from '@jwp/ott-common/types/plans.js';
 
-import { ACCESS_CONTROL_API_HOST, API_SECRET } from '../app-config.js';
+import { ACCESS_CONTROL_API_HOST, API_SECRET, SITE_ID } from '../app-config.js';
 import { put } from '../http.js';
 
 type GeneratePassportParams = {
-  siteId: string;
   viewerId: string;
   plans: AccessControlPlan[];
-};
-
-type RefreshPassportParams = {
-  siteId: string;
-  refreshToken: string;
 };
 
 /**
@@ -23,13 +17,12 @@ type RefreshPassportParams = {
 export class PassportService {
   /**
    * Generate access tokens for a specific site and subscriber.
-   * @param siteId The ID of the site.
    * @param email The subscriber's email address.
    * @param plans Array of access plans for the subscriber.
    * @returns A Promise resolving to an AccessTokensResponse.
    */
-  async generatePassport({ siteId, viewerId, plans }: GeneratePassportParams): Promise<PassportResponse> {
-    const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/generate`);
+  async generatePassport({ viewerId, plans }: GeneratePassportParams): Promise<PassportResponse> {
+    const url = await this.generateSignedUrl(`/v2/sites/${SITE_ID}/access/generate`);
     const payload = {
       subscriber_info: {
         email: viewerId,
@@ -42,12 +35,11 @@ export class PassportService {
 
   /**
    * Refresh access tokens for a specific site using a refresh token.
-   * @param siteId The ID of the site.
    * @param refreshToken The refresh token to use for token refresh.
    * @returns A Promise resolving to an AccessTokensResponse.
    */
-  async refreshPassport({ siteId, refreshToken }: RefreshPassportParams): Promise<PassportResponse> {
-    const url = await this.generateSignedUrl(`/v2/sites/${siteId}/access/refresh`);
+  async refreshPassport({ refreshToken }: { refreshToken: string }): Promise<PassportResponse> {
+    const url = await this.generateSignedUrl(`/v2/sites/${SITE_ID}/access/refresh`);
     const payload = {
       refresh_token: refreshToken,
     };

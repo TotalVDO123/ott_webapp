@@ -67,7 +67,7 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
 - **Method:** GET
 - **Authorization:** None
 - **Summary:** Lists all the corresponding stripe products with prices that are connected to the SIMS plans.
-- **Response:** Stripe.Product type
+- **Response:** [Product payment type](../../../ott-web-app/packages/common/types/payment.ts)
   ```json
   [
     {
