@@ -42,7 +42,7 @@ export class CheckoutController {
   }
 
   /**
-   * Service handler for generating a Billing portal session URL based on the provided customer.
+   * Service handler for generating a Billing portal session URL based on the provided viewer.
    * Viewers are redirected to this URL where they can manage their purchase info.
    * @returns A Promise that resolves with a response containing the URL for the Billing Portal session.
    */
