@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
-import { StripePaymentService } from '../services/stripe-service.js';
+import { StripePaymentService } from '../services/stripe-payment-service.js';
 import { PaymentService } from '../services/payment-service.js';
 /**
  * Controller class responsible for handling Stripe-related services.
  */
 export class ProductsController {
-  private plansService: PlansService;
-  private paymentService: PaymentService;
+  private readonly plansService: PlansService;
+  private readonly paymentService: PaymentService;
 
   constructor() {
     this.plansService = new PlansService();
@@ -22,7 +22,7 @@ export class ProductsController {
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
     const availablePlans = await this.plansService.getAvailablePlans();
     const stripeProductIds: string[] = availablePlans
-      // At this moment we only have support for stripe
+      // Currently, we only support Stripe as a payment provider, so we filter and use only Stripe product IDs.
       .map((plan) => plan.metadata.external_providers?.stripe ?? [])
       .flat();
 

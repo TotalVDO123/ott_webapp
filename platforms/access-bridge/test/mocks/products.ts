@@ -3,10 +3,15 @@ import { Plan } from '@jwp/ott-common/types/plans.js';
 
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors.js';
 import { PlansService } from '../../src/services/plans-service.js';
-import { StripePaymentService } from '../../src/services/stripe-service.js';
 import { PLANS, STRIPE_PRODUCT } from '../fixtures.js';
+import { ProductsController } from '../../src/controllers/products-controller.js';
+import { PaymentService } from '../../src/services/payment-service.js';
 
 export type MockBehavior = 'default' | 'empty' | 'error';
+
+export interface MockPaymentService extends PaymentService {
+  setMockBehavior(behavior: 'default' | 'empty' | 'error', error?: Stripe.errors.StripeError): unknown;
+}
 
 // Mock PlansService
 export class MockPlansService extends PlansService {
@@ -16,7 +21,7 @@ export class MockPlansService extends PlansService {
 }
 
 // Mock StripeService
-export class MockStripeService extends StripePaymentService {
+export class MockStripePaymentService implements MockPaymentService {
   private mockBehavior: MockBehavior = 'default';
   private mockError: AccessBridgeError | null = null;
 
@@ -51,5 +56,13 @@ export class MockStripeService extends StripePaymentService {
     }
 
     return [STRIPE_PRODUCT];
+  }
+}
+
+export class MockProductsController extends ProductsController {
+  constructor() {
+    super();
+    Reflect.set(this, 'paymentService', new MockStripePaymentService());
+    Reflect.set(this, 'plansService', new MockPlansService());
   }
 }
