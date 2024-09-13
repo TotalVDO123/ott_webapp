@@ -13,13 +13,16 @@ import type { PosterAspectRatio } from '@jwp/ott-common/src/utils/collection';
 
 import Image from '../Image/Image';
 import Icon from '../Icon/Icon';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './Card.module.scss';
+
+export const CardIdentifier = Symbol(`CARD`);
 
 type ReplaceColon<T> = T extends `${infer Left}:${infer Right}` ? `${Left}${Right}` : T;
 type PosterAspectRatioClass = ReplaceColon<PosterAspectRatio>;
 
-type CardProps = {
+export type CardProps = {
   item: PlaylistItem;
   onHover?: () => void;
   progress?: number;
@@ -137,4 +140,4 @@ function Card({
   );
 }
 
-export default memo(Card);
+export default memo(createInjectableComponent(CardIdentifier, Card));

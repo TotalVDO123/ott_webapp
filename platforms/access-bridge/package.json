@@ -11,7 +11,7 @@
   "scripts": {
     "build": "vite build --mode ${MODE:=prod}",
     "build-test": "vite build --mode test",
-    "start": "node --import ./build/instrument.js build/main.js",
+    "start": "node build/main.js",
     "prestart": "yarn build",
     "pretest": "yarn build-test",
     "test": "TZ=UTC LC_ALL=en_US.UTF-8 vitest run",
@@ -25,6 +25,7 @@
     "eslint-config-jwp": "*",
     "typescript": "^5.5.3",
     "vite": "^5.3.1",
+    "vite-plugin-node": "^3.1.0",
     "vitest": "^1.6.0"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "@sentry/profiling-node": "^8.26.0",
     "@sentry/vite-plugin": "^2.22.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "stripe": "^16.8.0"

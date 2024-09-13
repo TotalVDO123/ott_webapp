@@ -1,12 +1,10 @@
-import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
-import Stripe from 'stripe';
 import { NextFunction, Request, Response } from 'express';
 
-import { AccessBridgeError, ErrorDefinitions, sendErrors } from '../../src/errors.js';
-import { StripeService } from '../../src/services/stripe-service.js';
-import { STRIPE_SESSION_URL, AUTHORIZATION, VIEWER } from '../fixtures.js';
-import { IdentityService, Viewer } from '../../src/services/identity-service.js';
-import { isValidSiteId } from '../../src/utils.js';
+import { ErrorDefinitions, sendErrors } from '../../src/errors.js';
+import { AUTHORIZATION, VIEWER } from '../fixtures.js';
+import { IdentityService } from '../../src/services/identity-service.js';
+
+import { MockStripePaymentService } from './payment.js';
 
 // Mock IdentityService
 class MockIdentityService extends IdentityService {
@@ -19,85 +17,33 @@ class MockIdentityService extends IdentityService {
   }
 }
 
-// Mock StripeService
-class MockStripeService extends StripeService {
-  private mockBehavior: 'default' | 'error' = 'default';
-  private mockError: AccessBridgeError | null = null;
-
-  // Method to set the mock behavior
-  setMockBehavior(behavior: 'default' | 'error', error?: Stripe.errors.StripeError) {
-    this.mockBehavior = behavior;
-
-    if (behavior === 'error' && error instanceof Stripe.errors.StripeError) {
-      switch (error.type) {
-        case 'StripeInvalidRequestError':
-          this.mockError = ErrorDefinitions.BadRequestError.create();
-          break;
-        case 'StripeAuthenticationError':
-          this.mockError = ErrorDefinitions.UnauthorizedError.create();
-          break;
-        case 'StripePermissionError':
-          this.mockError = ErrorDefinitions.ForbiddenError.create();
-          break;
-        default:
-          this.mockError = ErrorDefinitions.BadRequestError.create();
-      }
-    }
-  }
-
-  async createCheckoutSession(viewer: Viewer, params: StripeCheckoutParams) {
-    if (this.mockBehavior === 'error' && this.mockError) {
-      throw this.mockError;
-    }
-
-    return { url: STRIPE_SESSION_URL } as Stripe.Checkout.Session;
-  }
-}
-
 // Mock Controller
 export class MockCheckoutController {
   private identityService: MockIdentityService;
-  private stripeService: MockStripeService;
+  private paymentService: MockStripePaymentService;
 
   constructor() {
     this.identityService = new MockIdentityService();
-    this.stripeService = new MockStripeService();
+    this.paymentService = new MockStripePaymentService();
   }
 
   initiateCheckout = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const siteId = req.params.site_id;
-      if (!isValidSiteId(siteId)) {
-        sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
-        return;
-      }
-
-      const authorization = req.headers['authorization'];
-      if (!authorization) {
-        sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
-        return;
-      }
-
-      const checkoutParams = req.body;
-
-      // Validate required params
-      const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
-      const missingParam = requiredParams.find((param) => !checkoutParams[param]);
-      if (missingParam) {
-        sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: missingParam }));
-        return;
-      }
-
-      const viewer = await this.identityService.getAccount({ authorization });
-      const checkoutSession = await this.stripeService.createCheckoutSession(viewer, checkoutParams);
-
-      res.end(JSON.stringify({ url: checkoutSession.url }));
-    } catch (error) {
-      if (error instanceof AccessBridgeError) {
-        sendErrors(res, error);
-        return;
-      }
-      throw error;
+    const authorization = req.headers['authorization'];
+    if (!authorization) {
+      sendErrors(res, ErrorDefinitions.UnauthorizedError.create());
+      return;
     }
+
+    const checkoutParams = req.body;
+    const validationError = this.paymentService.validateCheckoutParams(checkoutParams);
+    if (validationError) {
+      sendErrors(res, ErrorDefinitions.ParameterMissingError.create({ parameterName: validationError }));
+      return;
+    }
+
+    const viewer = await this.identityService.getAccount({ authorization });
+    const checkoutSessionUrl = await this.paymentService.createCheckoutSessionUrl(viewer, checkoutParams);
+
+    res.end(JSON.stringify({ url: checkoutSessionUrl }));
   };
 }

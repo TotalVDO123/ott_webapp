@@ -67,7 +67,7 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
 - **Method:** GET
 - **Authorization:** None
 - **Summary:** Lists all the corresponding stripe products with prices that are connected to the SIMS plans.
-- **Response:** Stripe.Product type
+- **Response:** [Product payment type](../../../ott-web-app/packages/common/types/payment.ts)
   ```json
   [
     {
@@ -87,6 +87,27 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
     }
     // ...
   ]
+  ```
+
+#### URL: `/v2/sites/{site_id}/checkout`
+
+- **Method:** POST
+- **Authorization:** Valid SIMS token
+- **Summary:** Creates Payment Checkout Session URL where the viewer will be redirected to complete the payment.
+- **Request:**
+  ```json
+  {
+    "price_id": "string", // id of the price that is about to be paid
+    "mode": "string", // subscription (recurring) | payment (one time purchases)
+    "success_url": "string", // redirect after successful payment
+    "cancel_url": "string" // redirect after cancel / invalid payment
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "url": "string" // url where the viewer will be redirected to complete the payment.
+  }
   ```
 
 ## Developer guidelines

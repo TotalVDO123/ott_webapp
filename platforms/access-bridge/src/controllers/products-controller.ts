@@ -1,50 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { PlansService } from '../services/plans-service.js';
-import { StripeService } from '../services/stripe-service.js';
-import { ErrorDefinitions, sendErrors } from '../errors.js';
-import { isValidSiteId } from '../utils.js';
-import logger from '../logger.js';
-
+import { StripePaymentService } from '../services/stripe-payment-service.js';
+import { PaymentService } from '../services/payment-service.js';
 /**
  * Controller class responsible for handling AC plans and Stripe products.
  */
 export class ProductsController {
-  private plansService: PlansService;
-  private stripeService: StripeService;
+  private readonly plansService: PlansService;
+  private readonly paymentService: PaymentService;
 
   constructor() {
     this.plansService = new PlansService();
-    this.stripeService = new StripeService();
+    this.paymentService = new StripePaymentService();
   }
 
   /**
-   * Service handler for fetching and returning Stripe products with prices based on available plans
-   * for a given site ID. Validates the site ID, retrieves and filters plans, and matches them with
-   * Stripe products via external provider IDs. Sends appropriate error responses for invalid requests.
-   *
-   * @param req - Express request object
-   * @param res - Express response object
-   * @param next - Express next middleware function
+   * Service handler for fetching and returning products from the used Provider with prices based on available plans.
+   * Retrieves and filters SIMS plans, then matches them with the Payment products based on the external provider IDs.
    */
   async getProducts(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const siteId = req.params.site_id;
-    if (!isValidSiteId(siteId)) {
-      sendErrors(res, ErrorDefinitions.ParameterInvalidError.create({ parameterName: 'site_id' }));
-      return;
-    }
+    const availablePlans = await this.plansService.getAvailablePlans();
+    const stripeProductIds: string[] = availablePlans
+      // Currently, we only support Stripe as a payment provider, so we filter and use only Stripe product IDs.
+      .map((plan) => plan.metadata.external_providers?.stripe ?? [])
+      .flat();
 
-    try {
-      const availablePlans = await this.plansService.getAvailablePlans({ siteId });
-      const stripeProductIds: string[] = availablePlans
-        .map((plan) => plan.metadata.external_providers?.stripe ?? [])
-        .flat();
-
-      const products = await this.stripeService.getProductsWithPrices(stripeProductIds);
-      res.json(products);
-    } catch (error) {
-      logger.error('ProductsController: getProducts: failed to fetch products.', error);
-      next(error);
-    }
+    const products = await this.paymentService.getProductsWithPrices(stripeProductIds);
+    res.json(products);
   }
 }

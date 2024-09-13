@@ -5,7 +5,7 @@ import type { GetTokenResponse } from '../../types/entitlement';
 
 @injectable()
 export default class GenericEntitlementService {
-  private getToken = async <T>(url: string, body: unknown = {}, jwt?: string): Promise<T> => {
+  protected getToken = async <T>(url: string, body: unknown = {}, jwt?: string): Promise<T> => {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
