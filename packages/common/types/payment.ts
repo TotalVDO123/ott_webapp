@@ -38,7 +38,3 @@ export type CheckoutParams = {
   success_url: string;
   cancel_url: string;
 };
-
-export type CheckoutSession = {
-  url: string | null;
-};
