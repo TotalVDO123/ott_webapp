@@ -1,4 +1,4 @@
-import type { PLAYLIST_TYPE } from '../src/constants';
+import type { APP_CONTENT_TYPE } from '../src/constants';
 
 import type { AdScheduleUrls, AdDeliveryMethod } from './ad-schedule';
 
@@ -43,14 +43,14 @@ export type Drm = {
   defaultPolicyId: string;
 };
 
-export type PlaylistType = keyof typeof PLAYLIST_TYPE;
-export type PlaylistMenuType = Extract<PlaylistType, 'playlist' | 'content_list' | 'media'>;
-export type PlaylistShelfType = Extract<PlaylistType, 'playlist' | 'content_list' | 'continue_watching' | 'favorites'>;
+export type AppContentType = keyof typeof APP_CONTENT_TYPE;
+export type AppMenuType = Extract<AppContentType, 'playlist' | 'content_list' | 'media'>;
+export type AppShelfType = Extract<AppContentType, 'playlist' | 'content_list' | 'continue_watching' | 'favorites'>;
 
 export type Content = {
   contentId?: string;
   title?: string;
-  type: PlaylistShelfType;
+  type: AppShelfType;
   featured?: boolean;
   backgroundColor?: string | null;
 };
@@ -58,7 +58,7 @@ export type Content = {
 export type Menu = {
   label: string;
   contentId: string;
-  type?: PlaylistMenuType;
+  type?: AppMenuType;
   filterTags?: string;
 };
 

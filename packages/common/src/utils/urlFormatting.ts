@@ -1,6 +1,9 @@
+import type { AppMenuType } from '@jwp/ott-common/types/config';
+
 import type { PlaylistItem } from '../../types/playlist';
 import { PATH_MEDIA, PATH_PLAYLIST, PATH_CONTENT_LIST } from '../paths';
 import { logWarn } from '../logger';
+import { APP_CONTENT_TYPE } from '../constants';
 
 import { getLegacySeriesPlaylistIdFromEpisodeTags, getSeriesPlaylistIdFromCustomParams } from './media';
 
@@ -127,6 +130,17 @@ export const playlistURL = (id: string, title?: string) => {
 
 export const contentListURL = (id: string, title?: string) => {
   return createPath(PATH_CONTENT_LIST, { id, title: title ? slugify(title) : undefined });
+};
+
+export const determinePath = ({ type, contentId }: { type: AppMenuType | undefined; contentId: string }) => {
+  switch (type) {
+    case APP_CONTENT_TYPE.content_list:
+      return contentListURL(contentId);
+    case APP_CONTENT_TYPE.media:
+      return singleMediaURL(contentId);
+    default:
+      return playlistURL(contentId);
+  }
 };
 
 export const liveChannelsURL = (playlistId: string, channelId?: string, play = false) => {
