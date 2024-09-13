@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import Stripe from 'stripe';
 import express, { Request, Response, NextFunction, Express } from 'express';
 import cors from 'cors';
@@ -97,5 +98,16 @@ export class Middleware {
   initializeErrorMiddleware(app: Express) {
     app.use(this.notFoundErrorHandler); // Handle 404 errors
     app.use(this.globalErrorHandler); // Handle all other errors
+  }
+
+  /**
+   * Registers Sentry error handler for Expresss.
+   * The error handler must be registered before any other error middleware and after all controllers
+   * @param app The Express application.
+   */
+  initializeSentryMiddleware(app: Express) {
+    if (Sentry.getClient()) {
+      Sentry.setupExpressErrorHandler(app);
+    }
   }
 }

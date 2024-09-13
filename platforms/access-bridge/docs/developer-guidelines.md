@@ -18,6 +18,7 @@
   /pipeline             - Middleware and routing logic
     /middleware.ts      - Middleware functions and error handling
     /routes.ts          - Route definitions and route registration
+    /logger.ts          - Logger class that integrates with Sentry if defined with fallback as a development logger
   /errors.ts            - Custom error classes and error handling logic
   /http.ts              - HTTP utility functions and setup
   /app-config.ts        - Configuration settings for the application

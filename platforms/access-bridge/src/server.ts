@@ -41,6 +41,9 @@ export class Server {
     // Initialize the defined routes
     initializeRoutes(this.app);
 
+    // Initialize Sentry error handler for Expresss
+    this.middleware.initializeSentryMiddleware(this.app);
+
     // Initialize error middleware after all routes are registered
     this.middleware.initializeErrorMiddleware(this.app);
   }

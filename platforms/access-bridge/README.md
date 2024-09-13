@@ -10,6 +10,7 @@ Here’s how you can set them up:
 
 Create a `.env.local` file in the root of this project and add the following variables:
 
+- APP_API_SITE_ID=customer_site_id
 - APP_API_SECRET=customer_v1_secret
 - APP_BIND_ADDR=localhost
 - APP_BIND_PORT=3000
