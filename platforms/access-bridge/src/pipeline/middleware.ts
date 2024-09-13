@@ -1,7 +1,15 @@
+import Stripe from 'stripe';
 import express, { Request, Response, NextFunction, Express } from 'express';
 import cors from 'cors';
 
-import { AccessBridgeError, ErrorDefinitions, handleJWError, isJWError, sendErrors } from '../errors.js';
+import {
+  AccessBridgeError,
+  ErrorDefinitions,
+  handleJWError,
+  handleStripeError,
+  isJWError,
+  sendErrors,
+} from '../errors.js';
 import { SITE_ID } from '../app-config.js';
 
 /**
@@ -43,6 +51,11 @@ export class Middleware {
     if (err instanceof AccessBridgeError) {
       sendErrors(res, err);
       return;
+    }
+
+    if (err instanceof Stripe.errors.StripeError) {
+      const accessBridgeError = handleStripeError(err);
+      sendErrors(res, accessBridgeError);
     }
 
     if (isJWError(err)) {
