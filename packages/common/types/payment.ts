@@ -1,34 +1,43 @@
-type Recurring = {
-  // The frequency at which a subscription is billed. One of `month` or `year`.
-  interval: 'month' | 'year';
-  // Default number of trial days when subscribing a customer.
-  trial_period_days: number | null;
+type Recurrence = {
+  // The frequency at which a subscription is billed. One of `day`, `week`, `month`, or `year`.
+  interval: 'day' | 'week' | 'month' | 'year';
+  // Recurrence duration, for example, `interval=month` and `duration=3` bills every 3 months.
+  duration: number;
+  // Trial period interval. For example, a month-long trial is different from a 30-day trial.
+  trial_period_interval: 'day' | 'week' | 'month' | 'year';
+  // Duration of the trial period (in the unit defined by trial_period_interval).
+  trial_period_duration: number | null;
 };
 
 export type Price = {
   // Unique identifier for the object.
-  id: string;
+  store_price_id: string;
+  // Dictionary of currencies, where the key is the currency code and the value is an object with an amount property.
   // Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-  currency: string;
-  // The ID of the product this price is associated with.
-  product: string;
-  // The recurring components of a price such as `interval` and `trial`.
-  recurring: Recurring | null;
-  // The unit amount in cents (or local equivalent) to be charged, represented as a whole integer if possible.
-  unit_amount: number | null;
+  currencies: {
+    [currency_code: string]: {
+      // The unit amount in cents (or local equivalent) to be charged, represented as a whole integer.
+      amount: number | null;
+    };
+  };
+  // Default currency code for this price.
+  default_currency: string;
+  // Recurrence details. Can be a Recurrence object or 'one_time'.
+  recurrence: Recurrence | 'one_time';
+  // Billing scheme. For now, we only support `per_unit`.
+  billing_scheme: 'per_unit';
 };
 
 export type Product = {
   // Unique identifier for the object.
-  id: string;
+  store_product_id: string;
   // The product's name, meant to be displayable to the customer.
   name: string;
   // The product's description, meant to be displayable to the customer.
-  // Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
   description: string;
   // The ID of the default price this product is associated with.
-  default_price: string;
-  // Array of price objects as defined above
+  default_store_price_id: string;
+  // Array of price objects.
   prices: Price[];
 };
 

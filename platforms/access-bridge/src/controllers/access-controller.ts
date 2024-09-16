@@ -41,8 +41,8 @@ export class AccessController {
     const viewerEntitledPlans = await this.plansService.getEntitledPlans({ authorization });
     const plans = viewerEntitledPlans
       .map((plan) => ({
-        id: plan.access_plan?.id,
-        exp: plan.access_plan?.exp,
+        id: plan.id,
+        exp: plan?.exp,
       }))
       .filter((plan) => plan.id !== undefined && plan.exp !== undefined);
 
