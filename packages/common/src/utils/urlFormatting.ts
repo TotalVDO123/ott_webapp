@@ -141,7 +141,7 @@ export const determinePath = ({ type, contentId }: { type: AppMenuType | undefin
     case APP_CONTENT_TYPE.playlist:
       return playlistURL(contentId);
     default:
-      return playlistURL(contentId);
+      return '';
   }
 };
 
