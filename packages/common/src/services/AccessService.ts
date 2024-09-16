@@ -1,33 +1,19 @@
 import { inject, injectable } from 'inversify';
 
-import type { Passport } from '../../types/passport';
-
-import StorageService from './StorageService';
-
-const PASSPORT_KEY = 'passport';
-
-type PassportStorageData = Passport & { expires: number };
+import type { AccessTokens } from '../../types/access';
+import { logError } from '../logger';
+import { API_ACCESS_BRIDGE_URL } from '../modules/types';
 
 @injectable()
 export default class AccessService {
-  private readonly storageService: StorageService;
+  private readonly apiAccessBridgeUrl;
 
-  constructor(@inject(StorageService) storageService: StorageService) {
-    this.storageService = storageService;
+  constructor(@inject(API_ACCESS_BRIDGE_URL) apiAccessBridgeUrl: string) {
+    this.apiAccessBridgeUrl = apiAccessBridgeUrl;
   }
 
-  // getProtectedMediaById = async (mediaId: string) => {
-
-  // }
-
-  generatePassport = async (host: string, siteId: string, jwt?: string): Promise<Passport | null> => {
-    if (!siteId) {
-      throw new Error('Site ID is required');
-    }
-
-    const pathname = `/v2/sites/${siteId}/access/generate`;
-    const url = `${host}${pathname}`;
-
+  generateAccessTokens = async (siteId: string, jwt?: string): Promise<AccessTokens | null> => {
+    const url = `${this.apiAccessBridgeUrl}/v2/sites/${siteId}/access/generate`;
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -36,20 +22,19 @@ export default class AccessService {
     });
 
     if (!response.ok) {
+      logError('AccessService', 'Failed to generateAccessTokens', {
+        status: response.status,
+        error: response.json(),
+      });
+
       return null;
     }
 
-    return (await response.json()) as Passport;
+    return (await response.json()) as AccessTokens;
   };
 
-  refreshPassport = async (host: string, siteId: string, refresh_token: string): Promise<Passport | null> => {
-    if (!siteId) {
-      throw new Error('Site ID is required');
-    }
-
-    const pathname = `/v2/sites/${siteId}/access/refresh`;
-    const url = `${host}${pathname}`;
-
+  refreshAccessTokens = async (siteId: string, refresh_token: string): Promise<AccessTokens | null> => {
+    const url = `${this.apiAccessBridgeUrl}/v2/sites/${siteId}/access/refresh`;
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -61,22 +46,14 @@ export default class AccessService {
     });
 
     if (!response.ok) {
+      logError('AccessService', 'Failed to refreshAccessTokens', {
+        status: response.status,
+        error: response.json(),
+      });
+
       return null;
     }
 
-    return (await response.json()) as Passport;
-  };
-
-  setPassport = (passport: Passport) => {
-    const expires = new Date(Date.now() + 3600 * 1000).getTime(); // Set expiration time to one hour from now
-    return this.storageService.setItem(PASSPORT_KEY, JSON.stringify({ ...passport, expires }), true);
-  };
-
-  getPassport = async (): Promise<PassportStorageData | null> => {
-    return await this.storageService.getItem(PASSPORT_KEY, true, true);
-  };
-
-  removePassport = async () => {
-    return await this.storageService.removeItem(PASSPORT_KEY);
+    return (await response.json()) as AccessTokens;
   };
 }
