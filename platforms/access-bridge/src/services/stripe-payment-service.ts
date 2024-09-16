@@ -153,10 +153,10 @@ export class StripePaymentService implements PaymentService {
    */
   private mapProduct(product: Stripe.Product, prices: Price[]): Product {
     return {
-      id: product.id,
+      store_product_id: product.id,
       name: product.name,
       description: product.description ?? '',
-      default_price: product.default_price as string,
+      default_store_price_id: product.default_price as string,
       prices: prices,
     };
   }
@@ -168,16 +168,22 @@ export class StripePaymentService implements PaymentService {
    */
   private mapPrices(stripePrices: Stripe.Price[]): Price[] {
     return stripePrices.map((price) => ({
-      id: price.id,
-      currency: price.currency,
-      product: price.product as string,
-      unit_amount: price.unit_amount,
-      recurring: price.recurring
+      store_price_id: price.id,
+      currencies: {
+        [price.currency]: {
+          amount: price.unit_amount,
+        },
+      },
+      default_currency: price.currency,
+      recurrence: price.recurring
         ? {
-            interval: price.recurring.interval as 'month' | 'year',
-            trial_period_days: price.recurring.trial_period_days,
+            interval: price.recurring.interval,
+            duration: price.recurring.interval_count ?? 1,
+            trial_period_interval: 'day', // Stripe only supports day for trial period.
+            trial_period_duration: price.recurring.trial_period_days ?? null,
           }
-        : null,
+        : 'one_time', // Set 'one_time' if there's no recurrence.
+      billing_scheme: 'per_unit', // We only support `per_unit` scheme.
     }));
   }
 }

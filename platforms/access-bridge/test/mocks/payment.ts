@@ -3,7 +3,7 @@ import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe';
 
 import { PaymentService } from '../../src/services/payment-service';
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors';
-import { STRIPE_PRODUCT, STRIPE_SESSION_URL } from '../fixtures';
+import { STORE_PRODUCT, STRIPE_SESSION_URL } from '../fixtures';
 import { Viewer } from '../../src/services/identity-service';
 
 import { MockBehavior } from './products';
@@ -26,7 +26,7 @@ export class MockStripePaymentService implements MockPaymentService {
       return [];
     }
 
-    return [STRIPE_PRODUCT];
+    return [STORE_PRODUCT];
   }
 
   async createCheckoutSessionUrl(viewer: Viewer, params: StripeCheckoutParams): Promise<string | null> {

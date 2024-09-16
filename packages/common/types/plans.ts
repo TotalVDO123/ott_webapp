@@ -1,9 +1,5 @@
 type AccessOptions = {
   drm_policy_id: string;
-  tags: {
-    include: string[];
-    exclude: string[];
-  };
 };
 
 type PlanExternalProviders = {
@@ -18,9 +14,9 @@ export type AccessControlPlan = {
 };
 
 export type Plan = {
-  name: string;
+  id: string;
+  exp: number;
   access_model: 'free' | 'freeauth' | 'svod';
-  access_plan: AccessControlPlan;
   access: AccessOptions;
   metadata: {
     external_providers: PlanExternalProviders;

@@ -9,10 +9,11 @@ import {
   STRIPE_SESSION_URL,
   VALID_PLAN_ID,
   ENDPOINTS,
-  STRIPE_PRICE,
+  STORE_PRODUCT,
   STRIPE_ERRORS,
   AUTHORIZATION,
   SITE_ID,
+  STORE_PRICE,
 } from '../fixtures.js';
 import { MockCheckoutController } from '../mocks/checkout.js';
 import { addRoute } from '../../src/pipeline/routes.js';
@@ -52,7 +53,7 @@ describe('CheckoutController tests', () => {
         method: 'POST',
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
-          price_id: STRIPE_PRICE.id,
+          price_id: STORE_PRODUCT.store_product_id,
           mode: 'subscription',
           success_url: 'http://example.com',
           cancel_url: 'http://example.com',
@@ -73,7 +74,7 @@ describe('CheckoutController tests', () => {
         method: 'POST',
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.INVALID),
         body: JSON.stringify({
-          price_id: STRIPE_PRICE.id,
+          price_id: STORE_PRICE.store_price_id,
           mode: 'subscription',
           success_url: 'http://example.com',
           cancel_url: 'http://example.com',
@@ -105,7 +106,7 @@ describe('CheckoutController tests', () => {
         method: 'POST',
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
-          price_id: STRIPE_PRICE.id,
+          price_id: STORE_PRICE.store_price_id,
           mode: 'payment',
           // missing success_url
           // missing cancel_url
@@ -218,7 +219,7 @@ describe('CheckoutController tests', () => {
 
       const requestBody = JSON.stringify({
         access_plan_id: VALID_PLAN_ID,
-        price_id: STRIPE_PRICE.id,
+        price_id: STORE_PRICE.store_price_id,
         mode: 'subscription',
         success_url: 'http://example.com',
         cancel_url: 'http://example.com',
