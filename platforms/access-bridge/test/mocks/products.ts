@@ -3,7 +3,7 @@ import { Plan } from '@jwp/ott-common/types/plans.js';
 
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors.js';
 import { PlansService } from '../../src/services/plans-service.js';
-import { PLANS, STRIPE_PRODUCT } from '../fixtures.js';
+import { PLANS, STORE_PRODUCT } from '../fixtures.js';
 import { ProductsController } from '../../src/controllers/products-controller.js';
 import { PaymentService } from '../../src/services/payment-service.js';
 
@@ -55,7 +55,7 @@ export class MockStripePaymentService implements MockPaymentService {
       return [];
     }
 
-    return [STRIPE_PRODUCT];
+    return [STORE_PRODUCT];
   }
 }
 
