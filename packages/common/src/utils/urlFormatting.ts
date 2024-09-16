@@ -138,6 +138,8 @@ export const determinePath = ({ type, contentId }: { type: AppMenuType | undefin
       return contentListURL(contentId);
     case APP_CONTENT_TYPE.media:
       return singleMediaURL(contentId);
+    case APP_CONTENT_TYPE.playlist:
+      return playlistURL(contentId);
     default:
       return playlistURL(contentId);
   }
