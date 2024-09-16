@@ -36,11 +36,11 @@ import JWPAPIService from './JWPAPIService';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
-  private readonly cardPaymentProvider = 'stripe';
+  protected readonly cardPaymentProvider = 'stripe';
 
   accessMethod: AccessMethod = 'plan';
 
-  private readonly apiService;
+  protected readonly apiService;
 
   constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
     super();

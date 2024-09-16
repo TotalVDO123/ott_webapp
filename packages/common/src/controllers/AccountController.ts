@@ -18,12 +18,14 @@ import { logError } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
 import FavoritesController from './FavoritesController';
+import AccessController from './AccessController';
 
 @injectable()
 export default class AccountController {
   private readonly checkoutService: CheckoutService;
   private readonly accountService: AccountService;
   private readonly subscriptionService: SubscriptionService;
+  private readonly accessController: AccessController;
   private readonly favoritesController: FavoritesController;
   private readonly watchHistoryController: WatchHistoryController;
   private readonly features: AccountServiceFeatures;
@@ -33,6 +35,7 @@ export default class AccountController {
 
   constructor(
     @inject(INTEGRATION_TYPE) integrationType: IntegrationType,
+    accessController: AccessController,
     favoritesController: FavoritesController,
     watchHistoryController: WatchHistoryController,
   ) {
@@ -41,6 +44,7 @@ export default class AccountController {
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
 
     // @TODO: Controllers shouldn't be depending on other controllers, but we've agreed to keep this as is for now
+    this.accessController = accessController;
     this.favoritesController = favoritesController;
     this.watchHistoryController = watchHistoryController;
 
@@ -155,6 +159,7 @@ export default class AccountController {
       const response = await this.accountService.login({ email, password, referrer });
 
       if (response) {
+        void this.accessController?.generateAccessTokens();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }
@@ -172,6 +177,7 @@ export default class AccountController {
 
   logout = async () => {
     await this.accountService?.logout();
+    await this.accessController?.removeAccessTokens();
     await this.clearLoginState();
 
     // let the application know to refresh all entitlements

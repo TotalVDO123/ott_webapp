@@ -24,9 +24,9 @@ type RequestOptions = {
 
 @injectable()
 export default class JWPAPIService {
-  private readonly storageService: StorageService;
+  protected readonly storageService: StorageService;
 
-  private useSandboxEnv = true;
+  protected useSandboxEnv = true;
   private siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService) {

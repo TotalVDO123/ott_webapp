@@ -34,12 +34,12 @@ import CleengService from './CleengService';
 
 @injectable()
 export default class CleengCheckoutService extends CheckoutService {
-  private readonly cleengService: CleengService;
-  private readonly getCustomerIP: GetCustomerIP;
+  protected readonly cleengService: CleengService;
+  protected readonly getCustomerIP: GetCustomerIP;
 
   accessMethod: AccessMethod = 'offer';
 
-  constructor(cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
+  constructor(@inject(CleengService) cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
     super();
     this.cleengService = cleengService;
     this.getCustomerIP = getCustomerIP;

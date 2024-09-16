@@ -1,3 +1,19 @@
+## [6.6.0](https://github.com/jwplayer/ott-web-app/compare/v6.5.0...v6.6.0) (2024-09-06)
+
+
+### Features
+
+* **project:** add injectable wrapper to common components ([#598](https://github.com/jwplayer/ott-web-app/issues/598)) ([a6ad0d8](https://github.com/jwplayer/ott-web-app/commit/a6ad0d88b0e7cdc36548867870c8eb3c014f1ad2))
+* **project:** app metadata insertion ([3753a9c](https://github.com/jwplayer/ott-web-app/commit/3753a9c352289620af6ec597fb5f474d7b8ac6d4))
+* **project:** remove free and productIds from content-types.json ([#605](https://github.com/jwplayer/ott-web-app/issues/605)) ([2268447](https://github.com/jwplayer/ott-web-app/commit/226844726061184252af24fabc8340e8539230b6))
+
+
+### Bug Fixes
+
+* **e2e:** fix tests after cleeng api update ([#606](https://github.com/jwplayer/ott-web-app/issues/606)) ([9062dba](https://github.com/jwplayer/ott-web-app/commit/9062dba9184561b5af399e25632f4fe132960223))
+* **search:** override search query cache ([#594](https://github.com/jwplayer/ott-web-app/issues/594)) ([1c25ad2](https://github.com/jwplayer/ott-web-app/commit/1c25ad2cd2ecfc1d388e5f8094006f7d961c93a0))
+* wrong protocol and url path ([#588](https://github.com/jwplayer/ott-web-app/issues/588)) ([de75eb7](https://github.com/jwplayer/ott-web-app/commit/de75eb7eaca51d4fef9be4a40f13d043437bf3f0))
+
 ## [6.5.0](https://github.com/jwplayer/ott-web-app/compare/v6.4.0...v6.5.0) (2024-07-25)
 
 
