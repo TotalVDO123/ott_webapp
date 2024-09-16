@@ -43,10 +43,10 @@ export const VIEWER: Viewer = {
 };
 
 // Plan mock creation function
-const createMockPlan = ({ name, access_model, access_plan, access, metadata }: Plan): Plan => ({
-  name,
+const createMockPlan = ({ id, exp, access_model, access, metadata }: Plan): Plan => ({
+  id,
+  exp,
   access_model,
-  access_plan,
   access,
   metadata,
 });
@@ -54,18 +54,11 @@ const createMockPlan = ({ name, access_model, access_plan, access, metadata }: P
 export const PLANS = {
   VALID: [
     createMockPlan({
-      name: 'plan1234',
+      id: 'plan1234',
+      exp: FUTURE_EXPIRY,
       access_model: 'svod',
-      access_plan: {
-        id: 'plan1234',
-        exp: FUTURE_EXPIRY,
-      },
       access: {
         drm_policy_id: 'drm_policy_123',
-        tags: {
-          include: ['tag1'],
-          exclude: ['tag2'],
-        },
       },
       metadata: {
         external_providers: {
@@ -76,18 +69,11 @@ export const PLANS = {
   ],
   FREE: [
     createMockPlan({
-      name: 'free1234',
+      id: 'free1234',
+      exp: FUTURE_EXPIRY,
       access_model: 'free',
-      access_plan: {
-        id: 'free1234',
-        exp: FUTURE_EXPIRY,
-      },
       access: {
         drm_policy_id: 'drm_policy_456',
-        tags: {
-          include: ['tag3'],
-          exclude: [],
-        },
       },
       metadata: {
         external_providers: {},
@@ -96,18 +82,11 @@ export const PLANS = {
   ],
   INVALID: [
     createMockPlan({
-      name: 'plan123456',
+      id: 'plan123456',
+      exp: FUTURE_EXPIRY,
       access_model: 'svod',
-      access_plan: {
-        id: 'plan123456',
-        exp: FUTURE_EXPIRY,
-      },
       access: {
         drm_policy_id: 'drm_policy_789',
-        tags: {
-          include: ['tag4'],
-          exclude: ['tag5'],
-        },
       },
       metadata: {
         external_providers: {},
@@ -116,18 +95,11 @@ export const PLANS = {
   ],
   EXPIRED: [
     createMockPlan({
-      name: 'plan1234',
+      id: 'plan1234',
+      exp: PAST_EXPIRY,
       access_model: 'svod',
-      access_plan: {
-        id: 'plan1234',
-        exp: PAST_EXPIRY,
-      },
       access: {
         drm_policy_id: 'drm_policy_101',
-        tags: {
-          include: ['tag6'],
-          exclude: [],
-        },
       },
       metadata: {
         external_providers: {},
@@ -154,25 +126,31 @@ export const AUTHORIZATION = {
   MISSING: '',
 };
 
-// Stripe price mock
-export const STRIPE_PRICE: Price = {
-  id: 'price_123456789',
-  currency: 'usd',
-  product: 'prod_123456789',
-  recurring: {
-    interval: 'month',
-    trial_period_days: 1,
+// Store price mock
+export const STORE_PRICE: Price = {
+  store_price_id: 'price_123456789',
+  currencies: {
+    usd: {
+      amount: 1000, // Amount in cents for USD
+    },
   },
-  unit_amount: 1000,
+  default_currency: 'usd',
+  recurrence: {
+    interval: 'month',
+    duration: 1, // Occurs every 1 month
+    trial_period_interval: 'month', // Free trial is based on months
+    trial_period_duration: 1, // 1 month trial
+  },
+  billing_scheme: 'per_unit', // Only per_unit supported for now
 };
 
-// Stripe product mock
-export const STRIPE_PRODUCT: Product = {
-  id: 'prod_123456789',
+// Store product mock
+export const STORE_PRODUCT: Product = {
+  store_product_id: 'prod_123456789',
   name: 'Sample Product',
   description: 'A high-quality product description',
-  default_price: 'price_123456789',
-  prices: [STRIPE_PRICE],
+  default_store_price_id: 'price_123456789',
+  prices: [STORE_PRICE],
 };
 
 // mock of the handled error cases for Stripe

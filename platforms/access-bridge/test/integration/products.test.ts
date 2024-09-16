@@ -4,7 +4,7 @@ import { Express } from 'express';
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 
 import { MockServer } from '../mock-server.js';
-import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STRIPE_PRODUCT } from '../fixtures.js';
+import { ENDPOINTS, SITE_ID, STRIPE_ERRORS, STORE_PRODUCT } from '../fixtures.js';
 import { ErrorDefinitions } from '../../src/errors.js';
 import { MockBehavior, MockPaymentService, MockProductsController } from '../mocks/products.js';
 import { addRoute } from '../../src/pipeline/routes.js';
@@ -35,7 +35,7 @@ describe('ProductsController tests', () => {
       },
       mockBehavior: 'default' as MockBehavior,
       expectedStatusCode: 200,
-      expectedResponse: [STRIPE_PRODUCT],
+      expectedResponse: [STORE_PRODUCT],
     },
     {
       description: 'should handle empty products',
