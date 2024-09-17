@@ -104,21 +104,26 @@ function runTestSuite(props: ProviderProps, providerName: string) {
     I.seeCssPropertiesOnElements(props.yearlyOffer.label, { color: '#000000' });
 
     I.click('Continue');
-    I.waitForLoaderDone();
 
-    I.see('Yearly subscription');
-    I.see(props.yearlyOffer.price);
-    I.see('/year');
+    if (providerName?.includes('JW')) {
+      // todo: redirected to Stripe
+    } else {
+      I.waitForLoaderDone();
 
-    I.see('Redeem coupon');
-    I.see(props.yearlyOffer.price);
-    I.dontSee('Payment method fee');
-    I.dontSee(props.yearlyOffer.paymentFee);
-    I.see('Total');
-    if (props.applicableTax !== 0) {
-      I.see('Applicable tax (21%)');
+      I.see('Yearly subscription');
+      I.see(props.yearlyOffer.price);
+      I.see('/year');
+
+      I.see('Redeem coupon');
+      I.see(props.yearlyOffer.price);
+      I.dontSee('Payment method fee');
+      I.dontSee(props.yearlyOffer.paymentFee);
+      I.see('Total');
+      if (props.applicableTax !== 0) {
+        I.see('Applicable tax (21%)');
+      }
+      I.clickCloseButton();
     }
-    I.clickCloseButton();
   });
 
   Scenario(`I can see payment types - ${providerName}`, async ({ I }) => {
