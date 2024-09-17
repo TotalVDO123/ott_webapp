@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 
 import StorageService from '../../StorageService';
+import { API_ACCESS_BRIDGE_URL } from '../../../modules/types';
 
 import { API_CONSTS } from './constants';
 import type { JWPError } from './types';
@@ -25,12 +26,14 @@ type RequestOptions = {
 @injectable()
 export default class JWPAPIService {
   protected readonly storageService: StorageService;
+  protected readonly apiAccessBridgeUrl;
 
-  protected useSandboxEnv = true;
+  private useSandboxEnv = true;
   private siteId = '';
 
-  constructor(@inject(StorageService) storageService: StorageService) {
+  constructor(@inject(StorageService) storageService: StorageService, @inject(API_ACCESS_BRIDGE_URL) apiAccessBridgeUrl: string) {
     this.storageService = storageService;
+    this.apiAccessBridgeUrl = apiAccessBridgeUrl;
   }
 
   setup = (useSandboxEnv: boolean, siteId: string) => {
@@ -38,15 +41,7 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  private getBaseUrl = (useAccessBridge = false) => {
-    const { API_BASE_URL, ACCESS_BRIDGE_URL } = API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'];
-
-    if (useAccessBridge) {
-      return ACCESS_BRIDGE_URL;
-    }
-
-    return API_BASE_URL;
-  };
+  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'].API_BASE_URL;
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -124,7 +119,7 @@ export default class JWPAPIService {
 
     const parsedPath = path.replace(':siteId', this.siteId);
 
-    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl(useAccessBridge)}${parsedPath}`}${
+    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${useAccessBridge ? this.apiAccessBridgeUrl : this.getBaseUrl()}${parsedPath}`}${
       searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
     }`;
 

@@ -115,12 +115,11 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  chooseOffer: ChooseOffer = async ({ offer: { contentExternalId, offerId }, successUrl, cancelUrl }) => {
+  chooseOffer: ChooseOffer = async ({ offer: { offerId }, successUrl, cancelUrl }) => {
     try {
       const { url } = await this.apiService.post<{ url: string }>(
         '/v2/sites/:siteId/checkout',
         {
-          access_plan_id: contentExternalId,
           price_id: offerId,
           mode: 'subscription',
           success_url: successUrl,
@@ -135,38 +134,26 @@ export default class JWPCheckoutService extends CheckoutService {
     }
   };
 
-  private formatPriceToOffer = (price: StripePrice & { name: string; planId: string }, i: number): Offer =>
+  private formatPriceToOffer = (price: StripePrice & { name: string }, i: number): Offer =>
     ({
       id: i,
-      offerId: price.id,
-      offerCurrency: price.currency,
-      customerPriceInclTax: price.unit_amount / 100,
-      customerCurrency: price.currency,
+      offerId: price.store_price_id,
+      offerCurrency: price.default_currency,
+      customerPriceInclTax: price.currencies[price.default_currency].amount / 100,
+      customerCurrency: price.default_currency,
       offerTitle: price.name,
       active: true,
-      period: price.recurring.interval,
-      freePeriods: price.recurring.trial_period_days ?? 0,
+      period: price.recurrence.interval,
+      freePeriods: price.recurrence.trial_period_duration ?? 0,
       planSwitchEnabled: false,
-      contentExternalId: price.planId,
     } as unknown as Offer);
 
   getOffers: GetOffers = async () => {
     try {
       const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
 
-      const offers: Offer[] = [];
-
-      stripeProducts.forEach((product) =>
-        product.prices.forEach((price) => {
-          if (!price.active) {
-            return;
-          }
-
-          const i = offers.length + 1;
-          const offer = this.formatPriceToOffer({ ...price, name: product.name, planId: product.metadata.access_plan_id }, i);
-
-          offers.push(offer);
-        }),
+      const offers = stripeProducts.flatMap((product, i) =>
+        product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),
       );
 
       return offers;

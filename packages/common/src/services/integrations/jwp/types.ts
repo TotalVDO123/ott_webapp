@@ -348,28 +348,26 @@ export type SetDefaultCardResponse = {
 
 type StripeProductId = `prod_${string}`;
 type StripePriceId = `price_${string}`;
+type StripeCurrencyObject = Record<'usd', { amount: number }>;
+type StripeInterval = 'day' | 'week' | 'month' | 'year';
 
 export type StripePrice = {
-  id: StripePriceId;
-  currency: string;
-  unit_amount: number;
-  object: 'price';
-  product: StripeProductId;
-  recurring: {
-    interval: 'year' | 'month';
-    trial_period_days: number | null;
+  store_price_id: StripePriceId;
+  default_currency: keyof StripeCurrencyObject;
+  currencies: StripeCurrencyObject;
+  billing_scheme: 'per_unit';
+  recurrence: {
+    interval: StripeInterval;
+    duration: number;
+    trial_period_interval: StripeInterval;
+    trial_period_duration: number | null;
   };
-  active: boolean;
-  type: 'recurring';
 };
 
 export type StripeProduct = {
-  id: StripeProductId;
+  store_product_id: StripeProductId;
   name: string;
   description: string;
-  metadata: {
-    access_plan_id: string;
-  };
-  object: 'product';
+  default_store_price_id: StripePriceId;
   prices: StripePrice[];
 };
