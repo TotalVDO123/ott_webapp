@@ -74,7 +74,7 @@ const ShelfList = ({ rows }: Props) => {
           const visibleTilesDelta = parseTilesDelta(posterAspect);
 
           const translatedKey = custom?.[`title-${language}`];
-          const translatedTitle = translatedKey ? (translatedKey as string) : title || playlist?.title;
+          const translatedTitle = translatedKey || title || playlist?.title;
 
           return (
             <section

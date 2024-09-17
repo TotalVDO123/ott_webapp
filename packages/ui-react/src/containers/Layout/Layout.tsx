@@ -54,10 +54,8 @@ const Layout = () => {
   const navItems = [
     { label: t('home'), to: '/' },
     ...menu.map(({ label, contentId, type, custom }) => {
-      const translatedKey = custom?.[`label-${language}`];
-      const translatedLabel = translatedKey ? translatedKey : label;
       return {
-        label: translatedLabel as string,
+        label: custom?.[`label-${language}`] || label,
         to: type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId),
       };
     }),

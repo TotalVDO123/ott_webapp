@@ -8,7 +8,7 @@ const contentSchema: SchemaOf<Content> = object({
   featured: boolean().notRequired(),
   backgroundColor: string().nullable().notRequired(),
   type: mixed().oneOf(['playlist', 'continue_watching', 'favorites', 'content_list']),
-  custom: object(),
+  custom: object().notRequired(),
 }).defined();
 
 const menuSchema: SchemaOf<Menu> = object().shape({
@@ -16,7 +16,7 @@ const menuSchema: SchemaOf<Menu> = object().shape({
   contentId: string().defined(),
   filterTags: string().notRequired(),
   type: mixed().oneOf(['playlist', 'content_list']).notRequired(),
-  custom: object(),
+  custom: object().notRequired(),
 });
 
 const featuresSchema: SchemaOf<Features> = object({
