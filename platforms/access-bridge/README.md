@@ -125,9 +125,9 @@ You can also copy and paste the contents of `.env.example` into `.env.local` and
 
 ## Developer guidelines
 
-- Read the workspace guidelines here [../../docs/developer-guidelines.md](../../docs/developer-guidelines.md).
-- Read the deployment guidelines here [../../docs/deployment.md](../../docs/deployment.md).
-- Read the web platform guidelines here [./docs/developer-guidelines.md](./docs/developer-guidelines.md).
+- Read the workspace guidelines here [developer-guidelines.md](./docs/developer-guidelines.md).
+- Read the deployment guidelines here [deployment.md](./docs/deployment.md).
+- Read the web platform guidelines here [developer-guidelines.md](../../docs/developer-guidelines.md).
 
 ```
 
