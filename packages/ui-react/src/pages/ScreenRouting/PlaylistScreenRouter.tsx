@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
-import { APP_CONTENT_TYPE, PLAYLIST_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
+import { APP_CONFIG_ITEM_TYPE, PLAYLIST_CONTENT_TYPE } from '@jwp/ott-common/src/constants';
 import { ScreenMap } from '@jwp/ott-common/src/utils/ScreenMap';
 import usePlaylist from '@jwp/ott-hooks-react/src/usePlaylist';
 import type { AppMenuType } from '@jwp/ott-common/types/config';
@@ -43,7 +43,7 @@ const PlaylistScreenRouter = ({ type }: { type: AppMenuType }) => {
     return <ErrorPage title={t('empty_shelves_heading')} message={t('empty_shelves_description')} />;
   }
 
-  const Screen = type === APP_CONTENT_TYPE.content_list ? contentScreenMap.getScreen(data) : playlistScreenMap.getScreen(data);
+  const Screen = type === APP_CONFIG_ITEM_TYPE.content_list ? contentScreenMap.getScreen(data) : playlistScreenMap.getScreen(data);
 
   return <Screen data={data} isLoading={isFetching} />;
 };

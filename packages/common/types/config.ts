@@ -1,4 +1,4 @@
-import type { APP_CONTENT_TYPE } from '../src/constants';
+import type { APP_CONFIG_ITEM_TYPE } from '../src/constants';
 
 import type { AdScheduleUrls, AdDeliveryMethod } from './ad-schedule';
 
@@ -43,7 +43,7 @@ export type Drm = {
   defaultPolicyId: string;
 };
 
-export type AppContentType = keyof typeof APP_CONTENT_TYPE;
+export type AppContentType = keyof typeof APP_CONFIG_ITEM_TYPE;
 export type AppMenuType = Extract<AppContentType, 'playlist' | 'content_list' | 'media'>;
 export type AppShelfType = Extract<AppContentType, 'playlist' | 'content_list' | 'continue_watching' | 'favorites'>;
 
