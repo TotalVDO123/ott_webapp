@@ -10,6 +10,7 @@ import useMedia from '@jwp/ott-hooks-react/src/useMedia';
 import type { ScreenComponent } from '../../../types/screens';
 import Loading from '../Loading/Loading';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
+import Fade from '../../components/Animation/Fade/Fade';
 
 import MediaStaticPage from './mediaScreens/MediaStaticPage/MediaStaticPage';
 import MediaMovie from './mediaScreens/MediaMovie/MediaMovie';
@@ -35,10 +36,10 @@ mediaScreenMap.register(MediaSeries, (item) => !!item && isLegacySeriesFlow(item
 const MediaScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
-  const { isLoading, isFetching, error, data } = useMedia(id);
+  const { isFetching, error, data } = useMedia(id);
   const { t } = useTranslation('error');
 
-  if (isLoading) {
+  if (isFetching) {
     return <Loading />;
   }
 
@@ -48,7 +49,11 @@ const MediaScreenRouter = () => {
 
   const MediaScreen = mediaScreenMap.getScreen(data);
 
-  return <MediaScreen data={data} isLoading={isFetching} />;
+  return (
+    <Fade key={id} open>
+      <MediaScreen data={data} isLoading={isFetching} />
+    </Fade>
+  );
 };
 
 export default MediaScreenRouter;
