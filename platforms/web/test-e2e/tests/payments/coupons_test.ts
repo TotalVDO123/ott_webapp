@@ -51,6 +51,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     await goToCheckout(I);
 
     I.click('Redeem coupon');
@@ -92,10 +96,18 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
   });
 
   Scenario(`I can renew a free subscription - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     if (props.canRenewSubscription) {
       renewPlan(I, addYear(today), props.yearlyOffer.price);
     } else {

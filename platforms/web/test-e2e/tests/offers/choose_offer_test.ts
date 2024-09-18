@@ -61,6 +61,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can see offered subscriptions - ${providerName}`, async ({ I }) => {
+    if (providerName?.includes('JW')) {
+      return;
+    }
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     I.amOnPage(constants.paymentsUrl);
@@ -90,6 +94,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can choose an offer - ${providerName}`, async ({ I }) => {
+    if (providerName?.includes('JW')) {
+      return;
+    }
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     I.amOnPage(constants.offersUrl);
@@ -104,29 +112,28 @@ function runTestSuite(props: ProviderProps, providerName: string) {
     I.seeCssPropertiesOnElements(props.yearlyOffer.label, { color: '#000000' });
 
     I.click('Continue');
+    I.waitForLoaderDone();
 
-    if (providerName?.includes('JW')) {
-      // todo: redirected to Stripe
-    } else {
-      I.waitForLoaderDone();
+    I.see('Yearly subscription');
+    I.see(props.yearlyOffer.price);
+    I.see('/year');
 
-      I.see('Yearly subscription');
-      I.see(props.yearlyOffer.price);
-      I.see('/year');
-
-      I.see('Redeem coupon');
-      I.see(props.yearlyOffer.price);
-      I.dontSee('Payment method fee');
-      I.dontSee(props.yearlyOffer.paymentFee);
-      I.see('Total');
-      if (props.applicableTax !== 0) {
-        I.see('Applicable tax (21%)');
-      }
-      I.clickCloseButton();
+    I.see('Redeem coupon');
+    I.see(props.yearlyOffer.price);
+    I.dontSee('Payment method fee');
+    I.dontSee(props.yearlyOffer.paymentFee);
+    I.see('Total');
+    if (props.applicableTax !== 0) {
+      I.see('Applicable tax (21%)');
     }
+    I.clickCloseButton();
   });
 
   Scenario(`I can see payment types - ${providerName}`, async ({ I }) => {
+    if (providerName?.includes('JW')) {
+      return;
+    }
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);

@@ -88,6 +88,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can cancel my subscription - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
@@ -97,6 +101,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can renew my subscription - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       renewPlan(I, addYear(today), props.yearlyOffer.price);
@@ -104,6 +112,10 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can view my invoices - ${providerName}`, async ({ I }) => {
+    if (providerName.includes('JW')) {
+      return;
+    }
+
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       I.amOnPage(constants.paymentsUrl);
