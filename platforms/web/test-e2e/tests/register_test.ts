@@ -7,7 +7,7 @@ runTestSuite(testConfigs.jwpAuth, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 
 function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
-  Feature(`register - ${providerName}'`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+  Feature(`register - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
 
   Before(async ({ I }) => {
     I.useConfig(config);

@@ -31,10 +31,10 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
-runTestSuite(jwProps, 'JW Player');
+runTestSuite(jwProps, 'JW Player', true);
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string) {
+function runTestSuite(props: ProviderProps, providerName: string, usesAccessBridge = false) {
   let couponLoginContext: LoginContext;
 
   const today = new Date();
@@ -51,7 +51,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
-    if (providerName.includes('JW')) {
+    if (usesAccessBridge) {
       return;
     }
 
@@ -96,7 +96,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
-    if (providerName.includes('JW')) {
+    if (usesAccessBridge) {
       return;
     }
 
@@ -104,7 +104,7 @@ function runTestSuite(props: ProviderProps, providerName: string) {
   });
 
   Scenario(`I can renew a free subscription - ${providerName}`, async ({ I }) => {
-    if (providerName.includes('JW')) {
+    if (usesAccessBridge) {
       return;
     }
 
