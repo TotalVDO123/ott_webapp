@@ -25,12 +25,12 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
   Before(async ({ I }) => {
     I.useConfig(config);
 
-    loginContext = await I.registerOrLogin(loginContext, async () => {
+    loginContext = await I.registerOrLogin(loginContext, () => {
       I.fillField('firstName', firstName);
       I.fillField('lastName', lastName);
 
       I.click('Continue');
-      await I.waitForLoaderDone();
+      I.waitForLoaderDone(3);
 
       I.clickCloseButton();
     });
