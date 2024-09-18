@@ -41,7 +41,7 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'].API_BASE_URL;
+  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'STAGING' : 'PROD'].API_BASE_URL;
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
