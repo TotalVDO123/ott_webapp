@@ -5,6 +5,7 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import type { Content, AppContentType, AppMenuType } from '@jwp/ott-common/types/config';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { useQueries, useQueryClient } from 'react-query';
+import { useTranslation } from 'react-i18next';
 
 import { getPlaylistQueryOptions } from './usePlaylist';
 
@@ -25,6 +26,9 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
   const favorites = useFavoritesStore((state) => state.getPlaylist());
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
 
+  // Determine currently selected language
+  const { i18n } = useTranslation();
+
   const playlistQueries = useQueries(
     content.map(({ contentId, type }, index) => {
       if (isPlaylistType(type)) {
@@ -36,6 +40,7 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
           queryClient,
           usePlaceholderData: true,
           params: { page_limit },
+          language: i18n.language,
         });
       }
 
