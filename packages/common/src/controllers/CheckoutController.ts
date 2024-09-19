@@ -42,12 +42,14 @@ export default class CheckoutController {
     this.accountService = getNamedModule(AccountService, integrationType);
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
+
+    useCheckoutStore.setState({ accessMethod: this.getAccessMethod() });
   }
 
   initialiseOffers = async () => {
     const requestedMediaOffers = useCheckoutStore.getState().requestedMediaOffers;
     const mediaOffers = requestedMediaOffers ? await this.getOffers({ offerIds: requestedMediaOffers.map(({ offerId }) => offerId) }) : [];
-    useCheckoutStore.setState({ mediaOffers, accessMethod: this.getAccessMethod() });
+    useCheckoutStore.setState({ mediaOffers });
 
     if (!useCheckoutStore.getState().subscriptionOffers.length && this.accountService.svodOfferIds) {
       const subscriptionOffers = await this.getOffers({ offerIds: this.accountService.svodOfferIds });
