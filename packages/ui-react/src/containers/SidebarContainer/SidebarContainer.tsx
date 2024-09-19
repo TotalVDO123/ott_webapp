@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { contentListURL, playlistURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { useUIStore } from '@jwp/ott-common/src/stores/UIStore';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import useOpaqueId from '@jwp/ott-hooks-react/src/useOpaqueId';
 import { useLocation, useNavigate } from 'react-router';
-import { ACCESS_MODEL, PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
+import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import { determinePath } from '@jwp/ott-common/src/utils/urlFormatting';
 
 import Button from '../../components/Button/Button';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -84,7 +84,7 @@ const SidebarContainer = () => {
         </li>
         {menu.map(({ contentId, type, label }) => (
           <li key={contentId}>
-            <MenuButton label={label} to={type === PLAYLIST_TYPE.content_list ? contentListURL(contentId) : playlistURL(contentId)} />
+            <MenuButton label={label} to={determinePath({ type, contentId })} />
           </li>
         ))}
       </ul>

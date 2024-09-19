@@ -52,11 +52,7 @@ export default class AppController {
     }
 
     // Store the logo right away and set css variables so the error page will be branded
-    const banner = config.assets.banner;
-
-    useConfigStore.setState((s) => {
-      s.config.assets.banner = banner;
-    });
+    useConfigStore.setState((state) => merge({}, state, { config: { assets: { banner: config.assets.banner } } }));
 
     config = await this.configService.validateConfig(config);
     config = merge({}, defaultConfig, config);

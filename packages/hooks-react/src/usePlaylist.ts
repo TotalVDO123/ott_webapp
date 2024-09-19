@@ -6,8 +6,8 @@ import { generatePlaylistPlaceholder } from '@jwp/ott-common/src/utils/collectio
 import { isScheduledOrLiveMedia } from '@jwp/ott-common/src/utils/liveEvent';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
 import type { ApiError } from '@jwp/ott-common/src/utils/api';
-import type { PlaylistMenuType } from '@jwp/ott-common/types/config';
-import { PLAYLIST_TYPE } from '@jwp/ott-common/src/constants';
+import type { AppMenuType } from '@jwp/ott-common/types/config';
+import { APP_CONFIG_ITEM_TYPE } from '@jwp/ott-common/src/constants';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
 const placeholderData = generatePlaylistPlaceholder(30);
@@ -21,7 +21,7 @@ export const getPlaylistQueryOptions = ({
   params = {},
   queryClient,
 }: {
-  type: PlaylistMenuType;
+  type: AppMenuType;
   contentId: string | undefined;
   siteId: string;
   enabled: boolean;
@@ -35,7 +35,7 @@ export const getPlaylistQueryOptions = ({
     enabled: !!contentId && enabled,
     queryKey: ['playlist', type, contentId, params],
     queryFn: async () => {
-      if (type === PLAYLIST_TYPE.playlist) {
+      if (type === APP_CONFIG_ITEM_TYPE.playlist) {
         const playlist = await apiService.getPlaylistById(contentId, params);
 
         // This pre-caches all playlist items and makes navigating a lot faster.
@@ -44,7 +44,7 @@ export const getPlaylistQueryOptions = ({
         });
 
         return playlist;
-      } else if (type === PLAYLIST_TYPE.content_list) {
+      } else if (type === APP_CONFIG_ITEM_TYPE.content_list) {
         const contentList = await apiService.getContentList({ siteId, id: contentId });
 
         return contentList;
@@ -67,7 +67,7 @@ export default function usePlaylist(
   params: GetPlaylistParams = {},
   enabled: boolean = true,
   usePlaceholderData: boolean = true,
-  type: PlaylistMenuType = PLAYLIST_TYPE.playlist,
+  type: AppMenuType = APP_CONFIG_ITEM_TYPE.playlist,
 ) {
   const queryClient = useQueryClient();
   const siteId = useConfigStore((state) => state.config.siteId);
