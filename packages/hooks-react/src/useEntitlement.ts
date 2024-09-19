@@ -65,7 +65,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   );
 
   const { isLoading: isTokenLoading, data: token } = useQuery(
-    ['token', 'media', playlistItem?.mediaid, {}],
+    ['token', 'media', playlistItem?.mediaid, {}, !!user],
     async () => {
       if (!playlistItem?.mediaid) {
         return '';

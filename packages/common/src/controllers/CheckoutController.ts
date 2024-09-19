@@ -43,7 +43,9 @@ export default class CheckoutController {
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
 
-    useCheckoutStore.setState({ accessMethod: this.getAccessMethod() });
+    if (this.checkoutService) {
+      useCheckoutStore.setState({ accessMethod: this.getAccessMethod() });
+    }
   }
 
   initialiseOffers = async () => {
