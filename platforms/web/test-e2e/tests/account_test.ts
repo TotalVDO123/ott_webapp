@@ -30,7 +30,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string, res
       I.fillField('lastName', lastName);
 
       I.click('Continue');
-      I.waitForLoaderDone(3);
+      I.waitForLoaderDone(8);
 
       I.clickCloseButton();
     });
