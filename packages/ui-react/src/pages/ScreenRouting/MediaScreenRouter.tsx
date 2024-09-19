@@ -36,10 +36,10 @@ mediaScreenMap.register(MediaSeries, (item) => !!item && isLegacySeriesFlow(item
 const MediaScreenRouter = () => {
   const params = useParams();
   const id = params.id || '';
-  const { isFetching, error, data } = useMedia(id);
+  const { isLoading, isFetching, error, data } = useMedia(id);
   const { t } = useTranslation('error');
 
-  if (isFetching) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -50,7 +50,7 @@ const MediaScreenRouter = () => {
   const MediaScreen = mediaScreenMap.getScreen(data);
 
   return (
-    <Fade key={id} open>
+    <Fade open>
       <MediaScreen data={data} isLoading={isFetching} />
     </Fade>
   );
