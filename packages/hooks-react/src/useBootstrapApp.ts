@@ -20,7 +20,7 @@ export type OnReadyCallback = (config: Config | undefined) => void;
 
 export const useBootstrapApp = (url: string, onReady: OnReadyCallback) => {
   const queryClient = useQueryClient();
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
 
   const refreshEntitlements = () => queryClient.invalidateQueries({ queryKey: ['entitlements'] });
 

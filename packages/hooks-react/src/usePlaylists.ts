@@ -27,7 +27,7 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
 
   // Determine currently selected language
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
 
   const playlistQueries = useQueries(
     content.map(({ contentId, type }, index) => {

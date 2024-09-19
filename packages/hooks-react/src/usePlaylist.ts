@@ -73,7 +73,7 @@ export default function usePlaylist(
   type: AppMenuType = APP_CONFIG_ITEM_TYPE.playlist,
 ) {
   // Determine currently selected language
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
   const language = i18n.language;
 
   const queryClient = useQueryClient();

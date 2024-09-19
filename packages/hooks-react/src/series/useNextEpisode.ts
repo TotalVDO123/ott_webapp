@@ -9,7 +9,7 @@ export const useNextEpisode = ({ series, episodeId }: { series: Series | undefin
   const apiService = getModule(ApiService);
 
   // Determine currently selected language
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
   const language = i18n.language;
 
   const { isLoading, data } = useQuery(

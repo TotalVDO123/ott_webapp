@@ -11,7 +11,7 @@ export default function useMedia(mediaId: string, enabled: boolean = true): UseM
   const apiService = getModule(ApiService);
 
   // Determine currently selected language
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
   const language = i18n.language;
 
   return useQuery(['media', mediaId, language], () => apiService.getMediaById({ id: mediaId, language }), {
