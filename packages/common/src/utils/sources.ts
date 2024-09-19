@@ -10,7 +10,19 @@ const isBCLManifestType = (sourceUrl: string, baseUrl: string, mediaId: string, 
   return extensions.some((ext) => sourceUrl === `${baseUrl}/live/broadcast/${mediaId}.${ext}`);
 };
 
-export const getSources = ({ item, baseUrl, config, user }: { item: PlaylistItem; baseUrl: string; config: Config; user: Customer | null }) => {
+export const getSources = ({
+  item,
+  baseUrl,
+  config,
+  user,
+  passport,
+}: {
+  item: PlaylistItem;
+  baseUrl: string;
+  config: Config;
+  user: Customer | null;
+  passport: string | null;
+}) => {
   const { sources, mediaid } = item;
   const { adConfig, siteId, adDeliveryMethod } = config;
 
@@ -34,10 +46,37 @@ export const getSources = ({ item, baseUrl, config, user }: { item: PlaylistItem
       // Attach user_id only for VOD and BCL SaaS Live Streams (doesn't work with SSAI items)
     } else if ((isVODManifest || isBCLManifest) && userId) {
       url.searchParams.set('user_id', userId);
+    } else if (passport) {
+      // Attach the passport in all the drm sources as it's needed for the licence request.
+      // Passport is only available if Access Bridge is in use.
+      attachPassportToSourceWithDRM(source, passport);
     }
 
     source.file = url.toString();
-
     return source;
   });
 };
+
+function attachPassportToSourceWithDRM(source: Source, passport: string): Source {
+  function updateUrl(urlString: string, passport: string): string {
+    const url = new URL(urlString);
+    if (!url.searchParams.has('token')) {
+      url.searchParams.set('passport', passport);
+    }
+    return url.toString();
+  }
+
+  if (source?.drm) {
+    if (source.drm?.playready?.url) {
+      source.drm.playready.url = updateUrl(source.drm.playready.url, passport);
+    }
+    if (source.drm?.widevine?.url) {
+      source.drm.widevine.url = updateUrl(source.drm.widevine.url, passport);
+    }
+    if (source.drm?.fairplay?.processSpcUrl) {
+      source.drm.fairplay.processSpcUrl = updateUrl(source.drm.fairplay.processSpcUrl, passport);
+    }
+  }
+
+  return source;
+}

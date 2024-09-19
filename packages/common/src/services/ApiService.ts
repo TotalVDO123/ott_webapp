@@ -170,6 +170,25 @@ export default class ApiService {
   };
 
   /**
+   * Get media by id
+   * @param {string} mediaId
+   * @param {string} siteId
+   * @param {string} planId
+   * @param {string} passport
+   */
+  getMediaByIdWithPassport = async (mediaId: string, siteId: string, planId: string, passport: string): Promise<PlaylistItem | undefined> => {
+    const pathname = `/v2/sites/${siteId}/media/${mediaId}/playback.json`;
+    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { passport, plan_id: planId });
+    const response = await fetch(url);
+    const data = (await getDataOrThrow(response)) as Playlist;
+    const mediaItem = data.playlist[0];
+
+    if (!mediaItem) throw new Error('MediaItem not found');
+
+    return this.transformMediaItem(mediaItem);
+  };
+
+  /**
    * Get series by id
    * @param {string} id
    * @param params

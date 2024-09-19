@@ -40,7 +40,7 @@ export default class JWPEntitlementService {
       });
       return data;
     } catch {
-      throw new Error('Failed to get entitled plans');
+      throw new Error('Failed to fetch entitled plans');
     }
   };
 }

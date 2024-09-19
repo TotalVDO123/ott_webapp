@@ -18,11 +18,13 @@ export type AccessControlPlan = {
 };
 
 export type Plan = {
-  name: string;
-  access_model: 'free' | 'freeauth' | 'svod';
-  access_plan: AccessControlPlan;
-  access: AccessOptions;
+  id: string;
+  original_id: number;
+  exp: number;
   metadata: {
+    name: string;
+    access: AccessOptions;
+    access_model: 'free' | 'freeauth' | 'svod';
     external_providers: PlanExternalProviders;
   };
 };
