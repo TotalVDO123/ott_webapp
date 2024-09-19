@@ -1,4 +1,4 @@
-import type { Offer, Order, PaymentMethod } from '../../types/checkout';
+import type { AccessMethod, Offer, Order, PaymentMethod } from '../../types/checkout';
 import type { MediaOffer } from '../../types/media';
 
 import { createStore } from './utils';
@@ -6,6 +6,7 @@ import { createStore } from './utils';
 type CheckoutStore = {
   requestedMediaOffers: MediaOffer[];
   mediaOffers: Offer[];
+  accessMethod: AccessMethod;
   subscriptionOffers: Offer[];
   switchSubscriptionOffers: Offer[];
   selectedOffer: Offer | null;
@@ -20,6 +21,7 @@ type CheckoutStore = {
 export const useCheckoutStore = createStore<CheckoutStore>('CheckoutStore', (set) => ({
   requestedMediaOffers: [],
   mediaOffers: [],
+  accessMethod: 'offer',
   subscriptionOffers: [],
   switchSubscriptionOffers: [],
   selectedOffer: null,

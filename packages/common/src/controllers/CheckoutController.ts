@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import i18next from 'i18next';
 
 import type {
+  AccessMethod,
   AddAdyenPaymentDetailsResponse,
   AdyenPaymentSession,
   CardPaymentData,
@@ -27,6 +28,7 @@ import { useCheckoutStore } from '../stores/CheckoutStore';
 import { useAccountStore } from '../stores/AccountStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { determineSwitchDirection } from '../utils/subscription';
+import { findDefaultCardMethodId } from '../utils/payments';
 
 @injectable()
 export default class CheckoutController {
@@ -40,6 +42,10 @@ export default class CheckoutController {
     this.accountService = getNamedModule(AccountService, integrationType);
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
+
+    if (this.checkoutService) {
+      useCheckoutStore.setState({ accessMethod: this.getAccessMethod() });
+    }
   }
 
   initialiseOffers = async () => {
@@ -61,8 +67,10 @@ export default class CheckoutController {
 
   getSubscriptionOfferIds = () => this.accountService.svodOfferIds;
 
-  chooseOffer = async (selectedOffer: Offer) => {
-    useCheckoutStore.setState({ selectedOffer });
+  chooseOffer = async (params: { offer: Offer; successUrl: string; cancelUrl: string }) => {
+    useCheckoutStore.setState({ selectedOffer: params.offer });
+
+    return this.checkoutService.chooseOffer(params);
   };
 
   initialiseOrder = async (offer: Offer): Promise<void> => {
@@ -70,7 +78,7 @@ export default class CheckoutController {
     const { customer } = getAccountInfo();
 
     const paymentMethods = await this.getPaymentMethods();
-    const paymentMethodId = paymentMethods[0]?.id;
+    const paymentMethodId = parseInt(findDefaultCardMethodId(paymentMethods));
 
     const createOrderArgs: CreateOrderArgs = {
       offer,
@@ -358,5 +366,9 @@ export default class CheckoutController {
 
   generateBillingPortalUrl = async (returnUrl: string) => {
     return this.checkoutService.generateBillingPortalUrl(returnUrl);
+  };
+
+  getAccessMethod = (): AccessMethod => {
+    return this.checkoutService.accessMethod;
   };
 }

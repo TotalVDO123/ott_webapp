@@ -31,8 +31,8 @@ export function formatDate(date: Date) {
 
 export async function finishSubscription(I: CodeceptJS.I) {
   I.click('Continue');
-  I.waitForText(`Welcome to JW OTT Web App (SVOD)`, longTimeout);
-  I.waitForText(`Thank you for subscribing to JW OTT Web App (SVOD). Please enjoy all our content.`);
+  I.waitForText('Payment successful', longTimeout);
+  I.waitForText('Thank you for your subscription, enjoy all our content.');
 
   I.click('Start watching');
 }

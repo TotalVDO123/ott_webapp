@@ -3,6 +3,7 @@ import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import { beforeEach } from 'vitest';
 import { mockService } from '@jwp/ott-common/test/mockService';
 import ApiService from '@jwp/ott-common/src/services/ApiService';
+import AccessController from '@jwp/ott-common/src/controllers/AccessController';
 import GenericEntitlementService from '@jwp/ott-common/src/services/GenericEntitlementService';
 import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementService';
 import WatchHistoryController from '@jwp/ott-common/src/controllers/WatchHistoryController';
@@ -18,6 +19,7 @@ describe('<Cinema>', () => {
     mockService(GenericEntitlementService, {});
     mockService(JWPEntitlementService, {});
     mockService(WatchHistoryController, {});
+    mockService(AccessController, {});
   });
 
   test('renders and matches snapshot', async () => {

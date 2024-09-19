@@ -1,6 +1,7 @@
 import type { PayloadWithIPOverride } from './account';
 import type { PaymentDetail } from './subscription';
 import type { EmptyEnvironmentServiceRequest, EnvironmentServiceRequest, PromiseRequest } from './service';
+import type { PlansResponse } from './plans';
 
 export type Offer = {
   id: number | null;
@@ -45,6 +46,8 @@ export type Offer = {
 };
 
 export type OfferType = 'svod' | 'tvod';
+
+export type AccessMethod = 'offer' | 'plan';
 
 export type ChooseOfferFormData = {
   selectedOfferType?: OfferType;
@@ -148,6 +151,12 @@ export type Payment = {
 
 export type GetOfferPayload = {
   offerId: string;
+};
+
+export type ChooseOfferPayload = {
+  offer: Offer;
+  successUrl: string;
+  cancelUrl: string;
 };
 
 export type GetOffersPayload = {
@@ -364,6 +373,7 @@ export type FinalizeAdyenPaymentDetailsPayload = Omit<FinalizeAdyenPaymentPayloa
 export type FinalizeAdyenPaymentDetailsResponse = PaymentDetail;
 
 export type GetOffers = PromiseRequest<GetOffersPayload, Offer[]>;
+export type ChooseOffer = PromiseRequest<ChooseOfferPayload, string | void>;
 export type GetOffer = EnvironmentServiceRequest<GetOfferPayload, Offer>;
 export type CreateOrder = EnvironmentServiceRequest<CreateOrderArgs, CreateOrderResponse>;
 export type GetOrder = EnvironmentServiceRequest<GetOrderPayload, GetOrderResponse>;
@@ -385,3 +395,4 @@ export type AddAdyenPaymentDetails = EnvironmentServiceRequest<AddAdyenPaymentDe
 export type FinalizeAdyenPaymentDetails = EnvironmentServiceRequest<FinalizeAdyenPaymentDetailsPayload, FinalizeAdyenPaymentDetailsResponse>;
 export type GetDirectPostCardPayment = (cardPaymentPayload: CardPaymentData, order: Order, referrer: string, returnUrl: string) => Promise<boolean>;
 export type GenerateBillingPortalURL = PromiseRequest<string, string | void>;
+export type GetEntitledPlans = PromiseRequest<{ siteId: string }, PlansResponse>;

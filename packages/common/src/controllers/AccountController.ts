@@ -7,15 +7,7 @@ import CheckoutService from '../services/integrations/CheckoutService';
 import AccountService, { type AccountServiceFeatures } from '../services/integrations/AccountService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
 import type { Offer } from '../../types/checkout';
-import type {
-  Capture,
-  Customer,
-  CustomerConsent,
-  EmailConfirmPasswordInput,
-  FirstLastNameInput,
-  GetCaptureStatusResponse,
-  SubscribeToNotificationsPayload,
-} from '../../types/account';
+import type { Capture, Customer, CustomerConsent, EmailConfirmPasswordInput, FirstLastNameInput, GetCaptureStatusResponse } from '../../types/account';
 import { assertFeature, assertModuleMethod, getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
@@ -26,12 +18,14 @@ import { logError } from '../logger';
 
 import WatchHistoryController from './WatchHistoryController';
 import FavoritesController from './FavoritesController';
+import AccessController from './AccessController';
 
 @injectable()
 export default class AccountController {
   private readonly checkoutService: CheckoutService;
   private readonly accountService: AccountService;
   private readonly subscriptionService: SubscriptionService;
+  private readonly accessController: AccessController;
   private readonly favoritesController: FavoritesController;
   private readonly watchHistoryController: WatchHistoryController;
   private readonly features: AccountServiceFeatures;
@@ -41,6 +35,7 @@ export default class AccountController {
 
   constructor(
     @inject(INTEGRATION_TYPE) integrationType: IntegrationType,
+    accessController: AccessController,
     favoritesController: FavoritesController,
     watchHistoryController: WatchHistoryController,
   ) {
@@ -49,6 +44,7 @@ export default class AccountController {
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
 
     // @TODO: Controllers shouldn't be depending on other controllers, but we've agreed to keep this as is for now
+    this.accessController = accessController;
     this.favoritesController = favoritesController;
     this.watchHistoryController = watchHistoryController;
 
@@ -163,6 +159,8 @@ export default class AccountController {
       const response = await this.accountService.login({ email, password, referrer });
 
       if (response) {
+        void this.accessController?.generateAccessTokens();
+        void this.accessController?.fetchAndStoreEntitledPlans();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }
@@ -180,6 +178,7 @@ export default class AccountController {
 
   logout = async () => {
     await this.accountService?.logout();
+    await this.accessController?.removeAccessTokens();
     await this.clearLoginState();
 
     // let the application know to refresh all entitlements
@@ -497,10 +496,6 @@ export default class AccountController {
 
   getAuthData = async () => {
     return this.accountService.getAuthData();
-  };
-
-  subscribeToNotifications = async ({ uuid, onMessage }: SubscribeToNotificationsPayload) => {
-    return this.accountService.subscribeToNotifications({ uuid, onMessage });
   };
 
   getFeatures() {

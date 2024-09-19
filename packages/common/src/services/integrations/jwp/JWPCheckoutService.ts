@@ -2,7 +2,9 @@ import { inject, injectable } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
 import type {
+  AccessMethod,
   CardPaymentData,
+  ChooseOffer,
   CreateOrder,
   CreateOrderArgs,
   GenerateBillingPortalURL,
@@ -24,20 +26,22 @@ import type { ServiceResponse } from '../../../../types/service';
 
 import type {
   CommonResponse,
-  GetAccessFeesResponse,
-  AccessFee,
   MerchantPaymentMethod,
   GeneratePayPalParameters,
   VoucherDiscountPrice,
   GetItemAccessResponse,
+  StripeProduct,
+  StripePrice,
 } from './types';
 import JWPAPIService from './JWPAPIService';
 
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
-  private readonly cardPaymentProvider = 'stripe';
+  protected readonly cardPaymentProvider = 'stripe';
 
-  private readonly apiService;
+  accessMethod: AccessMethod = 'plan';
+
+  protected readonly apiService;
 
   constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
     super();
@@ -64,16 +68,6 @@ export default class JWPCheckoutService extends CheckoutService {
   };
 
   /**
-   * Format a (Cleeng like) offer id for the given access fee (pricing option). For JWP, we need the asset id and
-   * access fee id in some cases.
-   */
-  private formatOfferId(offer: AccessFee) {
-    const ppvOffers = ['ppv', 'ppv_custom'];
-
-    return ppvOffers.includes(offer.access_type.name) ? `C${offer.item_id}_${offer.id}` : `S${offer.item_id}_${offer.id}`;
-  }
-
-  /**
    * Parse the given offer id and extract the asset id.
    * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
    */
@@ -90,21 +84,6 @@ export default class JWPCheckoutService extends CheckoutService {
 
     return offerId;
   }
-
-  private formatOffer = (offer: AccessFee): Offer => {
-    return {
-      id: offer.id,
-      offerId: this.formatOfferId(offer),
-      offerCurrency: offer.currency,
-      customerPriceInclTax: offer.amount,
-      customerCurrency: offer.currency,
-      offerTitle: offer.description,
-      active: true,
-      period: offer.access_type.period === 'month' && offer.access_type.quantity === 12 ? 'year' : offer.access_type.period,
-      freePeriods: offer.trial_period ? 1 : 0,
-      planSwitchEnabled: offer.item.plan_switch_enabled ?? false,
-    } as Offer;
-  };
 
   private formatOrder = (payload: CreateOrderArgs): Order => {
     return {
@@ -137,20 +116,51 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  getOffers: GetOffers = async (payload) => {
-    const offers = await Promise.all(
-      payload.offerIds.map(async (offerId) => {
-        try {
-          const data = await this.apiService.get<GetAccessFeesResponse>(`/v2/items/${this.parseOfferId(offerId)}/access-fees`);
+  chooseOffer: ChooseOffer = async ({ offer: { offerId }, successUrl, cancelUrl }) => {
+    try {
+      const { url } = await this.apiService.post<{ url: string }>(
+        '/v2/sites/:siteId/checkout',
+        {
+          price_id: offerId,
+          mode: 'subscription',
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+        },
+        { withAuthentication: true, useAccessBridge: true, contentType: 'json' },
+      );
 
-          return data?.map((offer) => this.formatOffer(offer));
-        } catch {
-          throw new Error('Failed to get offers');
-        }
-      }),
-    );
+      return url;
+    } catch (error) {
+      throw new Error('Failed to get checkout URL');
+    }
+  };
 
-    return offers.flat();
+  private formatPriceToOffer = (price: StripePrice & { name: string }, i: number): Offer =>
+    ({
+      id: i,
+      offerId: price.store_price_id,
+      offerCurrency: price.default_currency,
+      customerPriceInclTax: price.currencies[price.default_currency].amount / 100,
+      customerCurrency: price.default_currency,
+      offerTitle: price.name,
+      active: true,
+      period: price.recurrence.interval,
+      freePeriods: price.recurrence.trial_period_duration ?? 0,
+      planSwitchEnabled: false,
+    } as unknown as Offer);
+
+  getOffers: GetOffers = async () => {
+    try {
+      const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
+
+      const offers = stripeProducts.flatMap((product, i) =>
+        product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),
+      );
+
+      return offers;
+    } catch (error) {
+      throw new Error('Failed to get offers');
+    }
   };
 
   getPaymentMethods: GetPaymentMethods = async () => {

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { CYCLE_MODE_RESTART, type RenderControl, type RenderPagination, TileSlider } from '@videodock/tile-slider';
 import type { Playlist, PlaylistItem } from '@jwp/ott-common/types/playlist';
-import type { AccessModel, PlaylistType } from '@jwp/ott-common/types/config';
+import type { AccessModel, AppContentType } from '@jwp/ott-common/types/config';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
 import { mediaURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
@@ -15,6 +15,7 @@ import '@videodock/tile-slider/lib/style.css';
 
 import Card from '../Card/Card';
 import Icon from '../Icon/Icon';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './Shelf.module.scss';
 
@@ -34,9 +35,11 @@ export const featuredTileBreakpoints: Breakpoints = {
   [Breakpoint.xl]: 1,
 };
 
+export const ShelfIdentifier = Symbol(`SHELF`);
+
 export type ShelfProps = {
   playlist: Playlist;
-  type: PlaylistType;
+  type: AppContentType;
   onCardHover?: (playlistItem: PlaylistItem) => void;
   watchHistory?: { [key: string]: number };
   enableTitle?: boolean;
@@ -151,4 +154,4 @@ const Shelf = ({
   );
 };
 
-export default Shelf;
+export default createInjectableComponent(ShelfIdentifier, Shelf);

@@ -35,7 +35,6 @@ const Login = () => {
     onSubmit: ({ email, password }) => accountController.login(email, password, window.location.href),
     onSubmitSuccess: () => {
       announce(t('login.sign_in_success'), 'success');
-
       navigate(modalURLFromLocation(location, null));
     },
     onSubmitError: ({ resetValue }) => resetValue('password'),

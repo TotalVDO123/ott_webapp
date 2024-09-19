@@ -1,6 +1,5 @@
-import InPlayer, { Env } from '@inplayer-org/inplayer.js';
 import i18next from 'i18next';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
 import { formatConsentsToRegisterFields } from '../../../utils/collection';
 import type {
@@ -17,7 +16,6 @@ import type {
   GetCustomerConsents,
   GetPublisherConsents,
   Login,
-  NotificationsData,
   Register,
   ResetPassword,
   GetSocialURLs,
@@ -50,27 +48,21 @@ import type {
 } from './types';
 import JWPAPIService from './JWPAPIService';
 
-enum InPlayerEnv {
-  Development = 'development',
-  Production = 'production',
-  Daily = 'daily',
-}
-
 const JW_TERMS_URL = 'https://inplayer.com/legal/terms';
 
 @injectable()
 export default class JWPAccountService extends AccountService {
-  private readonly storageService;
-  private readonly apiService;
+  protected readonly storageService;
+  protected readonly apiService;
 
-  private clientId = '';
+  protected clientId = '';
 
   accessModel: AccessModel = ACCESS_MODEL.SVOD;
   assetId: number | null = null;
   svodOfferIds: string[] = [];
   sandbox = false;
 
-  constructor(storageService: StorageService, apiService: JWPAPIService) {
+  constructor(@inject(StorageService) storageService: StorageService, @inject(JWPAPIService) apiService: JWPAPIService) {
     super({
       canUpdateEmail: false,
       canSupportEmptyFullName: false,
@@ -150,10 +142,6 @@ export default class JWPAccountService extends AccountService {
 
     // set environment
     this.sandbox = !!jwpConfig.useSandbox;
-
-    const env: string = this.sandbox ? InPlayerEnv.Development : InPlayerEnv.Production;
-    InPlayer.setConfig(env as Env);
-
     this.apiService.setup(this.sandbox, config.siteId);
 
     // calculate access model
@@ -367,10 +355,6 @@ export default class JWPAccountService extends AccountService {
 
   logout = async () => {
     try {
-      if (InPlayer.Notifications.isSubscribed()) {
-        InPlayer.Notifications.unsubscribe();
-      }
-
       if (await this.apiService.isAuthenticated()) {
         await this.apiService.get<undefined>('/accounts/logout', { withAuthentication: true });
         await this.apiService.removeToken();
@@ -544,20 +528,6 @@ export default class JWPAccountService extends AccountService {
     );
 
     return watchHistoryData?.collection?.map(this.formatHistoryItem) || [];
-  };
-
-  subscribeToNotifications: NotificationsData = async ({ uuid, onMessage }) => {
-    try {
-      if (!InPlayer.Notifications.isSubscribed()) {
-        InPlayer.subscribe(uuid, {
-          onMessage: onMessage,
-          onOpen: () => true,
-        });
-      }
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   exportAccountData: ExportAccountData = async () => {

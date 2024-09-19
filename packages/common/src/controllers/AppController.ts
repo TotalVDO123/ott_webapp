@@ -15,6 +15,7 @@ import { logDebug } from '../logger';
 import WatchHistoryController from './WatchHistoryController';
 import FavoritesController from './FavoritesController';
 import AccountController from './AccountController';
+import AccessController from './AccessController';
 
 @injectable()
 export default class AppController {
@@ -51,11 +52,7 @@ export default class AppController {
     }
 
     // Store the logo right away and set css variables so the error page will be branded
-    const banner = config.assets.banner;
-
-    useConfigStore.setState((s) => {
-      s.config.assets.banner = banner;
-    });
+    useConfigStore.setState((state) => merge({}, state, { config: { assets: { banner: config.assets.banner } } }));
 
     config = await this.configService.validateConfig(config);
     config = merge({}, defaultConfig, config);
@@ -63,7 +60,7 @@ export default class AppController {
     return config;
   };
 
-  initializeApp = async (url: string, refreshEntitlements?: () => Promise<void>) => {
+  initializeApp = async (url: string, language: string, refreshEntitlements?: () => Promise<void>) => {
     logDebug('AppController', 'Initializing app', { url });
 
     const settings = await this.settingsService.initialize();
@@ -86,12 +83,17 @@ export default class AppController {
       await getModule(AccountController).initialize(url, refreshEntitlements);
     }
 
+    // when the apiAccessBridgeUrl is set up in the .ini file, we initialize the AccessController
+    if (settings?.apiAccessBridgeUrl) {
+      await getModule(AccessController).initialize();
+    }
+
     if (config.features?.continueWatchingList && config.content.some((el) => el.type === PersonalShelf.ContinueWatching)) {
-      await getModule(WatchHistoryController).initialize();
+      await getModule(WatchHistoryController).initialize(language);
     }
 
     if (config.features?.favoritesList && config.content.some((el) => el.type === PersonalShelf.Favorites)) {
-      await getModule(FavoritesController).initialize();
+      await getModule(FavoritesController).initialize(language);
     }
 
     return { config, settings, configSource };
@@ -119,5 +121,12 @@ export default class AppController {
     if (!configState.loaded) throw new Error('A call to `AppController#getIntegrationType()` was made before loading the config');
 
     return configState.integrationType;
+  };
+
+  getApiAccessBridgeUrl = (): string | undefined => {
+    const configState = useConfigStore.getState();
+
+    if (!configState.loaded) throw new Error('A call to `AppController#getApiAccessBridgeUrl()` was made before loading the config');
+    return configState.settings?.apiAccessBridgeUrl || undefined;
   };
 }

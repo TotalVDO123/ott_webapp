@@ -8,6 +8,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
+import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import Play from '@jwp/ott-theme/assets/icons/play.svg?react';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
@@ -38,6 +39,8 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   // watch history
   const watchHistoryItem = useWatchHistoryStore((state) => item && state.getItem(item));
   const videoProgress = watchHistoryItem?.progress;
+
+  useOffers();
 
   // entitlement
   const setRequestedMediaOffers = useCheckoutStore((s) => s.setRequestedMediaOffers);

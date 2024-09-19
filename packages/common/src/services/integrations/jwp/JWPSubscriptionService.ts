@@ -41,7 +41,7 @@ interface SubscriptionDetails extends JWPSubscription {
 
 @injectable()
 export default class JWPSubscriptionService extends SubscriptionService {
-  private readonly apiService: JWPAPIService;
+  protected readonly apiService: JWPAPIService;
 
   constructor(@named('JWP') @inject(JWPAPIService) apiService: JWPAPIService) {
     super();

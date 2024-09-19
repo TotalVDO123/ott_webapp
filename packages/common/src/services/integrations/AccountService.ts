@@ -8,7 +8,6 @@ import type {
   GetCustomerConsents,
   GetPublisherConsents,
   Login,
-  NotificationsData,
   Register,
   ResetPassword,
   GetSocialURLs,
@@ -87,8 +86,6 @@ export default abstract class AccountService {
   abstract getWatchHistory: GetWatchHistory;
 
   abstract getFavorites: GetFavorites;
-
-  abstract subscribeToNotifications: NotificationsData;
 
   abstract getSocialUrls?: GetSocialURLs;
 

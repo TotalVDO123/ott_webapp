@@ -5,14 +5,17 @@ import { createURL } from '@jwp/ott-common/src/utils/urlFormatting';
 
 import type { AccountModals } from '../../containers/AccountModal/AccountModal';
 import Spinner from '../Spinner/Spinner';
+import createInjectableComponent from '../../modules/createInjectableComponent';
 
 import styles from './Button.module.scss';
+
+export const ButtonIdentifier = Symbol(`BUTTON`);
 
 type Color = 'default' | 'primary' | 'delete';
 
 type Variant = 'contained' | 'outlined' | 'text' | 'danger' | 'delete';
 
-type Props = {
+export type ButtonProps = {
   children?: React.ReactNode;
   label: string;
   active?: boolean;
@@ -34,7 +37,7 @@ type Props = {
   activeClassname?: string;
 } & React.AriaAttributes;
 
-const Button: React.FC<Props> = ({
+const Button: React.FC<ButtonProps> = ({
   label,
   children,
   color = 'default',
@@ -52,7 +55,7 @@ const Button: React.FC<Props> = ({
   className,
   activeClassname = '',
   ...rest
-}: Props) => {
+}: ButtonProps) => {
   const buttonClassName = (isActive: boolean) =>
     classNames(styles.button, className, styles[color], styles[variant], {
       [styles.active]: isActive,
@@ -88,4 +91,4 @@ const Button: React.FC<Props> = ({
     </button>
   );
 };
-export default Button;
+export default createInjectableComponent(ButtonIdentifier, Button);

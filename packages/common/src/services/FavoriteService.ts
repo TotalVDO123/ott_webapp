@@ -23,17 +23,21 @@ const schema = array(
 export default class FavoriteService {
   private PERSIST_KEY_FAVORITES = 'favorites';
 
-  private readonly apiService;
-  private readonly storageService;
-  private readonly accountService;
+  protected readonly apiService;
+  protected readonly storageService;
+  protected readonly accountService;
 
-  constructor(@inject(INTEGRATION_TYPE) integrationType: string, apiService: ApiService, storageService: StorageService) {
+  constructor(
+    @inject(INTEGRATION_TYPE) integrationType: string,
+    @inject(ApiService) apiService: ApiService,
+    @inject(StorageService) storageService: StorageService,
+  ) {
     this.apiService = apiService;
     this.storageService = storageService;
     this.accountService = getNamedModule(AccountService, integrationType, false);
   }
 
-  private validateFavorites(favorites: unknown) {
+  protected validateFavorites(favorites: unknown) {
     if (favorites && schema.validateSync(favorites)) {
       return favorites as SerializedFavorite[];
     }
@@ -41,19 +45,19 @@ export default class FavoriteService {
     return [];
   }
 
-  private async getFavoritesFromAccount(user: Customer) {
+  protected async getFavoritesFromAccount(user: Customer) {
     const favorites = await this.accountService?.getFavorites({ user });
 
     return this.validateFavorites(favorites);
   }
 
-  private async getFavoritesFromStorage() {
+  protected async getFavoritesFromStorage() {
     const favorites = await this.storageService.getItem(this.PERSIST_KEY_FAVORITES, true);
 
     return this.validateFavorites(favorites);
   }
 
-  getFavorites = async (user: Customer | null, favoritesList: string) => {
+  getFavorites = async (user: Customer | null, favoritesList: string, language?: string) => {
     const savedItems = user ? await this.getFavoritesFromAccount(user) : await this.getFavoritesFromStorage();
     const mediaIds = savedItems.map(({ mediaid }) => mediaid);
 
@@ -62,7 +66,7 @@ export default class FavoriteService {
     }
 
     try {
-      const playlistItems = await this.apiService.getMediaByWatchlist(favoritesList, mediaIds);
+      const playlistItems = await this.apiService.getMediaByWatchlist({ playlistId: favoritesList, mediaIds, language });
 
       return (playlistItems || []).map((item) => this.createFavorite(item));
     } catch (error: unknown) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import classNames from 'classnames';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
@@ -164,11 +165,12 @@ const AccountModal = () => {
 
   const shouldShowBanner = !['delete-account', 'delete-account-confirmation', 'edit-card', 'warning-account-deletion'].includes(view ?? '');
   const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : 'small';
+  const bannerSize = ['payment-cancelled', 'welcome'].includes(view ?? '') ? classNames(styles.banner, styles.small) : styles.banner;
 
   return (
     <Dialog size={dialogSize} open={!!viewParam} onClose={closeHandler}>
       {shouldShowBanner && banner && (
-        <div className={styles.banner}>
+        <div className={bannerSize}>
           <img src={banner} alt="" />
         </div>
       )}
