@@ -9,7 +9,7 @@ type Props<Item> = {
   columnCount: number;
   data: Item[];
   renderCell: (item: Item, tabIndex: number) => JSX.Element;
-  getCellKey: (item: Item, rowIndex: number, columnIndex: number) => string;
+  getCellKey: (item: Item) => string;
 };
 
 const scrollIntoViewThrottled = throttle(function (focusedElement: HTMLElement) {
@@ -17,7 +17,7 @@ const scrollIntoViewThrottled = throttle(function (focusedElement: HTMLElement) 
 }, 300);
 
 // Keyboard-accessible grid layout, with focus management
-const LayoutGrid = <Item extends { mediaid: string }>({ className, columnCount, data, renderCell, getCellKey }: Props<Item>) => {
+const LayoutGrid = <Item extends object>({ className, columnCount, data, renderCell, getCellKey }: Props<Item>) => {
   const [currentRowIndex, setCurrentRowIndex] = useState(0);
   const [currentColumnIndex, setCurrentColumnIndex] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -121,7 +121,7 @@ const LayoutGrid = <Item extends { mediaid: string }>({ className, columnCount, 
             <div
               role="gridcell"
               id={`layout_grid_${rowIndex}-${columnIndex}`}
-              key={getCellKey(item, rowIndex, columnIndex)}
+              key={getCellKey(item)}
               aria-colindex={columnIndex}
               className={styles.cell}
               style={gridCellStyle}
