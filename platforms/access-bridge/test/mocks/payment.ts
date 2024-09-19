@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe';
+import { CheckoutParams } from '@jwp/ott-common/types/payment';
 
 import { PaymentService } from '../../src/services/payment-service';
 import { AccessBridgeError, ErrorDefinitions } from '../../src/errors';
@@ -29,7 +29,7 @@ export class MockStripePaymentService implements MockPaymentService {
     return [STORE_PRODUCT];
   }
 
-  async createCheckoutSessionUrl(viewer: Viewer, params: StripeCheckoutParams): Promise<string | null> {
+  async createCheckoutSessionUrl(viewer: Viewer, params: CheckoutParams): Promise<string | null> {
     if (this.mockBehavior === 'error' && this.mockError) {
       throw this.mockError;
     }
@@ -45,8 +45,8 @@ export class MockStripePaymentService implements MockPaymentService {
     return STRIPE_SESSION_URL;
   }
 
-  validateCheckoutParams(params: StripeCheckoutParams): string | null {
-    const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
+  validateCheckoutParams(params: CheckoutParams): string | null {
+    const requiredParams: (keyof CheckoutParams)[] = ['price_id', 'success_url', 'cancel_url'];
     const missingParam = requiredParams.find((param) => !params[param]);
     return missingParam ? `Missing required parameter: ${missingParam}` : null;
   }

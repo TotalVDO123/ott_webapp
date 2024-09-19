@@ -54,7 +54,6 @@ describe('CheckoutController tests', () => {
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           price_id: STORE_PRODUCT.store_product_id,
-          mode: 'subscription',
           success_url: 'http://example.com',
           cancel_url: 'http://example.com',
         }),
@@ -75,7 +74,6 @@ describe('CheckoutController tests', () => {
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.INVALID),
         body: JSON.stringify({
           price_id: STORE_PRICE.store_price_id,
-          mode: 'subscription',
           success_url: 'http://example.com',
           cancel_url: 'http://example.com',
         }),
@@ -107,7 +105,6 @@ describe('CheckoutController tests', () => {
         path: ENDPOINTS.CHECKOUT.replace(':site_id', SITE_ID.VALID),
         body: JSON.stringify({
           price_id: STORE_PRICE.store_price_id,
-          mode: 'payment',
           // missing success_url
           // missing cancel_url
         }),

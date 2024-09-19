@@ -6,7 +6,7 @@ import { Viewer } from './identity-service';
  * Any class implementing this should handle products, prices, checkout and payment,
  * from a specific payment provider (e.g., Stripe, Google, Apple).
  */
-export interface PaymentService<T extends CheckoutParams = CheckoutParams> {
+export interface PaymentService {
   /**
    * Retrieves products with prices based on the provided product IDs.
    * The implementation should interact with the payment provider's API to fetch products and prices details.
@@ -24,14 +24,14 @@ export interface PaymentService<T extends CheckoutParams = CheckoutParams> {
    * @param params The generic checkout parameters that will be customized for each payment provider.
    * @returns A Promise resolving to a checkout session URL depending on the provider.
    */
-  createCheckoutSessionUrl(viewer: Viewer, params: T): Promise<string | null>;
+  createCheckoutSessionUrl(viewer: Viewer, params: CheckoutParams): Promise<string | null>;
 
   /**
    * Validates the provided checkout parameters based on the specific provider's requirements.
    * @param params - The checkout parameters to validate.
    * @returns An error string if validation fails, or null if validation succeeds.
    */
-  validateCheckoutParams(params: T): string | null;
+  validateCheckoutParams(params: CheckoutParams): string | null;
 
   /**
    * Creates a billing portal session URL for the provided viewer and redirectUrl.

@@ -1,6 +1,5 @@
 import Stripe from 'stripe';
-import { Product, Price } from '@jwp/ott-common/types/payment.js';
-import { StripeCheckoutParams } from '@jwp/ott-common/types/stripe.js';
+import { Product, Price, CheckoutParams } from '@jwp/ott-common/types/payment.js';
 
 import { STRIPE_SECRET } from '../app-config.js';
 import { AccessBridgeError } from '../errors.js';
@@ -71,7 +70,7 @@ export class StripePaymentService implements PaymentService {
    * @param params Stripe checkout params to use for creating the checkout session.
    * @returns A Promise resolving to a Stripe Checkout Session URL for the checkout page.
    */
-  async createCheckoutSessionUrl(viewer: Viewer, params: StripeCheckoutParams): Promise<string | null> {
+  async createCheckoutSessionUrl(viewer: Viewer, params: CheckoutParams): Promise<string | null> {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
@@ -85,19 +84,15 @@ export class StripePaymentService implements PaymentService {
         viewer_id: viewer.id,
       },
       customer_email: viewer.email,
-      mode: params.mode,
+      mode: 'subscription', // at this moment we only support subscription mode
       success_url: params.success_url,
       cancel_url: params.cancel_url,
-
-      // Conditionally include `subscription_data` only if mode is `subscription`
-      ...(params.mode === 'subscription' && {
-        subscription_data: {
-          metadata: {
-            // This is very important as it's our only way of connecting the payment back to the viewer
-            viewer_id: viewer.id,
-          },
+      subscription_data: {
+        metadata: {
+          // This is very important as it's our only way of connecting the payment back to the viewer
+          viewer_id: viewer.id,
         },
-      }),
+      },
     };
 
     const checkoutSession = await this.stripe.checkout.sessions.create(sessionParams);
@@ -133,14 +128,14 @@ export class StripePaymentService implements PaymentService {
 
   /**
    * Validates the provided checkout parameters.
-   * Checks for the presence of required fields: 'price_id', 'mode', 'success_url', and 'cancel_url'.
+   * Checks for the presence of required fields: 'price_id', 'success_url', and 'cancel_url'.
    * If any required parameter is missing, returns an error message; otherwise, returns null.
    * @param params - The checkout parameters to validate.
    * @returns A string containing the name of the missing parameter if validation fails,
    * or null if all required parameters are present.
    */
-  validateCheckoutParams(params: StripeCheckoutParams): string | null {
-    const requiredParams: (keyof StripeCheckoutParams)[] = ['price_id', 'mode', 'success_url', 'cancel_url'];
+  validateCheckoutParams(params: CheckoutParams): string | null {
+    const requiredParams: (keyof CheckoutParams)[] = ['price_id', 'success_url', 'cancel_url'];
     const missingParam = requiredParams.find((param) => !params[param]);
     return missingParam ? `Missing required parameter: ${missingParam}` : null;
   }
