@@ -25,7 +25,7 @@ import styles from './Layout.module.scss';
 
 const Layout = () => {
   const { t } = useTranslation('common');
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
 
   // Determine currently selected language
   const language = i18n.language;

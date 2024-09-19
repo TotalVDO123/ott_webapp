@@ -30,7 +30,7 @@ const ShelfList = ({ rows }: Props) => {
   const { accessModel } = useConfigStore(({ accessModel }) => ({ accessModel }), shallow);
   const [rowsToLoad, setRowsToLoad] = useState(INITIAL_ROWS_TO_LOAD);
   const { t } = useTranslation('error');
-  const { i18n } = useTranslation('menu');
+  const { i18n } = useTranslation();
 
   // Determine currently selected language
   const language = i18n.language;
