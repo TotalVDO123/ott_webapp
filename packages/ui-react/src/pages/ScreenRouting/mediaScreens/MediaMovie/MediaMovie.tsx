@@ -60,7 +60,7 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
 
   // Handlers
   const goBack = () => data && navigate(mediaURL({ media: data, playlistId: feedId, play: false }));
-  const getUrl = (item: PlaylistItem) => mediaURL({ media: item, playlistId: features?.recommendationsPlaylist });
+  const getUrl = (item: PlaylistItem) => mediaURL({ media: item, playlistId: feedId });
 
   const handleComplete = useCallback(() => {
     if (!id || !playlist) return;
@@ -68,8 +68,8 @@ const MediaMovie: ScreenComponent<PlaylistItem> = ({ data, isLoading }) => {
     const index = playlist.playlist.findIndex(({ mediaid }) => mediaid === id);
     const nextItem = playlist.playlist[index + 1];
 
-    return nextItem && navigate(mediaURL({ media: nextItem, playlistId: features?.recommendationsPlaylist, play: true }));
-  }, [id, playlist, navigate, features?.recommendationsPlaylist]);
+    return nextItem && navigate(mediaURL({ media: nextItem, playlistId: feedId, play: true }));
+  }, [id, playlist, navigate, feedId]);
 
   useEffect(() => {
     (document.scrollingElement || document.body).scroll({ top: 0 });
