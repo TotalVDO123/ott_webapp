@@ -138,7 +138,7 @@ export default class ApiService {
     return transformedMediaItem;
   };
 
-  private transformEpisodes = (episodesRes: EpisodesRes, language: string, seasonNumber?: number) => {
+  private transformEpisodes = (episodesRes: EpisodesRes, language?: string, seasonNumber?: number) => {
     const { episodes, page, page_limit, total } = episodesRes;
 
     // Adding images and keys for media items
@@ -276,7 +276,7 @@ export default class ApiService {
     pageOffset?: number;
     pageLimit?: number;
     afterId?: string;
-    language: string;
+    language?: string;
   }): Promise<EpisodesWithPagination> => {
     if (!seriesId) {
       throw new Error('Series ID is required');
