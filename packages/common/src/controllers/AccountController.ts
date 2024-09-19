@@ -160,6 +160,7 @@ export default class AccountController {
 
       if (response) {
         void this.accessController?.generateAccessTokens();
+        void this.accessController?.fetchAndStoreEntitledPlans();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }

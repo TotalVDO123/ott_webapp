@@ -2,9 +2,10 @@ import { PersonalShelf, PersonalShelves, PLAYLIST_LIMIT } from '@jwp/ott-common/
 import { useFavoritesStore } from '@jwp/ott-common/src/stores/FavoritesStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import type { Content, PlaylistMenuType, PlaylistType } from '@jwp/ott-common/types/config';
+import type { Content, AppContentType, AppMenuType } from '@jwp/ott-common/types/config';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { useQueries, useQueryClient } from 'react-query';
+import { useTranslation } from 'react-i18next';
 
 import { getPlaylistQueryOptions } from './usePlaylist';
 
@@ -15,7 +16,7 @@ type UsePlaylistResult = {
   isPlaceholderData?: boolean;
 }[];
 
-const isPlaylistType = (type: PlaylistType): type is PlaylistMenuType => !PersonalShelves.some((pType) => pType === type);
+const isPlaylistType = (type: AppContentType): type is AppMenuType => !PersonalShelves.some((pType) => pType === type);
 
 const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undefined) => {
   const page_limit = PLAYLIST_LIMIT.toString();
@@ -24,6 +25,9 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
   const siteId = useConfigStore((state) => state.config.siteId);
   const favorites = useFavoritesStore((state) => state.getPlaylist());
   const watchHistory = useWatchHistoryStore((state) => state.getPlaylist());
+
+  // Determine currently selected language
+  const { i18n } = useTranslation();
 
   const playlistQueries = useQueries(
     content.map(({ contentId, type }, index) => {
@@ -36,6 +40,7 @@ const usePlaylists = (content: Content[], rowsToLoad: number | undefined = undef
           queryClient,
           usePlaceholderData: true,
           params: { page_limit },
+          language: i18n.language,
         });
       }
 

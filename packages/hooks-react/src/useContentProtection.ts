@@ -7,7 +7,6 @@ import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementSe
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import AccountController from '@jwp/ott-common/src/controllers/AccountController';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import { isTruthyCustomParamValue } from '@jwp/ott-common/src/utils/common';
 
 const useContentProtection = <T>(
@@ -18,18 +17,18 @@ const useContentProtection = <T>(
   enabled: boolean = true,
   placeholderData?: T,
 ) => {
-  const accessMethod = useCheckoutStore((state) => state.accessMethod);
-
   const genericEntitlementService = getModule(GenericEntitlementService);
   const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const { configId, signingConfig, contentProtection, urlSigning } = useConfigStore(({ config }) => ({
+  const { configId, signingConfig, contentProtection, jwp, urlSigning, isAcessBridgeEnabled } = useConfigStore(({ config, settings }) => ({
     configId: config.id,
     signingConfig: config.contentSigningService,
     contentProtection: config.contentProtection,
     jwp: config.integrations.jwp,
     urlSigning: isTruthyCustomParamValue(config?.custom?.urlSigning),
+    isAcessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
   }));
+
   const host = signingConfig?.host;
   const drmPolicyId = contentProtection?.drm?.defaultPolicyId ?? signingConfig?.drmPolicyId;
   const signingEnabled = !!urlSigning || !!host || (!!drmPolicyId && !host);
@@ -37,23 +36,27 @@ const useContentProtection = <T>(
   const { data: token, isLoading } = useQuery(
     ['token', type, id, params],
     async () => {
-      if (!id) {
+      if (isAcessBridgeEnabled) {
+        // if access control is set up we return nothing
+        // the useProtectedMedia hook will take care of it
         return;
       }
 
-      if (accessMethod === 'plan') {
-        return jwpEntitlementService.getJWPMediaToken(configId, id);
-      }
-
-      if (host) {
+      // if provider is not JWP
+      if (!!id && !!host) {
         const accountController = getModule(AccountController);
         const authData = await accountController.getAuthData();
         const { host, drmPolicyId } = signingConfig;
 
         return genericEntitlementService.getMediaToken(host, id, authData?.jwt, params, drmPolicyId);
       }
+
+      // if provider is JWP
+      if (jwp && configId && !!id && signingEnabled) {
+        return jwpEntitlementService.getJWPMediaToken(configId, id);
+      }
     },
-    { enabled: !!id && (accessMethod === 'plan' || (signingEnabled && enabled)), keepPreviousData: false, staleTime: 15 * 60 * 1000 },
+    { enabled: (signingEnabled || isAcessBridgeEnabled) && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
   );
 
   const queryResult = useQuery<T | undefined>([type, id, params, token], async () => callback(token, drmPolicyId), {
