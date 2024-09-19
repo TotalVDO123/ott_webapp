@@ -7,7 +7,9 @@ import useContentProtection from './useContentProtection';
 
 export default function useProtectedMedia(item: PlaylistItem) {
   const apiService = getModule(ApiService);
-  const contentProtectionQuery = useContentProtection('media', item.mediaid, (token, drmPolicyId) => apiService.getMediaById(item.mediaid, token, drmPolicyId));
+  const contentProtectionQuery = useContentProtection('media', item.mediaid, (token, drmPolicyId) =>
+    apiService.getMediaById({ id: item.mediaid, token, drmPolicyId }),
+  );
 
   const { isLoading, data: isGeoBlocked } = useQuery(
     ['media', 'geo', item.mediaid],

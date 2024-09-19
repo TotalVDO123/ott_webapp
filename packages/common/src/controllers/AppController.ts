@@ -59,7 +59,7 @@ export default class AppController {
     return config;
   };
 
-  initializeApp = async (url: string, refreshEntitlements?: () => Promise<void>) => {
+  initializeApp = async (url: string, language: string, refreshEntitlements?: () => Promise<void>) => {
     logDebug('AppController', 'Initializing app', { url });
 
     const settings = await this.settingsService.initialize();
@@ -83,11 +83,11 @@ export default class AppController {
     }
 
     if (config.features?.continueWatchingList && config.content.some((el) => el.type === PersonalShelf.ContinueWatching)) {
-      await getModule(WatchHistoryController).initialize();
+      await getModule(WatchHistoryController).initialize(language);
     }
 
     if (config.features?.favoritesList && config.content.some((el) => el.type === PersonalShelf.Favorites)) {
-      await getModule(FavoritesController).initialize();
+      await getModule(FavoritesController).initialize(language);
     }
 
     return { config, settings, configSource };
