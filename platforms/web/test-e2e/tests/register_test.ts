@@ -149,7 +149,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('lastName', 'Doe');
 
     I.click('Continue');
-    I.waitForLoaderDone();
+    I.waitForLoaderDone(8);
 
     I.see('Payment successful');
   });
