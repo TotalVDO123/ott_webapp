@@ -35,7 +35,6 @@ export type AccountServiceFeatures = {
   readonly hasSocialURLs: boolean;
   readonly hasNotifications: boolean;
   readonly watchListSizeLimit: number;
-  readonly canSeeSubscription?: boolean;
 };
 
 export default abstract class AccountService {

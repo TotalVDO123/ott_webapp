@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import useBillingPortal from '@jwp/ott-hooks-react/src/useBillingPortal';
 import type { Subscription as SubscriptionType } from '@jwp/ott-common/types/subscription';
 import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/formatting';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
 import userStyles from '../../pages/User/User.module.scss';
 import Button from '../Button/Button';
@@ -12,6 +13,7 @@ import styles from './Subscription.module.scss';
 
 const ActiveSubscription: React.FC<{ subscription: SubscriptionType }> = ({ subscription }) => {
   const { t, i18n } = useTranslation('user');
+  const isAccessBridgeEnabled = useConfigStore((state) => !!state.settings?.apiAccessBridgeUrl);
 
   const { isLoading, redirectToBillingPortal } = useBillingPortal();
 
@@ -29,9 +31,13 @@ const ActiveSubscription: React.FC<{ subscription: SubscriptionType }> = ({ subs
           <small>/{t(`account:periods.${subscription.period}`)}</small>
         </p>
       </div>
-      <p>{t(`subscription.${subscription.paymentGateway}.explanation`)}</p>
-      <Button label={t(`subscription.${subscription.paymentGateway}.goto_provider`)} disabled={isLoading} onClick={redirectToBillingPortal} />
-      {isLoading && <LoadingOverlay transparentBackground />}
+      {isAccessBridgeEnabled && (
+        <>
+          <p>{t(`subscription.${subscription.paymentGateway}.explanation`)}</p>
+          <Button label={t(`subscription.${subscription.paymentGateway}.goto_provider`)} disabled={isLoading} onClick={redirectToBillingPortal} />
+          {isLoading && <LoadingOverlay transparentBackground />}
+        </>
+      )}
     </div>
   );
 };

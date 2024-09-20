@@ -29,6 +29,7 @@ import { useAccountStore } from '../stores/AccountStore';
 import { FormValidationError } from '../errors/FormValidationError';
 import { determineSwitchDirection } from '../utils/subscription';
 import { findDefaultCardMethodId } from '../utils/payments';
+import { useConfigStore } from '../stores/ConfigStore';
 
 @injectable()
 export default class CheckoutController {
@@ -356,16 +357,25 @@ export default class CheckoutController {
     return response.responseData;
   };
 
+  generateBillingPortalUrl = async (returnUrl: string) => {
+    assertModuleMethod(this.checkoutService.generateBillingPortalUrl, 'generateBillingPortalUrl is not available in checkout service');
+
+    // This method should only be available when Access Bridge is being used, regardless of the integration type.
+    const { settings } = useConfigStore.getState();
+    const isAccessBridgeEnabled = !!settings?.apiAccessBridgeUrl;
+    if (!isAccessBridgeEnabled) {
+      return null;
+    }
+
+    return this.checkoutService.generateBillingPortalUrl(returnUrl);
+  };
+
   getOffers: GetOffers = (payload) => {
     return this.checkoutService.getOffers(payload);
   };
 
   getEntitlements: GetEntitlements = (payload) => {
     return this.checkoutService.getEntitlements(payload);
-  };
-
-  generateBillingPortalUrl = async (returnUrl: string) => {
-    return this.checkoutService.generateBillingPortalUrl(returnUrl);
   };
 
   getAccessMethod = (): AccessMethod => {

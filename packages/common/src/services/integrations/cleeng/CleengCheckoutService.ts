@@ -9,7 +9,6 @@ import type {
   DeletePaymentMethod,
   FinalizeAdyenPaymentDetails,
   GetAdyenPaymentSession,
-  GenerateBillingPortalURL,
   GetEntitlements,
   GetFinalizeAdyenPayment,
   GetInitialAdyenPayment,
@@ -191,5 +190,5 @@ export default class CleengCheckoutService extends CheckoutService {
 
   directPostCardPayment = async () => false;
 
-  generateBillingPortalUrl: GenerateBillingPortalURL = async () => {};
+  generateBillingPortalUrl: undefined;
 }

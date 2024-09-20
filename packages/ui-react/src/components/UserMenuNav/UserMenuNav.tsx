@@ -9,6 +9,7 @@ import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
 import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS, PATH_USER_SUBSCRIPTIONS } from '@jwp/ott-common/src/paths';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
 import styles from '../UserMenu/UserMenu.module.scss'; // TODO inherit styling
 import MenuButton from '../MenuButton/MenuButton';
@@ -29,7 +30,7 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
   const accountController = getModule(AccountController);
   const tabIndex = focusable ? 0 : -1;
 
-  const { canSeeSubscription } = accountController.getFeatures();
+  const isAccessBridgeEnabled = useConfigStore((state) => !!state.settings?.apiAccessBridgeUrl);
 
   const onLogout = useCallback(async () => {
     if (onButtonClick) {
@@ -68,7 +69,7 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        {showPaymentItems && !canSeeSubscription && (
+        {showPaymentItems && !isAccessBridgeEnabled && (
           <li>
             <MenuButton
               small={small}
@@ -80,7 +81,7 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        {canSeeSubscription && (
+        {isAccessBridgeEnabled && (
           <li>
             <MenuButton
               small={small}

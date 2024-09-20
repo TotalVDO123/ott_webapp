@@ -69,5 +69,5 @@ export default abstract class CheckoutService {
 
   abstract finalizeAdyenPaymentDetails?: FinalizeAdyenPaymentDetails;
 
-  abstract generateBillingPortalUrl: GenerateBillingPortalURL;
+  abstract generateBillingPortalUrl?: GenerateBillingPortalURL;
 }

@@ -36,10 +36,11 @@ const User = (): JSX.Element => {
   const favoritesController = getModule(FavoritesController);
   const accountController = getModule(AccountController);
 
-  const { accessModel, favoritesList } = useConfigStore(
+  const { accessModel, favoritesList, isAccessBridgeEnabled } = useConfigStore(
     (s) => ({
       accessModel: s.accessModel,
       favoritesList: s.config.features?.favoritesList,
+      isAccessBridgeEnabled: !!s.settings?.apiAccessBridgeUrl,
     }),
     shallow,
   );
@@ -50,7 +51,7 @@ const User = (): JSX.Element => {
 
   const isLargeScreen = breakpoint > Breakpoint.md;
   const { user: customer, subscription, loading } = useAccountStore();
-  const { canUpdateEmail, canSeeSubscription } = accountController.getFeatures();
+  const { canUpdateEmail } = accountController.getFeatures();
   const favorites = useFavoritesStore((state) => state.getPlaylist());
 
   const onLogout = useCallback(async () => {
@@ -100,7 +101,7 @@ const User = (): JSX.Element => {
                 </li>
               )}
 
-              {accessModel !== ACCESS_MODEL.AVOD && !canSeeSubscription && (
+              {accessModel !== ACCESS_MODEL.AVOD && !isAccessBridgeEnabled && (
                 <li>
                   <Button
                     to={RELATIVE_PATH_USER_PAYMENTS}
@@ -112,7 +113,7 @@ const User = (): JSX.Element => {
                 </li>
               )}
 
-              {canSeeSubscription && (
+              {isAccessBridgeEnabled && (
                 <li>
                   <Button
                     to={RELATIVE_PATH_USER_SUBSCRIPTION}

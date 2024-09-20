@@ -389,7 +389,7 @@ export default class AccountController {
     const { config, settings } = useConfigStore.getState();
     const isAccessBridgeEnabled = !!settings?.apiAccessBridgeUrl;
 
-    // This should be only used when access bridge is defined, regardless of the integration type.
+    // This should be only available when access bridge is defined, regardless of the integration type.
     if (!isAccessBridgeEnabled) {
       return null;
     }
