@@ -6,9 +6,11 @@ import type { IntegrationType } from '../../types/config';
 import CheckoutService from '../services/integrations/CheckoutService';
 import AccountService, { type AccountServiceFeatures } from '../services/integrations/AccountService';
 import SubscriptionService from '../services/integrations/SubscriptionService';
+import JWPEntitlementService from '../services/JWPEntitlementService';
 import type { Offer } from '../../types/checkout';
+import type { Plan } from '../../types/plans';
 import type { Capture, Customer, CustomerConsent, EmailConfirmPasswordInput, FirstLastNameInput, GetCaptureStatusResponse } from '../../types/account';
-import { assertFeature, assertModuleMethod, getNamedModule } from '../modules/container';
+import { assertFeature, assertModuleMethod, getModule, getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
 import { useAccountStore } from '../stores/AccountStore';
@@ -25,6 +27,7 @@ export default class AccountController {
   private readonly checkoutService: CheckoutService;
   private readonly accountService: AccountService;
   private readonly subscriptionService: SubscriptionService;
+  private readonly entitlementService: JWPEntitlementService;
   private readonly accessController: AccessController;
   private readonly favoritesController: FavoritesController;
   private readonly watchHistoryController: WatchHistoryController;
@@ -42,6 +45,7 @@ export default class AccountController {
     this.checkoutService = getNamedModule(CheckoutService, integrationType);
     this.accountService = getNamedModule(AccountService, integrationType);
     this.subscriptionService = getNamedModule(SubscriptionService, integrationType);
+    this.entitlementService = getModule(JWPEntitlementService);
 
     // @TODO: Controllers shouldn't be depending on other controllers, but we've agreed to keep this as is for now
     this.accessController = accessController;
@@ -81,6 +85,7 @@ export default class AccountController {
     useConfigStore.setState({ accessModel: this.accountService.accessModel });
 
     await this.loadUserData();
+    await this.getEntitledPlans();
 
     useAccountStore.setState({ loading: false });
   };
@@ -159,8 +164,7 @@ export default class AccountController {
       const response = await this.accountService.login({ email, password, referrer });
 
       if (response) {
-        void this.accessController?.generateAccessTokens();
-        void this.accessController?.fetchAndStoreEntitledPlans();
+        await this.accessController?.generateAccessTokens();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }
@@ -377,6 +381,29 @@ export default class AccountController {
 
     const { responseData } = await this.checkoutService.getEntitlements({ offerId });
     return !!responseData?.accessGranted;
+  };
+
+  // This currently supports only one plan, as the current usage for the media metadata requires only one plan_id provided.
+  // TODO: Support for multiple plans should be added. Revisit this logic once the dependency on plan_id is changed.
+  getEntitledPlans = async (): Promise<Plan | null> => {
+    const { config, settings } = useConfigStore.getState();
+    const siteId = config.siteId;
+    const isAccessBridgeEnabled = !!settings?.apiAccessBridgeUrl;
+
+    // This should be only used when access bridge is defined, regardless of the integration type.
+    if (!isAccessBridgeEnabled) {
+      return null;
+    }
+
+    const response = await this.entitlementService.getEntitledPlans({ siteId });
+    if (response?.plans?.length) {
+      // Find the SVOD plan or fallback to the first available plan
+      const entitledPlan = response.plans.find((plan) => plan.metadata.access_model === 'svod') || response.plans[0];
+      useAccountStore.setState({ entitledPlan });
+      return entitledPlan;
+    }
+
+    return null;
   };
 
   reloadSubscriptions = async (

@@ -46,9 +46,11 @@ export const getSources = ({
       // Attach user_id only for VOD and BCL SaaS Live Streams (doesn't work with SSAI items)
     } else if ((isVODManifest || isBCLManifest) && userId) {
       url.searchParams.set('user_id', userId);
-    } else if (passport) {
-      // Attach the passport in all the drm sources as it's needed for the licence request.
-      // Passport is only available if Access Bridge is in use.
+    }
+
+    // Attach the passport in all the drm sources as it's needed for the licence request.
+    // Passport is only available if Access Bridge is in use.
+    if (passport) {
       attachPassportToSourceWithDRM(source, passport);
     }
 
