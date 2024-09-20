@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useQueries, useQuery } from 'react-query';
+import { useQueries } from 'react-query';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import type { GetEntitlementsResponse } from '@jwp/ott-common/types/checkout';
 import type { MediaOffer } from '@jwp/ott-common/types/media';
@@ -7,7 +7,6 @@ import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
-import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementService';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 
@@ -35,11 +34,7 @@ const notifyOnChangeProps = ['data' as const, 'isLoading' as const];
  *
  *  */
 const useEntitlement: UseEntitlement = (playlistItem) => {
-  const { accessModel, config, isAccessBridgeEnabled } = useConfigStore(({ accessModel, config, settings }) => ({
-    accessModel,
-    config,
-    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
-  }));
+  const { accessModel } = useConfigStore();
   const { user, subscription } = useAccountStore(
     ({ user, subscription }) => ({
       user,
@@ -49,9 +44,8 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   );
 
   const checkoutController = getModule(CheckoutController, false);
-  const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const isPreEntitled = isAccessBridgeEnabled && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
+  const isPreEntitled = playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = useMemo(() => playlistItem?.mediaOffers || [], [playlistItem?.mediaOffers]);
 
   // this query is invalidated when the subscription gets reloaded
@@ -65,22 +59,9 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
     })),
   );
 
-  const { isLoading: isTokenLoading, data: token } = useQuery(
-    ['token', 'media', playlistItem?.mediaid, {}, !!user],
-    async () => {
-      if (!playlistItem?.mediaid) {
-        return '';
-      }
-
-      return await jwpEntitlementService.getJWPMediaToken(config.id, playlistItem.mediaid);
-    },
-    { enabled: isAccessBridgeEnabled, keepPreviousData: false, staleTime: 15 * 60 * 1000, retry: 2 },
-  );
-
   // when the user is logged out the useQueries will be disabled but could potentially return its cached data
-  const isMediaEntitled =
-    !!token || (!!user && !!mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted));
-  const isMediaEntitlementLoading = !isMediaEntitled && (isTokenLoading || mediaEntitlementQueries.some((item) => item.isLoading));
+  const isMediaEntitled = !!user && !!mediaEntitlementQueries.some((item) => item.isSuccess && (item.data as QueryResult)?.responseData?.accessGranted);
+  const isMediaEntitlementLoading = !isMediaEntitled && mediaEntitlementQueries.some((item) => item.isLoading);
 
   const isEntitled = !!playlistItem && (isPreEntitled || isMediaEntitled);
 
