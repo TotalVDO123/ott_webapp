@@ -139,6 +139,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('Email', passwordUtils.createRandomEmail());
     I.fillField('Password', passwordUtils.createRandomPassword());
 
+    I.waitForLoaderDone(20);
+
     await I.fillCustomRegistrationFields();
     I.click('Continue');
     I.waitForElement('form[data-testid="personal_details-form"]', longTimeout);
@@ -149,7 +151,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('lastName', 'Doe');
 
     I.click('Continue');
-    I.waitForLoaderDone(8);
+    I.waitForLoaderDone(20);
 
     I.see('Payment successful');
   });

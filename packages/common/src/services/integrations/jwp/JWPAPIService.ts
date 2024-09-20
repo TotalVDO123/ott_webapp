@@ -20,7 +20,7 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
-  useAccessBridge?: boolean;
+  fromAccessBridge?: boolean;
 };
 
 @injectable()
@@ -77,7 +77,7 @@ export default class JWPAPIService {
       withAuthentication = false,
       keepalive,
       includeFullResponse = false,
-      useAccessBridge = false,
+      fromAccessBridge = false,
     }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
@@ -117,11 +117,12 @@ export default class JWPAPIService {
       return formData.toString();
     })();
 
+    const baseUrl = fromAccessBridge ? this.apiAccessBridgeUrl : this.getBaseUrl();
     const parsedPath = path.replace(':siteId', this.siteId);
+    const fullPath = `${parsedPath.startsWith('http') ? parsedPath : `${baseUrl}${parsedPath}`}`;
+    const searchString = searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : '';
 
-    const endpoint = `${parsedPath.startsWith('http') ? parsedPath : `${useAccessBridge ? this.apiAccessBridgeUrl : this.getBaseUrl()}${parsedPath}`}${
-      searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
-    }`;
+    const endpoint = `${fullPath}${searchString}`;
 
     const resp = await fetch(endpoint, {
       headers,

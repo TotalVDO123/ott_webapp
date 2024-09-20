@@ -34,7 +34,7 @@ const cleengProps: ProviderProps = {
 runTestSuite(jwProps, 'JW Player', true);
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, usesAccessBridge = false) {
+function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
   let couponLoginContext: LoginContext;
 
   const today = new Date();
@@ -51,7 +51,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -96,7 +96,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -104,7 +104,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can renew a free subscription - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 

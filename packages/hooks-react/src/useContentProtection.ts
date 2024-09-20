@@ -20,13 +20,13 @@ const useContentProtection = <T>(
   const genericEntitlementService = getModule(GenericEntitlementService);
   const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const { configId, signingConfig, contentProtection, jwp, urlSigning, isAcessBridgeEnabled } = useConfigStore(({ config, settings }) => ({
+  const { configId, signingConfig, contentProtection, jwp, urlSigning, isAccessBridgeEnabled } = useConfigStore(({ config, settings }) => ({
     configId: config.id,
     signingConfig: config.contentSigningService,
     contentProtection: config.contentProtection,
     jwp: config.integrations.jwp,
     urlSigning: isTruthyCustomParamValue(config?.custom?.urlSigning),
-    isAcessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
   }));
 
   const host = signingConfig?.host;
@@ -36,7 +36,7 @@ const useContentProtection = <T>(
   const { data: token, isLoading } = useQuery(
     ['token', type, id, params],
     async () => {
-      if (isAcessBridgeEnabled) {
+      if (isAccessBridgeEnabled) {
         // if access control is set up we return nothing
         // the useProtectedMedia hook will take care of it
         return;
@@ -56,7 +56,7 @@ const useContentProtection = <T>(
         return jwpEntitlementService.getJWPMediaToken(configId, id);
       }
     },
-    { enabled: (signingEnabled || isAcessBridgeEnabled) && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
+    { enabled: (signingEnabled || isAccessBridgeEnabled) && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
   );
 
   const queryResult = useQuery<T | undefined>([type, id, params, token], async () => callback(token, drmPolicyId), {

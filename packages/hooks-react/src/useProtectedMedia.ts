@@ -11,14 +11,14 @@ export default function useProtectedMedia(item: PlaylistItem) {
   const apiService = getModule(ApiService);
   const accessController = getModule(AccessController);
 
-  const { isAcessBridgeEnabled } = useConfigStore(({ settings }) => ({
-    isAcessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+  const { isAccessBridgeEnabled } = useConfigStore(({ settings }) => ({
+    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
   }));
 
   const contentProtectionQuery = useContentProtection('media', item.mediaid, async (token, drmPolicyId) => {
     // If the Access Bridge is enabled, use it to retrieve media via access passport.
     // This bypasses the need for a DRM token or policy and directly uses the access-controlled method.
-    if (isAcessBridgeEnabled) {
+    if (isAccessBridgeEnabled) {
       return accessController.getMediaById(item.mediaid);
     }
 

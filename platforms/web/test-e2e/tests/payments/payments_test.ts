@@ -32,7 +32,7 @@ const cleengProps: ProviderProps = {
 runTestSuite(jwProps, 'JW Player', true);
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, usesAccessBridge = false) {
+function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
   let paidLoginContext: LoginContext;
 
   const today = new Date();
@@ -48,7 +48,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can open the PayPal site - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -65,7 +65,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can finish my subscription with credit card - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -96,7 +96,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can cancel my subscription - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -109,7 +109,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can renew my subscription - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -120,7 +120,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can view my invoices - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 

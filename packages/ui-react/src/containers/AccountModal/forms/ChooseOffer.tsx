@@ -7,7 +7,7 @@ import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
-import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
 import ChooseOfferForm from '../../../components/ChooseOfferForm/ChooseOfferForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
@@ -20,7 +20,7 @@ const ChooseOffer = () => {
   const { t } = useTranslation('account');
   const isSwitch = useQueryParam('u') === 'upgrade-subscription';
   const isPendingOffer = useAccountStore(({ pendingOffer }) => ({ isPendingOffer: !!pendingOffer }));
-  const accessMethod = useCheckoutStore((state) => state.accessMethod);
+  const isAccessBridgeEnabled = useConfigStore(({ settings }) => !!settings?.apiAccessBridgeUrl);
   const redirectUrlRef = useRef<string>('');
 
   const { isLoading, mediaOffers, subscriptionOffers, switchSubscriptionOffers, defaultOfferType, hasMultipleOfferTypes, chooseOffer, switchSubscription } =
@@ -61,7 +61,7 @@ const ChooseOffer = () => {
       }
     },
     onSubmitSuccess: async () => {
-      if (accessMethod === 'plan') {
+      if (isAccessBridgeEnabled) {
         if (redirectUrlRef.current) {
           window.location.href = redirectUrlRef.current;
         }
@@ -114,7 +114,7 @@ const ChooseOffer = () => {
     );
   }
 
-  if (accessMethod === 'plan') {
+  if (isAccessBridgeEnabled) {
     return (
       <ChoosePlanForm
         values={values}
