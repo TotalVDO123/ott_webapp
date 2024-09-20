@@ -22,16 +22,9 @@ import type {
 } from '../../../../types/checkout';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
+import type { Product, Price } from '../../../../types/payment';
 
-import type {
-  CommonResponse,
-  MerchantPaymentMethod,
-  GeneratePayPalParameters,
-  VoucherDiscountPrice,
-  GetItemAccessResponse,
-  StripeProduct,
-  StripePrice,
-} from './types';
+import type { CommonResponse, MerchantPaymentMethod, GeneratePayPalParameters, VoucherDiscountPrice, GetItemAccessResponse } from './types';
 import JWPAPIService from './JWPAPIService';
 
 @injectable()
@@ -121,7 +114,6 @@ export default class JWPCheckoutService extends CheckoutService {
         '/v2/sites/:siteId/checkout',
         {
           price_id: offerId,
-          mode: 'subscription',
           success_url: successUrl,
           cancel_url: cancelUrl,
         },
@@ -134,23 +126,23 @@ export default class JWPCheckoutService extends CheckoutService {
     }
   };
 
-  private formatPriceToOffer = (price: StripePrice & { name: string }, i: number): Offer =>
+  private formatPriceToOffer = (price: Price & { name: string }, i: number): Offer =>
     ({
       id: i,
       offerId: price.store_price_id,
       offerCurrency: price.default_currency,
-      customerPriceInclTax: price.currencies[price.default_currency].amount / 100,
+      customerPriceInclTax: (price.currencies[price.default_currency].amount || 0) / 100,
       customerCurrency: price.default_currency,
       offerTitle: price.name,
       active: true,
-      period: price.recurrence.interval,
-      freePeriods: price.recurrence.trial_period_duration ?? 0,
+      period: price.recurrence === 'one_time' ? 'one_time' : price.recurrence.interval,
+      freePeriods: price.recurrence === 'one_time' ? 0 : price.recurrence.trial_period_duration ?? 0,
       planSwitchEnabled: false,
     } as unknown as Offer);
 
   getOffers: GetOffers = async () => {
     try {
-      const stripeProducts = await this.apiService.get<StripeProduct[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
+      const stripeProducts = await this.apiService.get<Product[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
 
       const offers = stripeProducts.flatMap((product, i) =>
         product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),
