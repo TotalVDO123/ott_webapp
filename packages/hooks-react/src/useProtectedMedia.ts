@@ -2,10 +2,8 @@ import { useQuery } from 'react-query';
 import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import ApiService from '@jwp/ott-common/src/services/ApiService';
 import { getModule } from '@jwp/ott-common/src/modules/container';
-import { useAccessStore } from '@jwp/ott-common/src/stores/AccessStore';
 import AccessController from '@jwp/ott-common/src/controllers/AccessController';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import { ApiError } from '@jwp/ott-common/src/utils/api';
 
 import useContentProtection from './useContentProtection';
 
@@ -13,37 +11,20 @@ export default function useProtectedMedia(item: PlaylistItem) {
   const apiService = getModule(ApiService);
   const accessController = getModule(AccessController);
 
-  const { siteId } = useConfigStore().config;
-  const { passport, entitledPlan } = useAccessStore();
+  const { isAcessBridgeEnabled } = useConfigStore(({ settings }) => ({
+    isAcessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+  }));
 
-  const getMedia = async (token?: string, drmPolicyId?: string) => {
-    // If nothing from Access Bridge is present, the flow remains as it was.
-    if (!passport || !entitledPlan) {
-      return apiService.getMediaById({ id: item.mediaid, token, drmPolicyId });
+  const contentProtectionQuery = useContentProtection('media', item.mediaid, async (token, drmPolicyId) => {
+    // If the Access Bridge is enabled, use it to retrieve media via access passport.
+    // This bypasses the need for a DRM token or policy and directly uses the access-controlled method.
+    if (isAcessBridgeEnabled) {
+      return accessController.getMediaById(item.mediaid);
     }
 
-    // Otherwise use passport to get the media
-    // TODO: the logic needs to be revisited once the dependency on planId is changed.
-    try {
-      return await apiService.getMediaByIdWithPassport({ id: item.mediaid, siteId, planId: entitledPlan.id, passport });
-    } catch (error: unknown) {
-      if (error instanceof ApiError && error.code === 403) {
-        // If the passport is invalid or expired, refresh and get media again
-        await accessController.refreshAccessTokens();
-        const updatedPassport = useAccessStore.getState().passport;
-
-        if (updatedPassport) {
-          return await apiService.getMediaByIdWithPassport({ id: item.mediaid, siteId, planId: entitledPlan.id, passport: updatedPassport });
-        }
-
-        throw new Error('Failed to refresh passport and retrieve media.');
-      }
-
-      throw error;
-    }
-  };
-
-  const contentProtectionQuery = useContentProtection('media', item.mediaid, async (token, drmPolicyId) => getMedia(token, drmPolicyId));
+    // If Access Bridge is not enabled, retrieve the media using the provided DRM token and policy ID.
+    return apiService.getMediaById({ id: item.mediaid, token, drmPolicyId });
+  });
 
   const { isLoading, data: isGeoBlocked } = useQuery(
     ['media', 'geo', item.mediaid],
