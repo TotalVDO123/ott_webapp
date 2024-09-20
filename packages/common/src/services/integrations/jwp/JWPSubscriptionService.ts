@@ -20,7 +20,6 @@ import type {
   SetDefaultCardResponse,
   Card,
   JWPSubscription,
-  JWPSubscriptionPlanList,
 } from './types';
 import JWPAPIService from './JWPAPIService';
 
@@ -114,34 +113,28 @@ export default class JWPSubscriptionService extends SubscriptionService {
     } as Subscription;
   };
 
-  getActiveSubscription: GetActiveSubscription = async () => {
+  getActiveSubscription: GetActiveSubscription = async ({ entitledPlan }) => {
+    if (!entitledPlan) {
+      return null;
+    }
+
     try {
-      const { plans } = await this.apiService.get<JWPSubscriptionPlanList>('/v3/sites/:siteId/entitlements', {
-        withAuthentication: true,
-      });
+      const { collection: subscriptions } = await this.apiService.get<GetSubscriptionsResponse>(
+        '/subscriptions',
+        {
+          withAuthentication: true,
+          contentType: 'json',
+        },
+        {
+          limit: 15,
+          page: 0,
+        },
+      );
 
-      if (plans?.length) {
-        const svodPlan = plans.findLast((plan) => plan.metadata.access_model === 'svod');
+      const activeSubscription = subscriptions.find((subscription: SubscriptionDetails) => subscription.item_id === entitledPlan.original_id);
 
-        if (svodPlan) {
-          const { collection: subscriptions } = await this.apiService.get<GetSubscriptionsResponse>(
-            '/subscriptions',
-            {
-              withAuthentication: true,
-              contentType: 'json',
-            },
-            {
-              limit: 15,
-              page: 0,
-            },
-          );
-
-          const activeSubscription = subscriptions.find((subscription: SubscriptionDetails) => subscription.item_id === svodPlan.original_id);
-
-          if (activeSubscription) {
-            return this.formatActiveSubscription(activeSubscription, svodPlan.access_plan.exp);
-          }
-        }
+      if (activeSubscription) {
+        return this.formatActiveSubscription(activeSubscription, entitledPlan.exp);
       }
 
       return null;

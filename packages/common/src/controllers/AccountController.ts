@@ -84,8 +84,8 @@ export default class AccountController {
     // set the accessModel before restoring the user session
     useConfigStore.setState({ accessModel: this.accountService.accessModel });
 
-    await this.loadUserData();
     await this.getEntitledPlans();
+    await this.loadUserData();
 
     useAccountStore.setState({ loading: false });
   };
@@ -387,7 +387,6 @@ export default class AccountController {
   // TODO: Support for multiple plans should be added. Revisit this logic once the dependency on plan_id is changed.
   getEntitledPlans = async (): Promise<Plan | null> => {
     const { config, settings } = useConfigStore.getState();
-    const siteId = config.siteId;
     const isAccessBridgeEnabled = !!settings?.apiAccessBridgeUrl;
 
     // This should be only used when access bridge is defined, regardless of the integration type.
@@ -395,7 +394,7 @@ export default class AccountController {
       return null;
     }
 
-    const response = await this.entitlementService.getEntitledPlans({ siteId });
+    const response = await this.entitlementService.getEntitledPlans({ siteId: config.siteId });
     if (response?.plans?.length) {
       // Find the SVOD plan or fallback to the first available plan
       const entitledPlan = response.plans.find((plan) => plan.metadata.access_model === 'svod') || response.plans[0];
@@ -414,7 +413,7 @@ export default class AccountController {
   ): Promise<unknown> => {
     useAccountStore.setState({ loading: true });
 
-    const { getAccountInfo } = useAccountStore.getState();
+    const { getAccountInfo, entitledPlan } = useAccountStore.getState();
     const { customerId } = getAccountInfo();
     const { accessModel } = useConfigStore.getState();
 
@@ -436,7 +435,7 @@ export default class AccountController {
     }
 
     const [activeSubscription, transactions, activePayment] = await Promise.all([
-      this.subscriptionService.getActiveSubscription({ customerId }),
+      this.subscriptionService.getActiveSubscription({ customerId, entitledPlan }),
       this.subscriptionService.getAllTransactions({ customerId }),
       this.subscriptionService.getActivePayment({ customerId }),
     ]);
