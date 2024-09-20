@@ -3,8 +3,6 @@ import { testConfigs } from '@jwp/ott-testing/constants';
 import constants, { longTimeout, normalTimeout } from '#utils/constants';
 import passwordUtils from '#utils/password_utils';
 
-const loaderElement = '[class*=_loadingOverlay]';
-
 runTestSuite(testConfigs.jwpAuth, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 
@@ -141,7 +139,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('Email', passwordUtils.createRandomEmail());
     I.fillField('Password', passwordUtils.createRandomPassword());
 
-    I.waitForInvisible(loaderElement, 20);
+    I.waitForLoaderDone(20);
 
     await I.fillCustomRegistrationFields();
     I.click('Continue');
@@ -153,7 +151,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('lastName', 'Doe');
 
     I.click('Continue');
-    I.waitForLoaderDone(8);
+    I.waitForLoaderDone(20);
 
     I.see('Payment successful');
   });
