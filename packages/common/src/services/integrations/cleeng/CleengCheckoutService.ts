@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 
 import type {
-  AccessMethod,
   AddAdyenPaymentDetails,
   ChooseOffer,
   CreateOrder,
@@ -36,8 +35,6 @@ import CleengService from './CleengService';
 export default class CleengCheckoutService extends CheckoutService {
   protected readonly cleengService: CleengService;
   protected readonly getCustomerIP: GetCustomerIP;
-
-  accessMethod: AccessMethod = 'offer';
 
   constructor(@inject(CleengService) cleengService: CleengService, @inject(GET_CUSTOMER_IP) getCustomerIP: GetCustomerIP) {
     super();

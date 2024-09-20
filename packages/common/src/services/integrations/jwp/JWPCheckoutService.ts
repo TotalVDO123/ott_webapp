@@ -2,7 +2,6 @@ import { inject, injectable } from 'inversify';
 
 import { isSVODOffer } from '../../../utils/offers';
 import type {
-  AccessMethod,
   CardPaymentData,
   ChooseOffer,
   CreateOrder,
@@ -30,8 +29,6 @@ import JWPAPIService from './JWPAPIService';
 @injectable()
 export default class JWPCheckoutService extends CheckoutService {
   protected readonly cardPaymentProvider = 'stripe';
-
-  accessMethod: AccessMethod = 'plan';
 
   protected readonly apiService;
 
@@ -117,7 +114,7 @@ export default class JWPCheckoutService extends CheckoutService {
           success_url: successUrl,
           cancel_url: cancelUrl,
         },
-        { withAuthentication: true, useAccessBridge: true, contentType: 'json' },
+        { withAuthentication: true, fromAccessBridge: true, contentType: 'json' },
       );
 
       return url;
@@ -142,7 +139,7 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async () => {
     try {
-      const stripeProducts = await this.apiService.get<Product[]>('/v2/sites/:siteId/products', { useAccessBridge: true });
+      const stripeProducts = await this.apiService.get<Product[]>('/v2/sites/:siteId/products', { fromAccessBridge: true });
 
       const offers = stripeProducts.flatMap((product, i) =>
         product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),

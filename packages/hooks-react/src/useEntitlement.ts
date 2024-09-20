@@ -6,7 +6,6 @@ import type { MediaOffer } from '@jwp/ott-common/types/media';
 import { getModule } from '@jwp/ott-common/src/modules/container';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
-import { useCheckoutStore } from '@jwp/ott-common/src/stores/CheckoutStore';
 import CheckoutController from '@jwp/ott-common/src/controllers/CheckoutController';
 import JWPEntitlementService from '@jwp/ott-common/src/services/JWPEntitlementService';
 import { isLocked } from '@jwp/ott-common/src/utils/entitlements';
@@ -36,7 +35,11 @@ const notifyOnChangeProps = ['data' as const, 'isLoading' as const];
  *
  *  */
 const useEntitlement: UseEntitlement = (playlistItem) => {
-  const { accessModel, config } = useConfigStore();
+  const { accessModel, config, isAccessBridgeEnabled } = useConfigStore(({ accessModel, config, settings }) => ({
+    accessModel,
+    config,
+    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+  }));
   const { user, subscription } = useAccountStore(
     ({ user, subscription }) => ({
       user,
@@ -48,9 +51,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
   const checkoutController = getModule(CheckoutController, false);
   const jwpEntitlementService = getModule(JWPEntitlementService);
 
-  const accessMethod = useCheckoutStore((state) => state.accessMethod);
-
-  const isPreEntitled = accessMethod !== 'plan' && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
+  const isPreEntitled = isAccessBridgeEnabled && playlistItem && !isLocked(accessModel, !!user, !!subscription, playlistItem);
   const mediaOffers = useMemo(() => playlistItem?.mediaOffers || [], [playlistItem?.mediaOffers]);
 
   // this query is invalidated when the subscription gets reloaded
@@ -73,7 +74,7 @@ const useEntitlement: UseEntitlement = (playlistItem) => {
 
       return await jwpEntitlementService.getJWPMediaToken(config.id, playlistItem.mediaid);
     },
-    { enabled: accessMethod === 'plan', keepPreviousData: false, staleTime: 15 * 60 * 1000, retry: 2 },
+    { enabled: isAccessBridgeEnabled, keepPreviousData: false, staleTime: 15 * 60 * 1000, retry: 2 },
   );
 
   // when the user is logged out the useQueries will be disabled but could potentially return its cached data

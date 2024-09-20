@@ -31,7 +31,7 @@ const cleengProps: ProviderProps = {
 runTestSuite(jwProps, 'JW Player', true);
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, usesAccessBridge = false) {
+function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
   let paidLoginContext: LoginContext;
 
   Feature(`choose offer - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
@@ -61,7 +61,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can see offered subscriptions - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -94,7 +94,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can choose an offer - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 
@@ -130,7 +130,7 @@ function runTestSuite(props: ProviderProps, providerName: string, usesAccessBrid
   });
 
   Scenario(`I can see payment types - ${providerName}`, async ({ I }) => {
-    if (usesAccessBridge) {
+    if (isAccessBridgeEnabled) {
       return;
     }
 

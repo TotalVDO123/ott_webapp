@@ -47,8 +47,6 @@ export type Offer = {
 
 export type OfferType = 'svod' | 'tvod';
 
-export type AccessMethod = 'offer' | 'plan';
-
 export type ChooseOfferFormData = {
   selectedOfferType?: OfferType;
   selectedOfferId?: string;
