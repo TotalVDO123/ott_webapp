@@ -42,6 +42,8 @@ export default class CleengCheckoutService extends CheckoutService {
     this.getCustomerIP = getCustomerIP;
   }
 
+  initializePaymentService = async () => {};
+
   getOffers: GetOffers = async (payload) => {
     return await Promise.all(
       payload.offerIds.map(async (offerId) => {

@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 
 import StorageService from '../../StorageService';
-import { API_ACCESS_BRIDGE_URL } from '../../../modules/types';
 
 import { API_CONSTS } from './constants';
 import type { JWPError } from './types';
@@ -20,20 +19,17 @@ type RequestOptions = {
   contentType?: keyof typeof CONTENT_TYPES;
   responseType?: 'json' | 'blob';
   includeFullResponse?: boolean;
-  fromAccessBridge?: boolean;
 };
 
 @injectable()
 export default class JWPAPIService {
   protected readonly storageService: StorageService;
-  protected readonly apiAccessBridgeUrl;
 
   private useSandboxEnv = true;
   private siteId = '';
 
-  constructor(@inject(StorageService) storageService: StorageService, @inject(API_ACCESS_BRIDGE_URL) apiAccessBridgeUrl: string) {
+  constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
-    this.apiAccessBridgeUrl = apiAccessBridgeUrl;
   }
 
   setup = (useSandboxEnv: boolean, siteId: string) => {
@@ -41,7 +37,7 @@ export default class JWPAPIService {
     this.siteId = siteId;
   };
 
-  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'STAGING' : 'PROD'].API_BASE_URL;
+  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'DAILY' : 'PROD'].API_BASE_URL;
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -71,14 +67,7 @@ export default class JWPAPIService {
     path: string = '/',
     method = 'GET',
     bodyObject?: Record<string, unknown>,
-    {
-      contentType = 'form',
-      responseType = 'json',
-      withAuthentication = false,
-      keepalive,
-      includeFullResponse = false,
-      fromAccessBridge = false,
-    }: RequestOptions = {},
+    { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
     const headers: Record<string, string> = {
@@ -117,9 +106,8 @@ export default class JWPAPIService {
       return formData.toString();
     })();
 
-    const baseUrl = fromAccessBridge ? this.apiAccessBridgeUrl : this.getBaseUrl();
     const parsedPath = path.replace(':siteId', this.siteId);
-    const fullPath = `${parsedPath.startsWith('http') ? parsedPath : `${baseUrl}${parsedPath}`}`;
+    const fullPath = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl()}${parsedPath}`}`;
     const searchString = searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : '';
 
     const endpoint = `${fullPath}${searchString}`;

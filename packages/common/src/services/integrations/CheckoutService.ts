@@ -24,6 +24,8 @@ import type {
 } from '../../../types/checkout';
 
 export default abstract class CheckoutService {
+  abstract initializePaymentService: () => void;
+
   abstract getOffers: GetOffers;
 
   abstract createOrder: CreateOrder;

@@ -22,7 +22,9 @@ import type {
 } from '../../../../types/checkout';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
-import type { Product, Price } from '../../../../types/payment';
+import type { Price } from '../../../../types/payment';
+import PaymentService from '../../PaymentService';
+import { useConfigStore } from '../../../../../common/src/stores/ConfigStore';
 
 import type { CommonResponse, MerchantPaymentMethod, GeneratePayPalParameters, VoucherDiscountPrice, GetItemAccessResponse } from './types';
 import JWPAPIService from './JWPAPIService';
@@ -32,11 +34,19 @@ export default class JWPCheckoutService extends CheckoutService {
   protected readonly cardPaymentProvider = 'stripe';
 
   protected readonly apiService;
+  protected readonly paymentService;
 
-  constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
+  constructor(@inject(JWPAPIService) apiService: JWPAPIService, @inject(PaymentService) paymentService: PaymentService) {
     super();
     this.apiService = apiService;
+    this.paymentService = paymentService;
+    this.initializePaymentService();
   }
+
+  initializePaymentService = async () => {
+    const { siteId } = useConfigStore.getState().config;
+    this.paymentService.initialize(siteId);
+  };
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -108,17 +118,8 @@ export default class JWPCheckoutService extends CheckoutService {
 
   chooseOffer: ChooseOffer = async ({ offer: { offerId }, successUrl, cancelUrl }) => {
     try {
-      const { url } = await this.apiService.post<{ url: string }>(
-        '/v2/sites/:siteId/checkout',
-        {
-          price_id: offerId,
-          success_url: successUrl,
-          cancel_url: cancelUrl,
-        },
-        { withAuthentication: true, fromAccessBridge: true, contentType: 'json' },
-      );
-
-      return url;
+      const { url } = await this.paymentService.generateCheckoutSessionUrl(offerId, successUrl, cancelUrl);
+      return url || undefined;
     } catch (error) {
       throw new Error('Failed to get checkout URL');
     }
@@ -140,9 +141,8 @@ export default class JWPCheckoutService extends CheckoutService {
 
   getOffers: GetOffers = async () => {
     try {
-      const stripeProducts = await this.apiService.get<Product[]>('/v2/sites/:siteId/products', { fromAccessBridge: true });
-
-      const offers = stripeProducts.flatMap((product, i) =>
+      const products = await this.paymentService.getProducts();
+      const offers = products.flatMap((product, i) =>
         product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),
       );
 
@@ -305,15 +305,10 @@ export default class JWPCheckoutService extends CheckoutService {
 
   generateBillingPortalUrl: GenerateBillingPortalURL = async (returnUrl) => {
     try {
-      const { url } = await this.apiService.post<{ url: string }>(
-        '/v2/sites/:siteId/billing-portal',
-        { return_url: returnUrl },
-        { withAuthentication: true, fromAccessBridge: true, contentType: 'json' },
-      );
-
+      const { url } = await this.paymentService.generateBillingPortalUrl(returnUrl);
       return url;
     } catch (error) {
-      throw new Error('Failed to fetch billing portal URL');
+      throw new Error('Failed to generate billing portal URL');
     }
   };
 
