@@ -31,7 +31,18 @@ const MediaEpisode: ScreenComponent<PlaylistItem> = ({ data: media, isLoading: i
   }
 
   // Use media episode item for legacy series flow
-  return <Navigate to={mediaURL({ episodeId: mediaId, media: seriesMedia as PlaylistItem, play, playlistId: feedId })} replace />;
+  return (
+    <Navigate
+      to={mediaURL({
+        episodeId: mediaId,
+        id: (seriesMedia as PlaylistItem)?.mediaid,
+        title: (seriesMedia as PlaylistItem)?.title,
+        play,
+        playlistId: feedId,
+      })}
+      replace
+    />
+  );
 };
 
 export default MediaEpisode;

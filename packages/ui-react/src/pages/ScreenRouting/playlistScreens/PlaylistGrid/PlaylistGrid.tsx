@@ -32,7 +32,7 @@ const PlaylistGrid: ScreenComponent<Playlist> = ({ data, isLoading }) => {
 
   const pageTitle = `${data.title} - ${config.siteName}`;
 
-  const getUrl = (playlistItem: PlaylistItem) => mediaURL({ media: playlistItem, playlistId: playlistItem.feedid });
+  const getUrl = (playlistItem: PlaylistItem) => mediaURL({ id: playlistItem.mediaid, title: playlistItem.title, playlistId: playlistItem.feedid });
 
   return (
     <div className={styles.playlist}>

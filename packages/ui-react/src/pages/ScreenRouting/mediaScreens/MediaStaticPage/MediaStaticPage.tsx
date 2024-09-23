@@ -14,7 +14,7 @@ const MediaStaticPage: ScreenComponent<PlaylistItem> = ({ data }) => {
   const { config } = useConfigStore(({ config }) => ({ config }), shallow);
   const { siteName } = config;
   const pageTitle = `${data.title} - ${siteName}`;
-  const canonicalUrl = data ? `${window.location.origin}${mediaURL({ media: data })}` : window.location.href;
+  const canonicalUrl = data ? `${window.location.origin}${mediaURL({ id: data.mediaid, title: data.title })}` : window.location.href;
 
   useEffect(() => {
     (document.scrollingElement || document.body).scroll({ top: 0 });

@@ -5,7 +5,7 @@ import { mediaURL } from './urlFormatting';
 import { secondsToISO8601 } from './datetime';
 
 export const generateMovieJSONLD = (item: PlaylistItem, origin: string) => {
-  const movieCanonical = `${origin}${mediaURL({ media: item })}`;
+  const movieCanonical = `${origin}${mediaURL({ id: item.mediaid, title: item.title })}`;
 
   return JSON.stringify({
     '@context': 'http://schema.org/',
