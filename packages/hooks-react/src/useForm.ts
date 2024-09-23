@@ -13,6 +13,7 @@ export type UseFormReturnValue<T> = {
   handleBlur: UseFormBlurHandler;
   handleSubmit: UseFormSubmitHandler;
   setValue: (key: keyof T, value: T[keyof T]) => void;
+  setValues: (values: T | ((currValues: T) => T)) => void;
   setErrors: (errors: FormErrors<T>) => void;
   setSubmitting: (submitting: boolean) => void;
   setValidationSchemaError: (error: boolean) => void;
@@ -188,6 +189,7 @@ export default function useForm<T extends GenericFormValues>({
     handleSubmit,
     submitting,
     setValue,
+    setValues,
     setErrors,
     setSubmitting,
     setValidationSchemaError,
