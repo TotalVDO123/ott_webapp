@@ -31,7 +31,7 @@ const ChooseOffer = () => {
   const upgradeSuccessUrl = modalURLFromLocation(location, 'upgrade-subscription-success');
   const upgradeErrorUrl = modalURLFromLocation(location, 'upgrade-subscription-error');
 
-  const { values, errors, submitting, setValue, handleSubmit, handleChange } = useForm<ChooseOfferFormData>({
+  const { values, errors, submitting, setValue, setValues, handleSubmit, handleChange } = useForm<ChooseOfferFormData>({
     initialValues: { selectedOfferType: defaultOfferType, selectedOfferId: undefined },
     validationSchema: object().shape({
       selectedOfferId: mixed<string>().required(t('choose_offer.field_required')),
@@ -91,8 +91,12 @@ const ChooseOffer = () => {
 
     const offerId = visibleOffers[visibleOffers.length - 1]?.offerId;
 
-    setValue('selectedOfferId', offerId);
-  }, [visibleOffers, values.selectedOfferType, setValue, isLoading]);
+    setValues((currValues) => {
+      if (currValues.selectedOfferId) return currValues;
+
+      return { ...currValues, selectedOfferId: offerId };
+    });
+  }, [visibleOffers, values.selectedOfferType, setValues, isLoading]);
 
   useEffect(() => {
     if (isLoading || !defaultOfferType) return;

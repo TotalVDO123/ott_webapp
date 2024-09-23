@@ -32,7 +32,11 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const breakpoint = useBreakpoint();
 
   // account
-  const accessModel = useConfigStore((state) => state.accessModel);
+  const { accessModel, isAccessBridgeEnabled } = useConfigStore(({ accessModel, settings }) => ({
+    accessModel,
+    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+  }));
+
   const user = useAccountStore((state) => state.user);
   const isLoggedIn = !!user;
 
@@ -66,8 +70,12 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
 
+    if (isAccessBridgeEnabled) {
+      return navigate('/u/subscription');
+    }
+
     return navigate('/u/payments');
-  }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, onClick]);
+  }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, isAccessBridgeEnabled, onClick]);
 
   useEffect(() => {
     // set the TVOD mediaOffers in the checkout store
