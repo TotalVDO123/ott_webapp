@@ -44,24 +44,40 @@ export const VIEWER: Viewer = {
 };
 
 // Plan mock creation function
-const createMockPlan = ({ id, exp, access_model, access, metadata }: Plan): Plan => ({
+const createMockPlan = ({ id, original_id, exp, metadata }: Plan): Plan => ({
   id,
+  original_id,
   exp,
-  access_model,
-  access,
-  metadata,
+  metadata: {
+    name: metadata.name || '',
+    access: {
+      drm_policy_id: metadata.access.drm_policy_id,
+      include_tags: metadata.access.include_tags || [],
+      exclude_tags: metadata.access.exclude_tags || [],
+      include_custom_params: metadata.access.include_custom_params || [],
+      exclude_custom_params: metadata.access.exclude_custom_params || [],
+    },
+    access_model: metadata.access_model,
+    external_providers: metadata.external_providers || {},
+  },
 });
 
 export const PLANS = {
   VALID: [
     createMockPlan({
       id: 'plan1234',
+      original_id: 123456,
       exp: FUTURE_EXPIRY,
-      access_model: 'svod',
-      access: {
-        drm_policy_id: 'drm_policy_123',
-      },
       metadata: {
+        name: 'Test plan',
+        access: {
+          drm_policy_id: 'drm_policy_123',
+          include_tags: [],
+          exclude_tags: [],
+          include_custom_params: [],
+          exclude_custom_params: [],
+        },
+        access_model: 'svod',
         external_providers: {
           stripe: 'stripe_id',
         },
@@ -71,12 +87,18 @@ export const PLANS = {
   FREE: [
     createMockPlan({
       id: 'free1234',
+      original_id: 123457,
       exp: FUTURE_EXPIRY,
-      access_model: 'free',
-      access: {
-        drm_policy_id: 'drm_policy_456',
-      },
       metadata: {
+        name: 'Free plan',
+        access: {
+          drm_policy_id: 'drm_policy_456',
+          include_tags: [],
+          exclude_tags: [],
+          include_custom_params: [],
+          exclude_custom_params: [],
+        },
+        access_model: 'free',
         external_providers: {},
       },
     }),
@@ -84,12 +106,18 @@ export const PLANS = {
   INVALID: [
     createMockPlan({
       id: 'plan123456',
+      original_id: 123458,
       exp: FUTURE_EXPIRY,
-      access_model: 'svod',
-      access: {
-        drm_policy_id: 'drm_policy_789',
-      },
       metadata: {
+        name: 'Invalid plan',
+        access: {
+          drm_policy_id: 'drm_policy_789',
+          include_tags: [],
+          exclude_tags: [],
+          include_custom_params: [],
+          exclude_custom_params: [],
+        },
+        access_model: 'svod',
         external_providers: {},
       },
     }),
@@ -97,12 +125,18 @@ export const PLANS = {
   EXPIRED: [
     createMockPlan({
       id: 'plan1234',
+      original_id: 123459,
       exp: PAST_EXPIRY,
-      access_model: 'svod',
-      access: {
-        drm_policy_id: 'drm_policy_101',
-      },
       metadata: {
+        name: 'Expired plan',
+        access: {
+          drm_policy_id: 'drm_policy_101',
+          include_tags: [],
+          exclude_tags: [],
+          include_custom_params: [],
+          exclude_custom_params: [],
+        },
+        access_model: 'svod',
         external_providers: {},
       },
     }),
