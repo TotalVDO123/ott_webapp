@@ -165,6 +165,7 @@ export default class AccountController {
 
       if (response) {
         await this.accessController?.generateAccessTokens();
+        await this.getEntitledPlans();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }
@@ -196,6 +197,7 @@ export default class AccountController {
       if (response) {
         const { user, customerConsents } = response;
         await this.accessController?.generateAccessTokens();
+        await this.getEntitledPlans();
         await this.afterLogin(user, customerConsents, true);
 
         return;

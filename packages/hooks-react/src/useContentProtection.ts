@@ -36,12 +36,6 @@ const useContentProtection = <T>(
   const { data: token, isLoading } = useQuery(
     ['token', type, id, params],
     async () => {
-      if (isAccessBridgeEnabled) {
-        // if access control is set up we return nothing
-        // the useProtectedMedia hook will take care of it
-        return;
-      }
-
       // if provider is not JWP
       if (!!id && !!host) {
         const accountController = getModule(AccountController);
@@ -56,7 +50,7 @@ const useContentProtection = <T>(
         return jwpEntitlementService.getJWPMediaToken(configId, id);
       }
     },
-    { enabled: (signingEnabled || isAccessBridgeEnabled) && enabled && !!id, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
+    { enabled: signingEnabled && enabled && !!id && !isAccessBridgeEnabled, keepPreviousData: false, staleTime: 15 * 60 * 1000 },
   );
 
   const queryResult = useQuery<T | undefined>([type, id, params, token], async () => callback(token, drmPolicyId), {
