@@ -138,7 +138,7 @@ export default class ApiService {
     return transformedMediaItem;
   };
 
-  private transformEpisodes = (episodesRes: EpisodesRes, language: string, seasonNumber?: number) => {
+  private transformEpisodes = (episodesRes: EpisodesRes, language?: string, seasonNumber?: number) => {
     const { episodes, page, page_limit, total } = episodesRes;
 
     // Adding images and keys for media items
@@ -208,6 +208,33 @@ export default class ApiService {
   };
 
   /**
+   * Get media by id with passport
+   */
+  getMediaByIdWithPassport = async ({
+    id,
+    siteId,
+    planId,
+    passport,
+    language,
+  }: {
+    id: string;
+    siteId: string;
+    planId: string;
+    passport: string;
+    language?: string;
+  }): Promise<PlaylistItem | undefined> => {
+    const pathname = `/v2/sites/${siteId}/media/${id}/playback.json`;
+    const url = createURL(`${env.APP_API_BASE_URL}${pathname}`, { passport, plan_id: planId });
+    const response = await fetch(url);
+    const data = (await getDataOrThrow(response)) as Playlist;
+    const mediaItem = data.playlist[0];
+
+    if (!mediaItem) throw new Error('MediaItem not found');
+
+    return this.transformMediaItem({ item: mediaItem, language });
+  };
+
+  /**
    * Get series by id
    * @param {string} id
    * @param params
@@ -249,7 +276,7 @@ export default class ApiService {
     pageOffset?: number;
     pageLimit?: number;
     afterId?: string;
-    language: string;
+    language?: string;
   }): Promise<EpisodesWithPagination> => {
     if (!seriesId) {
       throw new Error('Series ID is required');
