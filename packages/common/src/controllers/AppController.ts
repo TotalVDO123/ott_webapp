@@ -15,6 +15,7 @@ import { logDebug } from '../logger';
 import WatchHistoryController from './WatchHistoryController';
 import FavoritesController from './FavoritesController';
 import AccountController from './AccountController';
+import AccessController from './AccessController';
 
 @injectable()
 export default class AppController {
@@ -82,6 +83,11 @@ export default class AppController {
       await getModule(AccountController).initialize(url, refreshEntitlements);
     }
 
+    // when the apiAccessBridgeUrl is set up in the .ini file, we initialize the AccessController
+    if (settings?.apiAccessBridgeUrl) {
+      await getModule(AccessController).initialize();
+    }
+
     if (config.features?.continueWatchingList && config.content.some((el) => el.type === PersonalShelf.ContinueWatching)) {
       await getModule(WatchHistoryController).initialize(language);
     }
@@ -115,5 +121,12 @@ export default class AppController {
     if (!configState.loaded) throw new Error('A call to `AppController#getIntegrationType()` was made before loading the config');
 
     return configState.integrationType;
+  };
+
+  getApiAccessBridgeUrl = (): string | undefined => {
+    const configState = useConfigStore.getState();
+
+    if (!configState.loaded) throw new Error('A call to `AppController#getApiAccessBridgeUrl()` was made before loading the config');
+    return configState.settings?.apiAccessBridgeUrl || undefined;
   };
 }

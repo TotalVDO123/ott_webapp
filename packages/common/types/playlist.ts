@@ -8,9 +8,22 @@ export type Image = {
   width: number;
 };
 
+export type DRM = {
+  playready?: {
+    url: string;
+  };
+  widevine?: {
+    url: string;
+  };
+  fairplay?: {
+    processSpcUrl: string;
+  };
+};
+
 export type Source = {
   file: string;
   type: string;
+  drm?: DRM;
 };
 
 export type Track = {
