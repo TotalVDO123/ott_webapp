@@ -7,7 +7,7 @@
   "author": "JW Player",
   "main": "index.js",
   "engines": {
-    "node": ">=18.13.0"
+    "node": ">=20.17.0"
   },
   "workspaces": [
     "configs/*",
