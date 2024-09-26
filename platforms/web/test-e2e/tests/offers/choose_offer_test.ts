@@ -16,6 +16,7 @@ const jwProps: ProviderProps = {
   fieldWrapper: '',
   hasInlineOfferSwitch: true,
 };
+
 const cleengProps: ProviderProps = {
   config: testConfigs.svod,
   monthlyOffer: constants.offers.monthlyOffer.cleeng,
