@@ -35,7 +35,9 @@ describe('createPath, mediaURL, playlistURL and liveChannelsURL', () => {
   test('valid media path', () => {
     const playlist = playlistFixture as Playlist;
     const media = playlist.playlist[0] as PlaylistItem;
-    const url = mediaURL({ id: media.mediaid, title: media.title, playlistId: playlist.feedid, play: true });
+
+    const { mediaid: id, title } = media;
+    const url = mediaURL({ id, title, playlistId: playlist.feedid, play: true });
 
     expect(url).toEqual('/m/uB8aRnu6/agent-327?r=dGSUzs9o&play=1');
   });
