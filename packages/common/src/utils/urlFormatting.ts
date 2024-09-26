@@ -99,29 +99,27 @@ export const slugify = (text: string, whitespaceChar: string = '-') =>
     .replace(/-/g, whitespaceChar);
 
 export const mediaURL = ({
-  media,
+  id,
+  title,
   playlistId,
   play = false,
   episodeId,
 }: {
-  media: PlaylistItem;
+  id: string;
+  title?: string;
   playlistId?: string | null;
   play?: boolean;
   episodeId?: string;
 }) => {
   return createPath(
     PATH_MEDIA,
-    { id: media.mediaid, title: slugify(media.title) },
+    { id, title: title ? slugify(title) : undefined },
     {
       r: playlistId,
       play: play ? '1' : null,
       e: episodeId,
     },
   );
-};
-
-export const singleMediaURL = (id: string, title?: string) => {
-  return createPath(PATH_MEDIA, { id, title: title ? slugify(title) : undefined });
 };
 
 export const playlistURL = (id: string, title?: string) => {
@@ -132,14 +130,14 @@ export const contentListURL = (id: string, title?: string) => {
   return createPath(PATH_CONTENT_LIST, { id, title: title ? slugify(title) : undefined });
 };
 
-export const determinePath = ({ type, contentId }: { type: AppMenuType | undefined; contentId: string }) => {
+export const determinePath = ({ type, contentId, label }: { type: AppMenuType | undefined; contentId: string; label?: string }) => {
   switch (type) {
     case APP_CONFIG_ITEM_TYPE.content_list:
-      return contentListURL(contentId);
+      return contentListURL(contentId, label);
     case APP_CONFIG_ITEM_TYPE.media:
-      return singleMediaURL(contentId);
+      return mediaURL({ id: contentId, title: label });
     case APP_CONFIG_ITEM_TYPE.playlist:
-      return playlistURL(contentId);
+      return playlistURL(contentId, label);
     default:
       return '';
   }

@@ -4,9 +4,26 @@ import * as Sentry from '@sentry/node';
 import logger from '../../src/pipeline/logger.js';
 
 describe('Logger Tests', () => {
+  // Preserve the original console methods
+  const originalConsole = { ...console };
+
   beforeEach(() => {
     // Reset all mocks to ensure a clean slate for each test
     vi.resetAllMocks();
+
+    // Mock console methods to suppress log outputs during tests
+    // Suppressing info output to avoid clutter
+    global.console = {
+      log: () => {},
+      error: () => {},
+      warn: () => {},
+      info: () => {},
+    } as unknown as Console;
+  });
+
+  afterEach(() => {
+    // Restore the original console methods after each test
+    global.console = originalConsole;
   });
 
   describe('when Sentry is configured', () => {

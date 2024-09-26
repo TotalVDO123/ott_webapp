@@ -54,7 +54,7 @@ const Layout = () => {
     { label: t('home'), to: '/' },
     ...menu.map(({ label, contentId, type, custom }) => ({
       label: custom?.[`label-${language}`] || label,
-      to: determinePath({ type, contentId }),
+      to: determinePath({ type, contentId, label }),
     })),
   ];
 

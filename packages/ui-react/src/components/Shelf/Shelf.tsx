@@ -76,7 +76,8 @@ const Shelf = ({
 
   const renderTile = useCallback(
     ({ item, isVisible }: { item: PlaylistItem; isVisible: boolean }) => {
-      const url = mediaURL({ media: item, playlistId: playlist.feedid, play: type === PersonalShelf.ContinueWatching });
+      const { mediaid: id, title } = item;
+      const url = mediaURL({ id, title, playlistId: playlist.feedid, play: type === PersonalShelf.ContinueWatching });
 
       return (
         <Card

@@ -193,7 +193,7 @@ const MediaSeries: ScreenComponent<PlaylistItem> = ({ data: seriesMedia }) => {
   if (!seriesMedia || !series || !playEpisode) return <ErrorPage title={t('series_error')} />;
 
   const pageTitle = `${selectedItem.title} - ${siteName}`;
-  const canonicalUrl = `${window.location.origin}${mediaURL({ media: seriesMedia, episodeId: episode?.mediaid })}`;
+  const canonicalUrl = `${window.location.origin}${mediaURL({ id: seriesMedia.mediaid, title: seriesMedia.title, episodeId: episode?.mediaid })}`;
 
   const primaryMetadata = <VideoMetaData attributes={createVideoMetadata(selectedItem, t('video:total_episodes', { count: series.episode_count }))} />;
   const secondaryMetadata = episodeMetadata && episode && (
