@@ -3,53 +3,22 @@
 exports[`<Welcome> > renders and matches snapshot 1`] = `
 <div>
   <div
-    class="_topContainer_c4a16f"
+    class="_welcome_c4a16f"
   >
-    <div
-      class="_circleHug_c4a16f"
+    <h2>
+      checkout.welcome_title
+    </h2>
+    <p>
+      checkout.welcome_description
+    </p>
+    <button
+      class="_button_f8f296 _primary_f8f296 _fullWidth_f8f296 _large_f8f296"
+      type="button"
     >
-      <svg
-        fill="none"
-        height="65"
-        viewBox="0 0 64 65"
-        width="64"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M13.3333 32.6663L26.6666 45.9997L53.3333 19.333"
-          stroke="#5aae4a"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="1.6"
-        />
-      </svg>
-    </div>
-    <div
-      class="_innerContainer_c4a16f"
-    >
-      <h2
-        class="_title_c4a16f"
-      >
-        checkout.welcome_title
-      </h2>
-      <p
-        class="_message_c4a16f"
-      >
-        checkout.welcome_description
-      </p>
-    </div>
-    <div
-      class="_buttonContainer_c4a16f"
-    >
-      <button
-        class="_button_f8f296 _primary_f8f296 _fullWidth_f8f296 _large_f8f296"
-        type="button"
-      >
-        <span>
-          checkout.start_watching
-        </span>
-      </button>
-    </div>
+      <span>
+        checkout.start_watching
+      </span>
+    </button>
   </div>
 </div>
 `;

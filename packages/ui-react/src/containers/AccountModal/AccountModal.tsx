@@ -10,6 +10,7 @@ import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay';
 import Welcome from '../../components/Welcome/Welcome';
+import PaymentSuccessful from '../../components/PaymentSuccessful/PaymentSuccessful';
 import PaymentFailed from '../../components/PaymentFailed/PaymentFailed';
 import Dialog from '../../components/Dialog/Dialog';
 import DeleteAccountModal from '../../components/DeleteAccountModal/DeleteAccountModal';
@@ -48,6 +49,7 @@ export type AccountModals = {
   'payment-error': 'payment-error';
   'payment-cancelled': 'payment-cancelled';
   welcome: 'welcome';
+  'payment-successful': 'payment-successful';
   'reset-password': 'reset-password';
   'forgot-password': 'forgot-password';
   'add-password': 'add-password';
@@ -134,6 +136,8 @@ const AccountModal = () => {
         return <PaymentFailed type="cancelled" message={message} onCloseButtonClick={closeHandler} />;
       case 'welcome':
         return <Welcome onCloseButtonClick={closeHandler} onCountdownCompleted={closeHandler} siteName={siteName} />;
+      case 'payment-successful':
+        return <PaymentSuccessful onCloseButtonClick={closeHandler} siteName={siteName} />;
       case 'reset-password':
         return <ResetPassword type="reset" />;
       case 'forgot-password':

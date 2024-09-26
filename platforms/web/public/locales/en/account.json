@@ -30,7 +30,7 @@
     "monthly": "Monthly subscription",
     "no_payment_needed": "No payment needed",
     "payment_cancelled": "Payment cancelled",
-    "payment_cancelled_message": "This payment attempt was cancelled and no charges were made. If this wasn’t intentional, please retry the payment process.",
+    "payment_cancelled_message": "You have cancelled the payment.",
     "payment_error": "Payment failed",
     "payment_method": "Payment method",
     "payment_method_fee": "Payment method fee",
@@ -50,8 +50,10 @@
     "upgrade_success": "Subscription updated!",
     "upgrade_success_message": "Your subscription is updated and can be used immediately.",
     "waiting_for_payment": "Waiting for payment",
-    "welcome_description": "Thank you for your subscription, enjoy all our content.",
-    "welcome_title": "Payment successful",
+    "welcome_description": "Thank you for subscribing to {{siteName}}. Please enjoy all our content.",
+    "welcome_title": "Welcome to {{siteName}}",
+    "payment_successful_title": "Payment successful",
+    "payment_successful_description": "Thank you for your subscription, enjoy all our content.",
     "yearly": "Yearly subscription"
   },
   "choose_offer": {

@@ -153,6 +153,6 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.click('Continue');
     I.waitForLoaderDone(20);
 
-    I.see('Payment successful');
+    I.see('Welcome to JW OTT Web App (AuthVod)');
   });
 }

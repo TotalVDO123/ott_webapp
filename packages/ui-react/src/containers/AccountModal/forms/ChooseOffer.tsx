@@ -48,7 +48,7 @@ const ChooseOffer = () => {
 
       const url = await chooseOffer.mutateAsync({
         offer,
-        successUrl: `${baseUrl}${modalURLFromLocation(location, 'welcome')}`,
+        successUrl: `${baseUrl}${modalURLFromLocation(location, 'payment-successful')}`,
         cancelUrl: `${baseUrl}${modalURLFromLocation(location, 'payment-cancelled')}`,
       });
 
