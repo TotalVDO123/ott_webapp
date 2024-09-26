@@ -133,11 +133,11 @@ export const contentListURL = (id: string, title?: string) => {
 export const determinePath = ({ type, contentId, label }: { type: AppMenuType | undefined; contentId: string; label?: string }) => {
   switch (type) {
     case APP_CONFIG_ITEM_TYPE.content_list:
-      return contentListURL(contentId);
+      return contentListURL(contentId, label);
     case APP_CONFIG_ITEM_TYPE.media:
       return mediaURL({ id: contentId, title: label });
     case APP_CONFIG_ITEM_TYPE.playlist:
-      return playlistURL(contentId);
+      return playlistURL(contentId, label);
     default:
       return '';
   }
