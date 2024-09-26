@@ -50,7 +50,7 @@ const Layout = () => {
     { label: t('home'), to: '/' },
     ...menu.map(({ label, contentId, type }) => ({
       label,
-      to: determinePath({ type, contentId }),
+      to: determinePath({ type, contentId, label }),
     })),
   ];
 

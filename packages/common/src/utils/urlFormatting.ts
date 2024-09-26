@@ -130,12 +130,12 @@ export const contentListURL = (id: string, title?: string) => {
   return createPath(PATH_CONTENT_LIST, { id, title: title ? slugify(title) : undefined });
 };
 
-export const determinePath = ({ type, contentId }: { type: AppMenuType | undefined; contentId: string }) => {
+export const determinePath = ({ type, contentId, label }: { type: AppMenuType | undefined; contentId: string; label?: string }) => {
   switch (type) {
     case APP_CONFIG_ITEM_TYPE.content_list:
       return contentListURL(contentId);
     case APP_CONFIG_ITEM_TYPE.media:
-      return mediaURL({ id: contentId });
+      return mediaURL({ id: contentId, title: label });
     case APP_CONFIG_ITEM_TYPE.playlist:
       return playlistURL(contentId);
     default:
