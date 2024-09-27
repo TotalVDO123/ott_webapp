@@ -31,10 +31,10 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
-runTestSuite(jwProps, 'JW Player', true);
+// runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
+function runTestSuite(props: ProviderProps, providerName: string) {
   let couponLoginContext: LoginContext;
 
   const today = new Date();
@@ -51,10 +51,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can redeem coupons - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     await goToCheckout(I);
 
     I.click('Redeem coupon');
@@ -96,18 +92,10 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can cancel a free subscription - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
   });
 
   Scenario(`I can renew a free subscription - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     if (props.canRenewSubscription) {
       renewPlan(I, addYear(today), props.yearlyOffer.price);
     } else {

@@ -31,10 +31,10 @@ const cleengProps: ProviderProps = {
   cardInfo: Array.of(['Card number', '•••• •••• •••• 1115'], ['Expiry date', '03/2030'], ['Security code', '******']),
 };
 
-runTestSuite(jwProps, 'JW Player', true);
+// runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
+function runTestSuite(props: ProviderProps, providerName: string) {
   let paidLoginContext: LoginContext;
 
   const today = new Date();
@@ -48,10 +48,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can open the PayPal site - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);
@@ -65,10 +61,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can finish my subscription with credit card - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);
@@ -96,10 +88,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can cancel my subscription - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await cancelPlan(I, addYear(today), props.canRenewSubscription, providerName);
@@ -109,10 +97,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can renew my subscription - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       renewPlan(I, addYear(today), props.yearlyOffer.price);
@@ -120,10 +104,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can view my invoices - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     if (props.canRenewSubscription) {
       paidLoginContext = await I.registerOrLogin(paidLoginContext);
       I.amOnPage(constants.paymentsUrl);

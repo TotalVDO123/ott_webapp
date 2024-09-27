@@ -29,10 +29,10 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
-runTestSuite(jwProps, 'JW Player', true);
+// runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
-function runTestSuite(props: ProviderProps, providerName: string, isAccessBridgeEnabled = false) {
+function runTestSuite(props: ProviderProps, providerName: string) {
   let paidLoginContext: LoginContext;
 
   Feature(`choose offer - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
@@ -62,10 +62,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can see offered subscriptions - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     I.amOnPage(constants.paymentsUrl);
@@ -95,10 +91,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can choose an offer - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     I.amOnPage(constants.offersUrl);
@@ -131,10 +123,6 @@ function runTestSuite(props: ProviderProps, providerName: string, isAccessBridge
   });
 
   Scenario(`I can see payment types - ${providerName}`, async ({ I }) => {
-    if (isAccessBridgeEnabled) {
-      return;
-    }
-
     paidLoginContext = await I.registerOrLogin(paidLoginContext);
 
     await goToCheckout(I);

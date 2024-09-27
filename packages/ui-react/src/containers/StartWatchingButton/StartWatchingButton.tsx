@@ -44,7 +44,7 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const watchHistoryItem = useWatchHistoryStore((state) => item && state.getItem(item));
   const videoProgress = watchHistoryItem?.progress;
 
-  useOffers();
+  const { isLoading: isOffersLoading } = useOffers();
 
   // entitlement
   const setRequestedMediaOffers = useCheckoutStore((s) => s.setRequestedMediaOffers);
@@ -98,7 +98,8 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
       startIcon={isEntitled ? <Icon icon={Play} /> : undefined}
       onClick={handleStartWatchingClick}
       fullWidth={breakpoint < Breakpoint.md}
-      disabled={disabled}
+      disabled={disabled || isOffersLoading}
+      busy={isOffersLoading}
     >
       {videoProgress ? (
         <div className={styles.progressRail}>
