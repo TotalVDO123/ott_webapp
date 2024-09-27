@@ -19,7 +19,7 @@ describe('<PaymentSuccessful>', () => {
     expect(onCloseButtonClick).toBeCalled();
   });
 
-  test('calls the onCloseButtonClick callback when clicking the close button', () => {
+  test('calls the onCloseButtonClick callback when timer expires', () => {
     vi.useFakeTimers();
     const onCountdownCompleted = vi.fn();
 
