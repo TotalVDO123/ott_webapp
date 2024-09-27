@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Subscription as SubscriptionType } from '@jwp/ott-common/types/subscription';
 import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/formatting';
@@ -56,14 +56,11 @@ type Props = {
 const Subscription: React.FC<Props> = ({ subscription }) => {
   const { t } = useTranslation('user');
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const hasActiveSubscription = subscription?.status === 'active' || subscription?.status === 'active_trial';
 
-  const onClick = () => {
-    navigate(modalURLFromLocation(location, 'choose-offer'));
-  };
+  const modalURL = modalURLFromLocation(location, 'choose-offer');
 
   return (
     <section className={userStyles.panel}>
@@ -75,7 +72,7 @@ const Subscription: React.FC<Props> = ({ subscription }) => {
       ) : (
         <>
           <p>{t('user:payment.no_subscription_new_payment')}</p>
-          <Button onClick={onClick} label={t('user:payment.view_plans')} />
+          <Button to={modalURL} label={t('user:payment.view_plans')} />
         </>
       )}
     </section>
