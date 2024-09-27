@@ -7,7 +7,7 @@ const useRedirectToBillingPortal = () => {
   const [isRedirecting, setRedirecting] = useState(false);
 
   const redirectToBillingPortal = useCallback(async () => {
-    const billingPortalUrl = await billingPortalURLmutation.mutateAsync();
+    const billingPortalUrl = await billingPortalURLmutation.mutateAsync(window.location.href);
 
     setRedirecting(true);
 

@@ -7,7 +7,7 @@ const useBillingPortalURL = () => {
 
   return useMutation({
     mutationKey: 'billing-portal',
-    mutationFn: () => checkoutController.generateBillingPortalUrl(window.location.href),
+    mutationFn: checkoutController.generateBillingPortalUrl,
   });
 };
 
