@@ -101,6 +101,6 @@ export default {
   },
   creditCard: {
     inplayer: '4111111111111111',
-    cleeng: '5555444433331111',
+    cleeng: '5555341244441115',
   },
 };
