@@ -1,3 +1,21 @@
+## [6.7.0](https://github.com/jwplayer/ott-web-app/compare/v6.6.0...v6.7.0) (2024-09-27)
+
+
+### Features
+
+* access bridge service ([#616](https://github.com/jwplayer/ott-web-app/issues/616)) ([aae2551](https://github.com/jwplayer/ott-web-app/commit/aae25515bcff0e4ad8428d8b8389220eb9126d5f)), closes [#594](https://github.com/jwplayer/ott-web-app/issues/594) [#598](https://github.com/jwplayer/ott-web-app/issues/598) [#590](https://github.com/jwplayer/ott-web-app/issues/590) [#605](https://github.com/jwplayer/ott-web-app/issues/605) [#606](https://github.com/jwplayer/ott-web-app/issues/606)
+* **i18n:** fix lint error ([c27a1e6](https://github.com/jwplayer/ott-web-app/commit/c27a1e69c360d9ebe9abcc9cf2e8bb3a088516aa))
+* **menu:** fix support for media menu item ([#621](https://github.com/jwplayer/ott-web-app/issues/621)) ([4ffb849](https://github.com/jwplayer/ott-web-app/commit/4ffb84923424de05f1f62455c7822354c0842173))
+* **menu:** support media type for menu ([#610](https://github.com/jwplayer/ott-web-app/issues/610)) ([80acd7f](https://github.com/jwplayer/ott-web-app/commit/80acd7f6c6672baf6e4a01dbecdf8540be68dbd7))
+
+
+### Bug Fixes
+
+* card grid rendering previous items ([#613](https://github.com/jwplayer/ott-web-app/issues/613)) ([dce9f70](https://github.com/jwplayer/ott-web-app/commit/dce9f70875444ad965bb69d87a3f9445883ab9b1))
+* **e2e:** fix cleeng tests ([#624](https://github.com/jwplayer/ott-web-app/issues/624)) ([5231d86](https://github.com/jwplayer/ott-web-app/commit/5231d86b1aa05f6424fd8335f805fb42794d2698))
+* **series:** first episode switching per season ([ddedb6b](https://github.com/jwplayer/ott-web-app/commit/ddedb6b6f636c720f0ba016b2fa07b41e964fe8e))
+* update plan types and access bridge port for the unit test workflow ([#619](https://github.com/jwplayer/ott-web-app/issues/619)) ([0e51bc4](https://github.com/jwplayer/ott-web-app/commit/0e51bc44288fb1ab2cd55dc8bdeaec8233819043))
+
 ## [6.6.0](https://github.com/jwplayer/ott-web-app/compare/v6.5.0...v6.6.0) (2024-09-06)
 
 
