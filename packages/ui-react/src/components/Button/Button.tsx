@@ -1,9 +1,7 @@
 import React, { type MouseEventHandler } from 'react';
 import classNames from 'classnames';
 import { NavLink } from 'react-router-dom';
-import { createURL } from '@jwp/ott-common/src/utils/urlFormatting';
 
-import type { AccountModals } from '../../containers/AccountModal/AccountModal';
 import Spinner from '../Spinner/Spinner';
 import createInjectableComponent from '../../modules/createInjectableComponent';
 
@@ -27,7 +25,6 @@ export type ButtonProps = {
   tabIndex?: number;
   size?: 'small' | 'medium' | 'large';
   to?: string;
-  toModal?: keyof AccountModals;
   role?: string;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
@@ -50,7 +47,6 @@ const Button: React.FC<ButtonProps> = ({
   busy,
   type = 'button',
   to,
-  toModal,
   onClick,
   className,
   activeClassname = '',
@@ -75,11 +71,9 @@ const Button: React.FC<ButtonProps> = ({
     </>
   );
 
-  if (to || toModal) {
-    const path = createURL(to || `${window.location.pathname}${window.location.search}`, { u: toModal });
-
+  if (to) {
     return (
-      <NavLink className={({ isActive }) => buttonClassName(isActive)} to={path} {...rest} end>
+      <NavLink className={({ isActive }) => buttonClassName(isActive)} to={to} {...rest} end>
         {content}
       </NavLink>
     );

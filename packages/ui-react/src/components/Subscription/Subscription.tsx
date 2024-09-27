@@ -1,10 +1,12 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import useBillingPortal from '@jwp/ott-hooks-react/src/useBillingPortal';
 import type { Subscription as SubscriptionType } from '@jwp/ott-common/types/subscription';
 import { formatLocalizedDate, formatPrice } from '@jwp/ott-common/src/utils/formatting';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 
+import useRedirectToBillingPortal from '../../hooks/useRedirectToBillingPortal';
 import userStyles from '../../pages/User/User.module.scss';
 import Button from '../Button/Button';
 import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
@@ -15,7 +17,7 @@ const ActiveSubscription: React.FC<{ subscription: SubscriptionType }> = ({ subs
   const { t, i18n } = useTranslation('user');
   const isAccessBridgeEnabled = useConfigStore((state) => !!state.settings?.apiAccessBridgeUrl);
 
-  const { isLoading, redirectToBillingPortal } = useBillingPortal();
+  const { isLoading, redirectToBillingPortal } = useRedirectToBillingPortal();
 
   return (
     <div>
@@ -34,7 +36,12 @@ const ActiveSubscription: React.FC<{ subscription: SubscriptionType }> = ({ subs
       {isAccessBridgeEnabled && (
         <>
           <p>{t(`subscription.${subscription.paymentGateway}.explanation`)}</p>
-          <Button label={t(`subscription.${subscription.paymentGateway}.goto_provider`)} disabled={isLoading} onClick={redirectToBillingPortal} />
+          <Button
+            label={t(`subscription.${subscription.paymentGateway}.goto_provider`)}
+            disabled={isLoading}
+            busy={isLoading}
+            onClick={redirectToBillingPortal}
+          />
           {isLoading && <LoadingOverlay transparentBackground />}
         </>
       )}
@@ -49,7 +56,14 @@ type Props = {
 const Subscription: React.FC<Props> = ({ subscription }) => {
   const { t } = useTranslation('user');
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const hasActiveSubscription = subscription?.status === 'active' || subscription?.status === 'active_trial';
+
+  const onClick = () => {
+    navigate(modalURLFromLocation(location, 'choose-offer'));
+  };
 
   return (
     <section className={userStyles.panel}>
@@ -61,7 +75,7 @@ const Subscription: React.FC<Props> = ({ subscription }) => {
       ) : (
         <>
           <p>{t('user:payment.no_subscription_new_payment')}</p>
-          <Button toModal="choose-offer" label={t('user:payment.view_plans')} />
+          <Button onClick={onClick} label={t('user:payment.view_plans')} />
         </>
       )}
     </section>
