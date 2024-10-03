@@ -15,6 +15,8 @@ type Props = {
 
 export type Status = 'opening' | 'open' | 'closing' | 'closed';
 
+const triggerReflow = (element: HTMLElement | null) => element?.scrollTop;
+
 const Animation: React.FC<Props> = ({
   className,
   createStyle,
@@ -26,6 +28,7 @@ const Animation: React.FC<Props> = ({
   keepMounted = false,
   children,
 }) => {
+  const nodeRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>('closed');
   const [hasOpenedBefore, setHasOpenedBefore] = useState<boolean>(false);
 
@@ -35,6 +38,9 @@ const Animation: React.FC<Props> = ({
   // use event callbacks to ignore reactive dependencies
   const openEvent = useEventCallback(() => {
     setHasOpenedBefore(true);
+    // trigger a reflow to ensure the transition is respected after mount
+    triggerReflow(nodeRef.current);
+
     timeout.current = window.setTimeout(() => setStatus('opening'), delay);
     timeout2.current = window.setTimeout(() => {
       setStatus('open');
@@ -70,7 +76,7 @@ const Animation: React.FC<Props> = ({
   }
 
   return (
-    <div style={createStyle(status)} className={className}>
+    <div style={createStyle(status)} className={className} ref={nodeRef}>
       {children}
     </div>
   );

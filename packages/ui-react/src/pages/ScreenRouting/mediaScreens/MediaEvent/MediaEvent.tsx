@@ -65,8 +65,8 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   const hasMediaOffers = !!mediaOffers.length;
 
   // Handlers
-  const goBack = () => media && navigate(mediaURL({ media, playlistId, play: false }));
-  const getUrl = (item: PlaylistItem) => mediaURL({ media: item, playlistId });
+  const goBack = () => media && navigate(mediaURL({ id: media.mediaid, title: media.title, playlistId, play: false }));
+  const getUrl = (item: PlaylistItem) => mediaURL({ id: item.mediaid, title: item.title, playlistId });
 
   const handleComplete = useCallback(() => {
     if (!id || !playlist) return;
@@ -78,7 +78,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
       return;
     }
 
-    return nextItem && navigate(mediaURL({ media: nextItem, playlistId, play: true }));
+    return nextItem && navigate(mediaURL({ id: nextItem.mediaid, title: nextItem.title, playlistId, play: true }));
   }, [id, playlist, navigate, playlistId]);
 
   // Effects
@@ -88,8 +88,9 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
   }, [id]);
 
   // UI
-  const pageTitle = `${media.title} - ${siteName}`;
-  const canonicalUrl = media ? `${window.location.origin}${mediaURL({ media: media })}` : window.location.href;
+  const { title, mediaid } = media;
+  const pageTitle = `${title} - ${siteName}`;
+  const canonicalUrl = media ? `${window.location.origin}${mediaURL({ id: mediaid, title })}` : window.location.href;
 
   const primaryMetadata = (
     <>
@@ -103,7 +104,7 @@ const MediaEvent: ScreenComponent<PlaylistItem> = ({ data: media, isLoading }) =
     <StartWatchingButton
       key={id} // necessary to fix autofocus on TalkBack
       item={media}
-      playUrl={mediaURL({ media, playlistId, play: true })}
+      playUrl={mediaURL({ id: mediaid, title, playlistId, play: true })}
       disabled={!liveEvent.isPlayable}
     />
   );
