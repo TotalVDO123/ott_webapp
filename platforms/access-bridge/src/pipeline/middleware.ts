@@ -59,6 +59,7 @@ export class Middleware {
     if (err instanceof Stripe.errors.StripeError) {
       const accessBridgeError = handleStripeError(err);
       sendErrors(res, accessBridgeError);
+      return;
     }
 
     if (isJWError(err)) {
@@ -69,6 +70,7 @@ export class Middleware {
 
     logger.error('Unexpected error:', err);
     sendErrors(res, ErrorDefinitions.InternalError.create());
+    return;
   };
 
   /**
@@ -77,6 +79,7 @@ export class Middleware {
    */
   notFoundErrorHandler = (req: Request, res: Response, next: NextFunction) => {
     sendErrors(res, ErrorDefinitions.NotFoundError.create());
+    return;
   };
 
   /**
