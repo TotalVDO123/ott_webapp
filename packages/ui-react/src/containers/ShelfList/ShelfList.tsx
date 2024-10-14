@@ -16,6 +16,7 @@ import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
 import Shelf from '../../components/Shelf/Shelf';
 import InfiniteScrollLoader from '../../components/InfiniteScrollLoader/InfiniteScrollLoader';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
+import Fade from '../../components/Animation/Fade/Fade';
 
 import styles from './ShelfList.module.scss';
 
@@ -76,20 +77,22 @@ const ShelfList = ({ rows }: Props) => {
               data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
               aria-label={title || playlist?.title}
             >
-              <Shelf
-                loading={isPlaceholderData}
-                error={error}
-                type={type}
-                playlist={playlist}
-                watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
-                title={title || playlist?.title}
-                featured={featured}
-                accessModel={accessModel}
-                isLoggedIn={!!user}
-                hasSubscription={!!subscription}
-                posterAspect={posterAspect}
-                visibleTilesDelta={visibleTilesDelta}
-              />
+              <Fade duration={250} delay={index * 33} open>
+                <Shelf
+                  loading={isPlaceholderData}
+                  error={error}
+                  type={type}
+                  playlist={playlist}
+                  watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
+                  title={title || playlist?.title}
+                  featured={featured}
+                  accessModel={accessModel}
+                  isLoggedIn={!!user}
+                  hasSubscription={!!subscription}
+                  posterAspect={posterAspect}
+                  visibleTilesDelta={visibleTilesDelta}
+                />
+              </Fade>
             </section>
           );
         })}

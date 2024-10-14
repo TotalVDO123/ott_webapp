@@ -10,6 +10,7 @@ import type { AppMenuType } from '@jwp/ott-common/types/config';
 import Loading from '../Loading/Loading';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
 import type { ScreenComponent } from '../../../types/screens';
+import Fade from '../../components/Animation/Fade/Fade';
 
 import PlaylistGrid from './playlistScreens/PlaylistGrid/PlaylistGrid';
 import PlaylistLiveChannels from './playlistScreens/PlaylistLiveChannels/PlaylistLiveChannels';
@@ -28,10 +29,10 @@ const PlaylistScreenRouter = ({ type }: { type: AppMenuType }) => {
   const params = useParams();
   const id = params.id || '';
 
-  const { isLoading, isFetching, error, data } = usePlaylist(id, {}, true, true, type);
+  const { isFetching, error, data } = usePlaylist(id, {}, true, true, type);
   const { t } = useTranslation('error');
 
-  if (isLoading) {
+  if (isFetching) {
     return <Loading />;
   }
 
@@ -45,7 +46,11 @@ const PlaylistScreenRouter = ({ type }: { type: AppMenuType }) => {
 
   const Screen = type === APP_CONFIG_ITEM_TYPE.content_list ? contentScreenMap.getScreen(data) : playlistScreenMap.getScreen(data);
 
-  return <Screen data={data} isLoading={isFetching} />;
+  return (
+    <Fade key={id} open>
+      <Screen data={data} isLoading={isFetching} />
+    </Fade>
+  );
 };
 
 export default PlaylistScreenRouter;
