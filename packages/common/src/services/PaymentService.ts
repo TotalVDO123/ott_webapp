@@ -73,6 +73,7 @@ export default class PaymentService {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${auth?.jwt}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         return_url: returnUrl,
