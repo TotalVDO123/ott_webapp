@@ -6,7 +6,6 @@ import { deepCopy } from '@jwp/ott-common/src/utils/collection';
 import { testId } from '@jwp/ott-common/src/utils/common';
 import { logInfo } from '@jwp/ott-common/src/logger';
 import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
-import useOttAnalytics from '@jwp/ott-hooks-react/src/useOttAnalytics';
 import { useMediaSources } from '@jwp/ott-hooks-react/src/useMediaSources';
 import env from '@jwp/ott-common/src/env';
 
@@ -64,12 +63,9 @@ const Player: React.FC<Props> = ({
   const startTimeRef = useRef(startTime);
   const sources = useMediaSources({ item, baseUrl: env.APP_API_BASE_URL });
 
-  const setPlayer = useOttAnalytics(item, feedId);
-
   const { settings } = useConfigStore((s) => s);
 
   const playerId = settings.playerId;
-  const playerLicenseKey = settings.playerLicenseKey;
 
   const handleBeforePlay = useEventCallback(onBeforePlay);
   const handlePlay = useEventCallback(onPlay);
@@ -218,14 +214,8 @@ const Player: React.FC<Props> = ({
         playerOptions.autostart = autostart;
       }
 
-      // Set the license key if provided
-      if (playerLicenseKey) {
-        playerOptions.key = playerLicenseKey;
-      }
-
       playerRef.current.setup(playerOptions);
 
-      setPlayer(playerRef.current);
       attachEvents();
     };
 
@@ -236,7 +226,7 @@ const Player: React.FC<Props> = ({
     if (libLoaded) {
       initializePlayer();
     }
-  }, [libLoaded, item, detachEvents, attachEvents, playerId, setPlayer, autostart, adsData, playerLicenseKey, sources, feedId]);
+  }, [libLoaded, item, detachEvents, attachEvents, playerId, autostart, adsData, sources, feedId]);
 
   useEffect(() => {
     return () => {
