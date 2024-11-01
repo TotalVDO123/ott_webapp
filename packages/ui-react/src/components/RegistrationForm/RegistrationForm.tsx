@@ -7,6 +7,7 @@ import type { CustomFormField, RegistrationFormData } from '@jwp/ott-common/type
 import { testId } from '@jwp/ott-common/src/utils/common';
 import type { SocialLoginURLs } from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
 import env from '@jwp/ott-common/src/env';
+import type { ReCAPTCHA } from 'react-google-recaptcha';
 
 import TextField from '../form-fields/TextField/TextField';
 import Button from '../Button/Button';
@@ -16,6 +17,7 @@ import LoadingOverlay from '../LoadingOverlay/LoadingOverlay';
 import Link from '../Link/Link';
 import { modalURLFromLocation } from '../../utils/location';
 import PasswordField from '../form-fields/PasswordField/PasswordField';
+import RecaptchaField from '../RecaptchaField/RecaptchaField';
 
 import styles from './RegistrationForm.module.scss';
 
@@ -33,6 +35,8 @@ type Props = {
   validationError?: boolean;
   publisherConsents: CustomFormField[] | null;
   socialLoginURLs: SocialLoginURLs | null;
+  captchaSiteKey?: string;
+  recaptchaRef?: React.RefObject<ReCAPTCHA>;
 };
 
 const RegistrationForm: React.FC<Props> = ({
@@ -48,6 +52,8 @@ const RegistrationForm: React.FC<Props> = ({
   consentValues,
   onConsentChange,
   consentErrors,
+  captchaSiteKey,
+  recaptchaRef,
 }: Props) => {
   const { t, i18n } = useTranslation('account');
   const location = useLocation();
@@ -131,6 +137,7 @@ const RegistrationForm: React.FC<Props> = ({
           })}
         </div>
       )}
+      {!!captchaSiteKey && <RecaptchaField siteKey={captchaSiteKey} ref={recaptchaRef} />}
       <Button
         className={styles.continue}
         type="submit"
