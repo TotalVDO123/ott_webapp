@@ -43,7 +43,7 @@ const useCheckout = ({ onUpdateOrderSuccess, onSubmitPaymentWithoutDetailsSucces
     onSuccess: onUpdateOrderSuccess,
   });
 
-  const submitPaymentWithoutDetails = useMutation<Payment, Error>({
+  const submitPaymentWithoutDetails = useMutation<Payment, Error, { captchaValue?: string }>({
     mutationKey: ['submitPaymentWithoutDetails'],
     mutationFn: checkoutController.paymentWithoutDetails,
     onSuccess: async () => {
@@ -55,7 +55,7 @@ const useCheckout = ({ onUpdateOrderSuccess, onSubmitPaymentWithoutDetailsSucces
   const submitPaymentPaypal = useMutation<
     { redirectUrl: string },
     Error,
-    { successUrl: string; waitingUrl: string; cancelUrl: string; errorUrl: string; couponCode: string }
+    { successUrl: string; waitingUrl: string; cancelUrl: string; errorUrl: string; couponCode: string; captchaValue?: string }
   >({
     mutationKey: ['submitPaymentPaypal'],
     mutationFn: checkoutController.paypalPayment,

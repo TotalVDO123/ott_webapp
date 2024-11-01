@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import useCheckout from '@jwp/ott-hooks-react/src/useCheckout';
 import { modalURLFromLocation, modalURLFromWindowLocation } from '@jwp/ott-ui-react/src/utils/location';
@@ -7,6 +7,9 @@ import { FormValidationError } from '@jwp/ott-common/src/errors/FormValidationEr
 import { useTranslation } from 'react-i18next';
 import { createURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { findDefaultCardMethodId } from '@jwp/ott-common/src/utils/payments';
+import type { ReCAPTCHA } from 'react-google-recaptcha';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
 
 import CheckoutForm from '../../../components/CheckoutForm/CheckoutForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
@@ -29,6 +32,10 @@ const Checkout = () => {
   const chooseOfferUrl = modalURLFromLocation(location, 'choose-offer');
   const welcomeUrl = modalURLFromLocation(location, 'welcome');
   const closeModalUrl = modalURLFromLocation(location, null);
+
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const captchaSiteKey = useConfigStore(({ config }) => (config.custom?.captchaSiteKey ? (config.custom?.captchaSiteKey as string) : undefined));
+  const getCaptchaValue = useEventCallback(async () => (captchaSiteKey ? (await recaptchaRef.current?.executeAsync()) || undefined : undefined));
 
   const backButtonClickHandler = () => navigate(chooseOfferUrl);
 
@@ -134,8 +141,19 @@ const Checkout = () => {
       couponFormSubmitting={couponFormSubmitting}
       couponFormError={errors.couponCode}
       submitting={isSubmitting || adyenUpdating}
+      captchaSiteKey={captchaSiteKey}
+      recaptchaRef={recaptchaRef}
     >
-      {noPaymentRequired && <NoPaymentRequired onSubmit={submitPaymentWithoutDetails.mutateAsync} error={submitPaymentWithoutDetails.error?.message || null} />}
+      {noPaymentRequired && (
+        <NoPaymentRequired
+          onSubmit={async () => {
+            const captchaValue = await getCaptchaValue();
+
+            return submitPaymentWithoutDetails.mutateAsync({ captchaValue });
+          }}
+          error={submitPaymentWithoutDetails.error?.message || null}
+        />
+      )}
       {isStripePayment && (
         <PaymentForm
           onPaymentFormSubmit={async (cardPaymentPayload: PaymentFormData) =>
@@ -150,12 +168,17 @@ const Checkout = () => {
             setUpdatingOrder={setAdyenUpdating}
             orderId={order.id}
             type="card"
+            getCaptchaValue={getCaptchaValue}
           />
         </>
       )}
       {isPayPalPayment && (
         <PayPal
-          onSubmit={() => submitPaymentPaypal.mutate({ successUrl: successUrlPaypal, waitingUrl, cancelUrl, errorUrl, couponCode })}
+          onSubmit={async () => {
+            const captchaValue = await getCaptchaValue();
+
+            submitPaymentPaypal.mutate({ successUrl: successUrlPaypal, waitingUrl, cancelUrl, errorUrl, couponCode, captchaValue });
+          }}
           error={submitPaymentPaypal.error?.message || null}
         />
       )}

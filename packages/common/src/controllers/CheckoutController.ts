@@ -128,12 +128,12 @@ export default class CheckoutController {
   };
 
   //
-  paymentWithoutDetails = async (): Promise<Payment> => {
+  paymentWithoutDetails = async ({ captchaValue }: { captchaValue?: string } = {}): Promise<Payment> => {
     const { order } = useCheckoutStore.getState();
 
     if (!order) throw new Error('No order created');
 
-    const response = await this.checkoutService.paymentWithoutDetails({ orderId: order.id });
+    const response = await this.checkoutService.paymentWithoutDetails({ orderId: order.id, captchaValue });
 
     if (response.errors.length > 0) throw new Error(response.errors[0]);
     if (response.responseData.rejectedReason) throw new Error(response.responseData.rejectedReason);
@@ -169,7 +169,7 @@ export default class CheckoutController {
     return response.responseData;
   };
 
-  initialAdyenPayment = async (paymentMethod: AdyenPaymentMethod, returnUrl: string): Promise<InitialAdyenPayment> => {
+  initialAdyenPayment = async (paymentMethod: AdyenPaymentMethod, returnUrl: string, captchaValue?: string): Promise<InitialAdyenPayment> => {
     const { order } = useCheckoutStore.getState();
 
     if (!order) throw new Error('No order created');
@@ -181,6 +181,7 @@ export default class CheckoutController {
       returnUrl: returnUrl,
       paymentMethod,
       customerIP: await this.getCustomerIP(),
+      captchaValue,
     });
 
     if (response.errors.length > 0) throw new Error(response.errors[0]);
@@ -212,12 +213,14 @@ export default class CheckoutController {
     cancelUrl,
     errorUrl,
     couponCode = '',
+    captchaValue,
   }: {
     successUrl: string;
     waitingUrl: string;
     cancelUrl: string;
     errorUrl: string;
     couponCode: string;
+    captchaValue?: string;
   }): Promise<{ redirectUrl: string }> => {
     const { order } = useCheckoutStore.getState();
 
@@ -230,6 +233,7 @@ export default class CheckoutController {
       cancelUrl,
       errorUrl,
       couponCode,
+      captchaValue,
     });
 
     if (response.errors.length > 0) throw new Error(response.errors[0]);

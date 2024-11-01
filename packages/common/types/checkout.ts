@@ -252,6 +252,7 @@ export type GetOrderResponse = {
 
 export type PaymentWithoutDetailsPayload = {
   orderId: number;
+  captchaValue?: string;
 };
 
 export type PaymentWithAdyenPayload = PayloadWithIPOverride & {
@@ -266,6 +267,7 @@ export type PaymentWithPayPalPayload = {
   errorUrl: string;
   waitingUrl: string;
   couponCode?: string;
+  captchaValue?: string;
 };
 
 export type PaymentWithPayPalResponse = {
@@ -304,6 +306,7 @@ export type InitialAdyenPaymentPayload = {
   customerIP?: string;
   browserInfo?: unknown;
   enable3DSRedirectFlow?: boolean;
+  captchaValue?: string;
 };
 
 export type AdyenAction = {
