@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEventHandler } from 'react';
+import React, { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
 import { object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
@@ -10,6 +10,8 @@ import useSocialLoginUrls from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { modalURLFromLocation, modalURLFromWindowLocation } from '@jwp/ott-ui-react/src/utils/location';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
+import type { ReCAPTCHA } from 'react-google-recaptcha';
 
 import RegistrationForm from '../../../components/RegistrationForm/RegistrationForm';
 import { useAriaAnnouncer } from '../../AnnouncementProvider/AnnoucementProvider';
@@ -29,6 +31,9 @@ const Registration = () => {
     publisherConsentsLoading,
     loading,
   }));
+
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const captchaSiteKey = useConfigStore(({ config }) => (config.custom?.captchaSiteKey ? (config.custom?.captchaSiteKey as string) : undefined));
 
   const handleChangeConsent: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = ({ currentTarget }) => {
     if (!currentTarget) return;
@@ -66,6 +71,7 @@ const Registration = () => {
       password: string()
         .matches(/^(?=.*[a-z])(?=.*[0-9]).{8,}$/, t('registration.invalid_password', { field: t('registration.password') }))
         .required(t('registration.field_required', { field: t('registration.password') })),
+      captchaValue: string().notRequired(),
     }),
     validateOnBlur: true,
     onSubmit: async ({ email, password }) => {
@@ -76,7 +82,9 @@ const Registration = () => {
         throw new Error(t('registration.consents_error'));
       }
 
-      await accountController.register(email, password, window.location.href, formatConsentsFromValues(publisherConsents, consentValues));
+      const captchaValue = captchaSiteKey ? (await recaptchaRef.current?.executeAsync()) || undefined : undefined;
+
+      await accountController.register(email, password, window.location.href, formatConsentsFromValues(publisherConsents, consentValues), captchaValue);
     },
     onSubmitSuccess: () => {
       announce(t('registration.success'), 'success');
@@ -99,6 +107,8 @@ const Registration = () => {
       publisherConsents={publisherConsents}
       loading={loading || publisherConsentsLoading}
       socialLoginURLs={socialLoginURLs}
+      captchaSiteKey={captchaSiteKey}
+      recaptchaRef={recaptchaRef}
     />
   );
 };
