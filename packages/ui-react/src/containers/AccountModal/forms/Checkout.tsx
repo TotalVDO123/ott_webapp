@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import useCheckout from '@jwp/ott-hooks-react/src/useCheckout';
 import { modalURLFromLocation, modalURLFromWindowLocation } from '@jwp/ott-ui-react/src/utils/location';
@@ -7,9 +7,6 @@ import { FormValidationError } from '@jwp/ott-common/src/errors/FormValidationEr
 import { useTranslation } from 'react-i18next';
 import { createURL } from '@jwp/ott-common/src/utils/urlFormatting';
 import { findDefaultCardMethodId } from '@jwp/ott-common/src/utils/payments';
-import type { ReCAPTCHA } from 'react-google-recaptcha';
-import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
 
 import CheckoutForm from '../../../components/CheckoutForm/CheckoutForm';
 import LoadingOverlay from '../../../components/LoadingOverlay/LoadingOverlay';
@@ -18,6 +15,7 @@ import NoPaymentRequired from '../../../components/NoPaymentRequired/NoPaymentRe
 import PaymentForm, { type PaymentFormData } from '../../../components/PaymentForm/PaymentForm';
 import AdyenInitialPayment from '../../AdyenInitialPayment/AdyenInitialPayment';
 import { useAriaAnnouncer } from '../../AnnouncementProvider/AnnoucementProvider';
+import useRecaptcha from '../../../hooks/useRecaptcha';
 
 const Checkout = () => {
   const location = useLocation();
@@ -33,9 +31,7 @@ const Checkout = () => {
   const welcomeUrl = modalURLFromLocation(location, 'welcome');
   const closeModalUrl = modalURLFromLocation(location, null);
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const captchaSiteKey = useConfigStore(({ config }) => (config.custom?.captchaSiteKey ? (config.custom?.captchaSiteKey as string) : undefined));
-  const getCaptchaValue = useEventCallback(async () => (captchaSiteKey ? (await recaptchaRef.current?.executeAsync()) || undefined : undefined));
+  const { recaptchaRef, captchaSiteKey, getCaptchaValue } = useRecaptcha();
 
   const backButtonClickHandler = () => navigate(chooseOfferUrl);
 
