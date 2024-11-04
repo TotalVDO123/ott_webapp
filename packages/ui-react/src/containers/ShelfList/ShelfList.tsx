@@ -71,9 +71,9 @@ const ShelfList = ({ rows }: Props) => {
           const posterAspect = parseAspectRatio(playlist.cardImageAspectRatio || playlist.shelfImageAspectRatio);
           const visibleTilesDelta = parseTilesDelta(posterAspect);
 
-          const hasFeaturedCustomParam = isTruthyCustomParamValue(custom?.featured);
+          const isFeatured = isTruthyCustomParamValue(custom?.featured) || featured;
 
-          const ShelfComponent = hasFeaturedCustomParam || featured ? FeaturedShelf : Shelf;
+          const ShelfComponent = isFeatured ? FeaturedShelf : Shelf;
 
           return (
             <section
