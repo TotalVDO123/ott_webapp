@@ -8,6 +8,7 @@ const contentSchema: SchemaOf<Content> = object({
   featured: boolean().notRequired(),
   backgroundColor: string().nullable().notRequired(),
   type: mixed().oneOf(['playlist', 'continue_watching', 'favorites', 'content_list']),
+  custom: object().notRequired(),
 }).defined();
 
 const menuSchema: SchemaOf<Menu> = object().shape({
