@@ -181,7 +181,7 @@ export default class CleengAccountService extends AccountService {
     };
   };
 
-  register: Register = async ({ email, password, consents }) => {
+  register: Register = async ({ email, password, consents, captchaValue }) => {
     const localesResponse = await this.getLocales();
 
     this.handleErrors(localesResponse.errors);
@@ -194,6 +194,7 @@ export default class CleengAccountService extends AccountService {
       currency: localesResponse.responseData.currency,
       publisherId: this.publisherId,
       customerIP: await this.getCustomerIP(),
+      captchaValue,
     };
 
     const { responseData: auth, errors }: ServiceResponse<AuthData> = await this.cleengService.post('/customers', JSON.stringify(payload));
