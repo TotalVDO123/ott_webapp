@@ -15,6 +15,7 @@ import NoPaymentRequired from '../../../components/NoPaymentRequired/NoPaymentRe
 import PaymentForm, { type PaymentFormData } from '../../../components/PaymentForm/PaymentForm';
 import AdyenInitialPayment from '../../AdyenInitialPayment/AdyenInitialPayment';
 import { useAriaAnnouncer } from '../../AnnouncementProvider/AnnoucementProvider';
+import useRecaptcha from '../../../hooks/useRecaptcha';
 
 const Checkout = () => {
   const location = useLocation();
@@ -29,6 +30,8 @@ const Checkout = () => {
   const chooseOfferUrl = modalURLFromLocation(location, 'choose-offer');
   const welcomeUrl = modalURLFromLocation(location, 'welcome');
   const closeModalUrl = modalURLFromLocation(location, null);
+
+  const { recaptchaRef, captchaSiteKey, getCaptchaValue } = useRecaptcha();
 
   const backButtonClickHandler = () => navigate(chooseOfferUrl);
 
@@ -134,8 +137,19 @@ const Checkout = () => {
       couponFormSubmitting={couponFormSubmitting}
       couponFormError={errors.couponCode}
       submitting={isSubmitting || adyenUpdating}
+      captchaSiteKey={captchaSiteKey}
+      recaptchaRef={recaptchaRef}
     >
-      {noPaymentRequired && <NoPaymentRequired onSubmit={submitPaymentWithoutDetails.mutateAsync} error={submitPaymentWithoutDetails.error?.message || null} />}
+      {noPaymentRequired && (
+        <NoPaymentRequired
+          onSubmit={async () => {
+            const captchaValue = await getCaptchaValue();
+
+            return submitPaymentWithoutDetails.mutateAsync({ captchaValue });
+          }}
+          error={submitPaymentWithoutDetails.error?.message || null}
+        />
+      )}
       {isStripePayment && (
         <PaymentForm
           onPaymentFormSubmit={async (cardPaymentPayload: PaymentFormData) =>
@@ -150,12 +164,17 @@ const Checkout = () => {
             setUpdatingOrder={setAdyenUpdating}
             orderId={order.id}
             type="card"
+            getCaptchaValue={getCaptchaValue}
           />
         </>
       )}
       {isPayPalPayment && (
         <PayPal
-          onSubmit={() => submitPaymentPaypal.mutate({ successUrl: successUrlPaypal, waitingUrl, cancelUrl, errorUrl, couponCode })}
+          onSubmit={async () => {
+            const captchaValue = await getCaptchaValue();
+
+            submitPaymentPaypal.mutate({ successUrl: successUrlPaypal, waitingUrl, cancelUrl, errorUrl, couponCode, captchaValue });
+          }}
           error={submitPaymentPaypal.error?.message || null}
         />
       )}
