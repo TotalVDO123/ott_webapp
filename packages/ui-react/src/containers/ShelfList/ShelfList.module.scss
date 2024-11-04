@@ -9,25 +9,17 @@
 
 .shelfContainer {
   position: relative;
-  padding: 12px 56px;
+  padding: calc(variables.$base-spacing * 2) calc(variables.$base-spacing * 3);
 
   &.featured {
-    padding: 12px 20%;
+    padding: 0;
   }
 
   @include responsive.mobile-only() {
     padding: 8px 60px 8px variables.$base-spacing;
-
-    &.featured {
-      padding: 24px variables.$base-spacing;
-    }
   }
 
   @include responsive.tablet-only() {
     padding: 24px calc(#{variables.$base-spacing} * 2);
-
-    &.featured {
-      padding: 24px 10%;
-    }
   }
 }

@@ -53,6 +53,7 @@ export type Content = {
   type: AppShelfType;
   featured?: boolean;
   backgroundColor?: string | null;
+  custom?: Record<string, unknown>;
 };
 
 export type Menu = {
