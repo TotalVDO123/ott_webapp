@@ -9,7 +9,7 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
 import { slugify } from '@jwp/ott-common/src/utils/urlFormatting';
 import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/collection';
-import { testId } from '@jwp/ott-common/src/utils/common';
+import { isTruthyCustomParamValue, testId } from '@jwp/ott-common/src/utils/common';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
 
@@ -63,7 +63,7 @@ const ShelfList = ({ rows }: Props) => {
         loader={<InfiniteScrollLoader key="loader" />}
         useWindow={false}
       >
-        {rows.slice(0, rowsToLoad).map(({ type, featured, title }, index) => {
+        {rows.slice(0, rowsToLoad).map(({ type, featured, title, custom }, index) => {
           const { data: playlist, isPlaceholderData, error } = playlists[index];
 
           if (!playlist?.playlist?.length) return null;
@@ -71,13 +71,15 @@ const ShelfList = ({ rows }: Props) => {
           const posterAspect = parseAspectRatio(playlist.cardImageAspectRatio || playlist.shelfImageAspectRatio);
           const visibleTilesDelta = parseTilesDelta(posterAspect);
 
-          const ShelfComponent = featured ? FeaturedShelf : Shelf;
+          const isFeatured = isTruthyCustomParamValue(custom?.featured) || featured;
+
+          const ShelfComponent = isFeatured ? FeaturedShelf : Shelf;
 
           return (
             <section
               key={`${index}_${playlist.id}`}
-              className={classNames(styles.shelfContainer, { [styles.featured]: featured })}
-              data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
+              className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
+              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
               aria-label={title || playlist?.title}
             >
               <Fade duration={250} delay={index * 33} open>
@@ -88,7 +90,7 @@ const ShelfList = ({ rows }: Props) => {
                   playlist={playlist}
                   watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
                   title={title || playlist?.title}
-                  featured={featured}
+                  featured={isFeatured}
                   accessModel={accessModel}
                   isLoggedIn={!!user}
                   hasSubscription={!!subscription}
