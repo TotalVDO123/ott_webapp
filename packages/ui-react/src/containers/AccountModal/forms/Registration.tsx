@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, type ChangeEventHandler } from 'react';
+import React, { useEffect, useState, type ChangeEventHandler } from 'react';
 import { object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
@@ -10,11 +10,10 @@ import useSocialLoginUrls from '@jwp/ott-hooks-react/src/useSocialLoginUrls';
 import useForm from '@jwp/ott-hooks-react/src/useForm';
 import { modalURLFromLocation, modalURLFromWindowLocation } from '@jwp/ott-ui-react/src/utils/location';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
-import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
-import type { ReCAPTCHA } from 'react-google-recaptcha';
 
 import RegistrationForm from '../../../components/RegistrationForm/RegistrationForm';
 import { useAriaAnnouncer } from '../../AnnouncementProvider/AnnoucementProvider';
+import useRecaptcha from '../../../hooks/useRecaptcha';
 
 const Registration = () => {
   const accountController = getModule(AccountController);
@@ -32,8 +31,7 @@ const Registration = () => {
     loading,
   }));
 
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const captchaSiteKey = useConfigStore(({ config }) => (config.custom?.captchaSiteKey ? (config.custom?.captchaSiteKey as string) : undefined));
+  const { recaptchaRef, captchaSiteKey, getCaptchaValue } = useRecaptcha();
 
   const handleChangeConsent: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = ({ currentTarget }) => {
     if (!currentTarget) return;
@@ -82,7 +80,7 @@ const Registration = () => {
         throw new Error(t('registration.consents_error'));
       }
 
-      const captchaValue = captchaSiteKey ? (await recaptchaRef.current?.executeAsync()) || undefined : undefined;
+      const captchaValue = await getCaptchaValue();
 
       await accountController.register(email, password, window.location.href, formatConsentsFromValues(publisherConsents, consentValues), captchaValue);
     },

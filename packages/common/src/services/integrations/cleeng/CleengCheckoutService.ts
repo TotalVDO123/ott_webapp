@@ -115,13 +115,14 @@ export default class CleengCheckoutService extends CheckoutService {
   };
 
   paymentWithPayPal: PaymentWithPayPal = async (payload) => {
-    const { order, successUrl, cancelUrl, errorUrl } = payload;
+    const { order, successUrl, cancelUrl, errorUrl, captchaValue } = payload;
 
     const paypalPayload = {
       orderId: order.id,
       successUrl,
       cancelUrl,
       errorUrl,
+      captchaValue,
     };
 
     return this.cleengService.post('/connectors/paypal/v1/tokens', JSON.stringify(paypalPayload), { authenticate: true });
