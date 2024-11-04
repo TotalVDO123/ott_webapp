@@ -9,7 +9,7 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
 import { slugify } from '@jwp/ott-common/src/utils/urlFormatting';
 import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/collection';
-import { testId } from '@jwp/ott-common/src/utils/common';
+import { isTruthyCustomParamValue, testId } from '@jwp/ott-common/src/utils/common';
 import { PersonalShelf } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
 
@@ -78,14 +78,16 @@ const ShelfList = ({ rows }: Props) => {
           const translatedKey = custom?.[`title-${language}`];
           const translatedTitle = translatedKey || title || playlist?.title;
 
-          const ShelfComponent = featured ? FeaturedShelf : Shelf;
+          const isFeatured = isTruthyCustomParamValue(custom?.featured) || featured;
+
+          const ShelfComponent = isFeatured ? FeaturedShelf : Shelf;
 
           return (
             <section
               key={`${index}_${playlist.id}`}
-              className={classNames(styles.shelfContainer, { [styles.featured]: featured })}
-              data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
-              aria-label={translatedTitle}
+              className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
+              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
+              aria-label={title || playlist?.title}
             >
               <Fade duration={250} delay={index * 33} open>
                 <ShelfComponent
@@ -95,7 +97,7 @@ const ShelfList = ({ rows }: Props) => {
                   playlist={playlist}
                   watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
                   title={translatedTitle}
-                  featured={featured}
+                  featured={isFeatured}
                   accessModel={accessModel}
                   isLoggedIn={!!user}
                   hasSubscription={!!subscription}
