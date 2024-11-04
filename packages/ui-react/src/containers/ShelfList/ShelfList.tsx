@@ -78,8 +78,8 @@ const ShelfList = ({ rows }: Props) => {
           return (
             <section
               key={`${index}_${playlist.id}`}
-              className={classNames(styles.shelfContainer, { [styles.featured]: featured })}
-              data-testid={testId(`shelf-${featured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
+              className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
+              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
               aria-label={title || playlist?.title}
             >
               <Fade duration={250} delay={index * 33} open>
@@ -90,7 +90,7 @@ const ShelfList = ({ rows }: Props) => {
                   playlist={playlist}
                   watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
                   title={title || playlist?.title}
-                  featured={featured}
+                  featured={isFeatured}
                   accessModel={accessModel}
                   isLoggedIn={!!user}
                   hasSubscription={!!subscription}
