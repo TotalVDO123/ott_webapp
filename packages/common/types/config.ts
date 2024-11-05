@@ -53,7 +53,7 @@ export type Content = {
   type: AppShelfType;
   featured?: boolean;
   backgroundColor?: string | null;
-  custom?: Record<string, unknown>;
+  custom?: Record<string, string>;
 };
 
 export type Menu = {
@@ -61,6 +61,7 @@ export type Menu = {
   contentId: string;
   type?: AppMenuType;
   filterTags?: string;
+  custom?: Record<string, string>;
 };
 
 export type Styling = {

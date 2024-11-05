@@ -32,6 +32,10 @@ const ShelfList = ({ rows }: Props) => {
   const { accessModel } = useConfigStore(({ accessModel }) => ({ accessModel }), shallow);
   const [rowsToLoad, setRowsToLoad] = useState(INITIAL_ROWS_TO_LOAD);
   const { t } = useTranslation('error');
+  const { i18n } = useTranslation();
+
+  // Determine currently selected language
+  const language = i18n.language;
 
   const watchHistoryDictionary = useWatchHistoryStore((state) => state.getDictionaryWithSeries());
 
@@ -71,6 +75,9 @@ const ShelfList = ({ rows }: Props) => {
           const posterAspect = parseAspectRatio(playlist.cardImageAspectRatio || playlist.shelfImageAspectRatio);
           const visibleTilesDelta = parseTilesDelta(posterAspect);
 
+          const translatedKey = custom?.[`title-${language}`];
+          const translatedTitle = translatedKey || title || playlist?.title;
+
           const isFeatured = isTruthyCustomParamValue(custom?.featured) || featured;
 
           const ShelfComponent = isFeatured ? FeaturedShelf : Shelf;
@@ -79,7 +86,7 @@ const ShelfList = ({ rows }: Props) => {
             <section
               key={`${index}_${playlist.id}`}
               className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
-              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(title || playlist?.title) : type}`)}
+              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
               aria-label={title || playlist?.title}
             >
               <Fade duration={250} delay={index * 33} open>
@@ -89,7 +96,7 @@ const ShelfList = ({ rows }: Props) => {
                   type={type}
                   playlist={playlist}
                   watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
-                  title={title || playlist?.title}
+                  title={translatedTitle}
                   featured={isFeatured}
                   accessModel={accessModel}
                   isLoggedIn={!!user}
