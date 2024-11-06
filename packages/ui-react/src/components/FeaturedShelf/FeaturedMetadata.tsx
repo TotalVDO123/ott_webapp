@@ -51,9 +51,7 @@ const FeaturedMetadata = ({
       <h2 className={classNames(loading ? styles.loadingTitle : styles.title)}>{!loading && item?.title}</h2>
       <TruncatedText text={item?.description} maximumLines={3} />
       <div>
-        {hasVideo && isWatchable && !isMobile && (
-          <StartWatchingButton item={item} playUrl={mediaURL({ id: item.mediaid, title: item.title, playlistId, play: true })} />
-        )}
+        {showStartWatchingButton && <StartWatchingButton item={item} playUrl={mediaURL({ id: item.mediaid, title: item.title, playlistId, play: true })} />}
         <Button
           label={t('common:more_info')}
           onClick={() => navigate(mediaURL({ id: item.mediaid, title: item.title, playlistId }))}
