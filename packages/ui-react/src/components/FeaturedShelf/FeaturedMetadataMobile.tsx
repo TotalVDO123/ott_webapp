@@ -109,14 +109,16 @@ const FeaturedMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading
         playlistId={playlistId}
         style={{ left: '-100%' }}
         hidden={direction !== 'left' && swipeAction !== 'slide'}
+        isMobile
       />
-      <FeaturedMetadata loading={loading} item={item} playlistId={playlistId} />
+      <FeaturedMetadata loading={loading} item={item} playlistId={playlistId} isMobile />
       <FeaturedMetadata
         loading={loading}
         item={rightItem}
         playlistId={playlistId}
         style={{ left: '100%' }}
         hidden={direction !== 'right' && swipeAction !== 'slide'}
+        isMobile
       />
     </div>
   );

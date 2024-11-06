@@ -21,12 +21,14 @@ const FeaturedMetadata = ({
   playlistId,
   style,
   hidden,
+  isMobile,
 }: {
   item: PlaylistItem | null;
   loading: boolean;
   playlistId: string | undefined;
   style?: CSSProperties;
   hidden?: boolean;
+  isMobile?: boolean;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
@@ -36,6 +38,8 @@ const FeaturedMetadata = ({
   const isWatchable =
     !isContentType(item, MEDIA_CONTENT_TYPE.hub) && !isContentType(item, MEDIA_CONTENT_TYPE.liveChannel) && !isContentType(item, MEDIA_CONTENT_TYPE.page);
   const hasVideo = item.sources.find((source) => source.file.indexOf('.m3u8') > -1 || source.file.indexOf('.mp4') > -1);
+
+  const showStartWatchingButton = hasVideo && isWatchable && !isMobile;
 
   return (
     <div
@@ -47,12 +51,14 @@ const FeaturedMetadata = ({
       <h2 className={classNames(loading ? styles.loadingTitle : styles.title)}>{!loading && item?.title}</h2>
       <TruncatedText text={item?.description} maximumLines={3} />
       <div>
-        {hasVideo && isWatchable && <StartWatchingButton item={item} playUrl={mediaURL({ id: item.mediaid, title: item.title, playlistId, play: true })} />}
+        {showStartWatchingButton && <StartWatchingButton item={item} playUrl={mediaURL({ id: item.mediaid, title: item.title, playlistId, play: true })} />}
         <Button
           label={t('common:more_info')}
           onClick={() => navigate(mediaURL({ id: item.mediaid, title: item.title, playlistId }))}
           startIcon={<Icon icon={ChevronRight} />}
           size="large"
+          variant={showStartWatchingButton ? undefined : 'contained'}
+          color={showStartWatchingButton ? undefined : 'primary'}
         />
       </div>
     </div>
