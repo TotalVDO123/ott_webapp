@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useState, type CSSProperties, type TransitionEventHandler } from 'react';
+import React, { useCallback, useEffect, useState, type CSSProperties, type TransitionEventHandler } from 'react';
 import type { PosterAspectRatio } from '@jwp/ott-common/src/utils/collection';
 import type { AccessModel } from '@jwp/ott-common/types/config';
 import type { Playlist, PlaylistItem } from '@jwp/ott-common/types/playlist';
@@ -65,7 +65,7 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
     [animationPhase],
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!direction) return;
     if (animationPhase === 'init') {
       setAnimationPhase('start');
