@@ -17,6 +17,8 @@
   --card-color: #{theme.$card-color};
   --card-border-hover-color: #{theme.$card-border-hover-color};
   --card-tag-bg: #{theme.$card-tag-bg};
+
+  --my-safe-area-top: 0; // Can be overridden for specific platforms
 }
 
 @include accessibility.globalClassNames;
