@@ -87,7 +87,7 @@ const ShelfList = ({ rows }: Props) => {
               key={`${index}_${playlist.id}`}
               className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
               data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
-              aria-label={title || playlist?.title}
+              aria-label={translatedTitle}
             >
               <Fade duration={250} delay={index * 33} open>
                 <ShelfComponent
