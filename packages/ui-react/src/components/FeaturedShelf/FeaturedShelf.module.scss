@@ -47,7 +47,7 @@ $mobile-landscape-height: 100vh;
   }
 
   @include responsive.mobile-only() {
-    height: calc($mobile-height - variables.$header-height - var(--my-safe-area-top, 0));
+    height: calc($mobile-height - variables.$header-height - var(--safe-area-top, 0));
     min-height: calc($mobile-min-height - variables.$header-height);
   }
 
