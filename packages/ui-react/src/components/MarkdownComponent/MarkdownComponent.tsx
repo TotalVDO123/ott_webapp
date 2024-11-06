@@ -35,7 +35,10 @@ const MarkdownComponent: React.FC<Props> = ({ markdownString, className, tag = '
     return DOMPurify.sanitize(dirtyHTMLString, { ADD_ATTR: ['target'] });
   }, [inline, markdownString]);
 
-  return React.createElement(tag, { dangerouslySetInnerHTML: { __html: sanitizedHTMLString }, className: classNames(styles.markdown, className) });
+  return React.createElement(tag, {
+    dangerouslySetInnerHTML: { __html: sanitizedHTMLString },
+    className: classNames(styles.markdown, inline && styles.inline, className),
+  });
 };
 
 export default MarkdownComponent;
