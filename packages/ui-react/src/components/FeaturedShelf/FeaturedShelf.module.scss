@@ -8,7 +8,7 @@ $desktop-max-height: 700px;
 $desktop-min-height: 275px;
 
 $tablet-height: 70vw;
-$tablet-min-height: 375x;
+$tablet-min-height: 375px;
 
 $mobile-height: 70vh;
 $mobile-min-height: 450px;
@@ -47,7 +47,7 @@ $mobile-landscape-height: 100vh;
   }
 
   @include responsive.mobile-only() {
-    height: calc($mobile-height - variables.$header-height);
+    height: calc($mobile-height - variables.$header-height - var(--safe-area-top, 0));
     min-height: calc($mobile-min-height - variables.$header-height);
   }
 
@@ -226,10 +226,6 @@ $mobile-landscape-height: 100vh;
     }
     > div {
       font-size: 14px;
-
-      > button:nth-child(2) {
-        display: none;
-      }
     }
   }
 
@@ -352,7 +348,7 @@ $mobile-landscape-height: 100vh;
     }
   }
 
-  &:disabled {
+  &[aria-hidden="true"] {
     cursor: default;
   }
 }

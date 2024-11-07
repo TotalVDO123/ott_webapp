@@ -16,6 +16,7 @@ const menuSchema: SchemaOf<Menu> = object().shape({
   contentId: string().defined(),
   filterTags: string().notRequired(),
   type: mixed().oneOf(['playlist', 'content_list', 'media']).notRequired(),
+  custom: object().notRequired(),
 });
 
 const featuresSchema: SchemaOf<Features> = object({
