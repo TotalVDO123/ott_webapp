@@ -49,7 +49,8 @@ const SidebarUserActions = ({
 };
 
 const SidebarContainer = () => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const language = i18n.language;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -82,9 +83,9 @@ const SidebarContainer = () => {
         <li>
           <MenuButton label={t('home')} to="/" />
         </li>
-        {menu.map(({ contentId, type, label }) => (
+        {menu.map(({ contentId, type, label, custom }) => (
           <li key={contentId}>
-            <MenuButton label={label} to={determinePath({ type, contentId })} />
+            <MenuButton label={custom?.[`label-${language}`] || label} to={determinePath({ type, contentId })} />
           </li>
         ))}
       </ul>
