@@ -3,7 +3,7 @@ import type { Playlist } from '@jwp/ott-common/types/playlist';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 
-import styles from './FeaturedShelf.module.scss';
+import styles from './HeroShelf.module.scss';
 
 const calculateDotSize = (direction: 'left' | 'right' | false, itemIndex: number, index: number, range: number, sizeSmall: number) => {
   const isAnimatingLeft = direction === 'left';
@@ -38,7 +38,7 @@ type Props = {
   className?: string;
 };
 
-const FeaturedPagination = ({
+const HeroShelfPagination = ({
   playlist,
   index: indexIn,
   direction,
@@ -110,4 +110,4 @@ const FeaturedPagination = ({
   );
 };
 
-export default FeaturedPagination;
+export default HeroShelfPagination;

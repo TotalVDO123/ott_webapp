@@ -6,6 +6,7 @@ export const normalTimeout = 10;
 export const longTimeout = 20;
 
 export enum ShelfId {
+  hero = 'hero',
   featured = 'featured',
   allFilms = 'all-films',
   allCourses = 'all-courses',
