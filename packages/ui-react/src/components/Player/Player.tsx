@@ -66,6 +66,7 @@ const Player: React.FC<Props> = ({
   const { settings } = useConfigStore((s) => s);
 
   const playerId = settings.playerId;
+  const playerLicenseKey = settings.playerLicenseKey;
 
   const handleBeforePlay = useEventCallback(onBeforePlay);
   const handlePlay = useEventCallback(onPlay);
@@ -214,6 +215,10 @@ const Player: React.FC<Props> = ({
         playerOptions.autostart = autostart;
       }
 
+      // Set the license key if provided
+      if (playerLicenseKey) {
+        playerOptions.key = playerLicenseKey;
+      }
       playerRef.current.setup(playerOptions);
 
       attachEvents();
@@ -226,7 +231,7 @@ const Player: React.FC<Props> = ({
     if (libLoaded) {
       initializePlayer();
     }
-  }, [libLoaded, item, detachEvents, attachEvents, playerId, autostart, adsData, sources, feedId]);
+  }, [libLoaded, item, detachEvents, attachEvents, playerId, autostart, adsData, playerLicenseKey, sources, feedId]);
 
   useEffect(() => {
     return () => {
