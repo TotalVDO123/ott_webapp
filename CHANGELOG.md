@@ -1,3 +1,25 @@
+## [6.8.0](https://github.com/jwplayer/ott-web-app/compare/v6.7.0...v6.8.0) (2024-11-08)
+
+
+### Features
+
+* add support for featured custom param ([#632](https://github.com/jwplayer/ott-web-app/issues/632)) ([9ea7884](https://github.com/jwplayer/ott-web-app/commit/9ea78849d24a84652c34bcd7a62c5576ed068b99))
+* **auth:** add optional captcha validation to registration ([#630](https://github.com/jwplayer/ott-web-app/issues/630)) ([fac471c](https://github.com/jwplayer/ott-web-app/commit/fac471cde71239f98db60141542ec6f764d7650a))
+* **home:** add hero shelf type and deprecate content.featured ([#638](https://github.com/jwplayer/ott-web-app/issues/638)) ([8388404](https://github.com/jwplayer/ott-web-app/commit/8388404a25192d1562654bfe0af198307cb22c61))
+* **home:** add jumbotron featured shelf ([#628](https://github.com/jwplayer/ott-web-app/issues/628)) ([08bf7c0](https://github.com/jwplayer/ott-web-app/commit/08bf7c001b5f3d10e0e885b27f2cec4188ccaca5))
+* **i18n:** support translations for shelves titles and menu labels ([#612](https://github.com/jwplayer/ott-web-app/issues/612)) ([8d13515](https://github.com/jwplayer/ott-web-app/commit/8d13515c10dc91d477f4bcece239dc61474fec4b))
+* **payment:** add optional captcha validation to payments ([#631](https://github.com/jwplayer/ott-web-app/issues/631)) ([afa7d6a](https://github.com/jwplayer/ott-web-app/commit/afa7d6a17428ca6f801c3ff99e7f322d257d8a8f))
+* **project:** add custom menu label to sidebar ([#637](https://github.com/jwplayer/ott-web-app/issues/637)) ([b73ae54](https://github.com/jwplayer/ott-web-app/commit/b73ae542db10129ad1278410aabc754b820a93e4))
+* **project:** remove ott analytics ([beae9bd](https://github.com/jwplayer/ott-web-app/commit/beae9bd4278f8e4a1e2f0f64e7456a14300e9c3d))
+* **project:** ui improvements and support light background ([620007b](https://github.com/jwplayer/ott-web-app/commit/620007b69f888d415c35162b4396adfccbba8b26))
+
+
+### Bug Fixes
+
+* access bridge flaky tests ([#627](https://github.com/jwplayer/ott-web-app/issues/627)) ([1ae469b](https://github.com/jwplayer/ott-web-app/commit/1ae469b4c7b1f6922f6504b42d3445f7b9310cd8))
+* **project:** improve featured shelf and general ui ([#634](https://github.com/jwplayer/ott-web-app/issues/634)) ([085e245](https://github.com/jwplayer/ott-web-app/commit/085e2452290f11e8884294be0454bab9ea6f0895))
+* remove blue link color in hero description ([adf388c](https://github.com/jwplayer/ott-web-app/commit/adf388c968e11ba15c72d3ddc6679f940fb64076))
+
 ## [6.7.0](https://github.com/jwplayer/ott-web-app/compare/v6.6.0...v6.7.0) (2024-09-27)
 
 
