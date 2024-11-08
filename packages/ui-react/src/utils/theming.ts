@@ -26,8 +26,8 @@ export const setThemingVariables = (config: Config) => {
     if (bodyColor === '#000000') {
       // disable text shadows when using a light background
       root.style.setProperty('--body-text-shadow', 'none');
-      // featured shelf should always be dark, so on a light background we fall back to gray
-      root.style.setProperty('--featured-shelf-background-color', '#1f1f1f');
+      // hero shelf should always be dark, so on a light background we fall back to gray
+      root.style.setProperty('--hero-shelf-background-color', '#1f1f1f');
       // currently, the EPG only supports a dark background
       root.style.setProperty('--epg-background-color', '#262626');
     }

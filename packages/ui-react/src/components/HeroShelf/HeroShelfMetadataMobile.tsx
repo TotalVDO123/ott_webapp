@@ -2,8 +2,8 @@ import type { PlaylistItem } from '@jwp/ott-common/types/playlist';
 import useEventCallback from '@jwp/ott-hooks-react/src/useEventCallback';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import FeaturedMetadata from './FeaturedMetadata';
-import styles from './FeaturedShelf.module.scss';
+import HeroShelfMetadata from './HeroShelfMetadata';
+import styles from './HeroShelf.module.scss';
 
 type Props = {
   item: PlaylistItem;
@@ -16,7 +16,7 @@ type Props = {
   onSlideRight: () => void;
 };
 
-const FeaturedMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading, direction, onSlideLeft, onSlideRight }: Props) => {
+const HeroShelfMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading, direction, onSlideLeft, onSlideRight }: Props) => {
   const movementRef = useRef({ x: 0, y: 0, start: Date.now() });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [swipeAction, setSwipeAction] = useState<'slide' | 'scroll' | null>(null);
@@ -103,7 +103,7 @@ const FeaturedMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading
 
   return (
     <div ref={containerRef} className={styles.metadataMobile}>
-      <FeaturedMetadata
+      <HeroShelfMetadata
         loading={loading}
         item={leftItem}
         playlistId={playlistId}
@@ -111,8 +111,8 @@ const FeaturedMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading
         hidden={direction !== 'left' && swipeAction !== 'slide'}
         isMobile
       />
-      <FeaturedMetadata loading={loading} item={item} playlistId={playlistId} isMobile />
-      <FeaturedMetadata
+      <HeroShelfMetadata loading={loading} item={item} playlistId={playlistId} isMobile />
+      <HeroShelfMetadata
         loading={loading}
         item={rightItem}
         playlistId={playlistId}
@@ -124,4 +124,4 @@ const FeaturedMetadataMobile = ({ item, leftItem, rightItem, playlistId, loading
   );
 };
 
-export default FeaturedMetadataMobile;
+export default HeroShelfMetadataMobile;

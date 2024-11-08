@@ -9,15 +9,15 @@ import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useWatchHistoryStore } from '@jwp/ott-common/src/stores/WatchHistoryStore';
 import { slugify } from '@jwp/ott-common/src/utils/urlFormatting';
 import { parseAspectRatio, parseTilesDelta } from '@jwp/ott-common/src/utils/collection';
-import { isTruthyCustomParamValue, testId } from '@jwp/ott-common/src/utils/common';
-import { PersonalShelf } from '@jwp/ott-common/src/constants';
+import { testId } from '@jwp/ott-common/src/utils/common';
+import { PersonalShelf, SHELF_LAYOUT_TYPE } from '@jwp/ott-common/src/constants';
 import usePlaylists from '@jwp/ott-hooks-react/src/usePlaylists';
 
 import Shelf from '../../components/Shelf/Shelf';
 import InfiniteScrollLoader from '../../components/InfiniteScrollLoader/InfiniteScrollLoader';
 import ErrorPage from '../../components/ErrorPage/ErrorPage';
 import Fade from '../../components/Animation/Fade/Fade';
-import FeaturedShelf from '../../components/FeaturedShelf/FeaturedShelf';
+import HeroShelf from '../../components/HeroShelf/HeroShelf';
 
 import styles from './ShelfList.module.scss';
 
@@ -78,32 +78,35 @@ const ShelfList = ({ rows }: Props) => {
           const translatedKey = custom?.[`title-${language}`];
           const translatedTitle = translatedKey || title || playlist?.title;
 
-          const isFeatured = isTruthyCustomParamValue(custom?.featured) || featured;
-
-          const ShelfComponent = isFeatured ? FeaturedShelf : Shelf;
+          const isHero = custom?.layoutType === SHELF_LAYOUT_TYPE.hero && index === 0;
+          const isFeatured = !isHero && (custom?.layoutType === SHELF_LAYOUT_TYPE.featured || featured);
 
           return (
             <section
               key={`${index}_${playlist.id}`}
-              className={classNames(styles.shelfContainer, { [styles.featured]: isFeatured })}
-              data-testid={testId(`shelf-${isFeatured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
+              className={classNames(styles.shelfContainer, { [styles.hero]: isHero, [styles.featured]: isFeatured })}
+              data-testid={testId(`shelf-${isHero ? 'hero' : isFeatured ? 'featured' : type === 'playlist' ? slugify(translatedTitle) : type}`)}
               aria-label={translatedTitle}
             >
               <Fade duration={250} delay={index * 33} open>
-                <ShelfComponent
-                  loading={isPlaceholderData}
-                  error={error}
-                  type={type}
-                  playlist={playlist}
-                  watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
-                  title={translatedTitle}
-                  featured={isFeatured}
-                  accessModel={accessModel}
-                  isLoggedIn={!!user}
-                  hasSubscription={!!subscription}
-                  posterAspect={posterAspect}
-                  visibleTilesDelta={visibleTilesDelta}
-                />
+                {isHero ? (
+                  <HeroShelf loading={isPlaceholderData} error={error} playlist={playlist} />
+                ) : (
+                  <Shelf
+                    loading={isPlaceholderData}
+                    error={error}
+                    type={type}
+                    playlist={playlist}
+                    watchHistory={type === PersonalShelf.ContinueWatching ? watchHistoryDictionary : undefined}
+                    title={translatedTitle}
+                    featured={isFeatured}
+                    accessModel={accessModel}
+                    isLoggedIn={!!user}
+                    hasSubscription={!!subscription}
+                    posterAspect={posterAspect}
+                    visibleTilesDelta={visibleTilesDelta}
+                  />
+                )}
               </Fade>
             </section>
           );

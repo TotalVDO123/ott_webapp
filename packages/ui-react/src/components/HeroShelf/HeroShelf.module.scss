@@ -31,7 +31,7 @@ $mobile-landscape-height: 100vh;
   font-size: 18px;
   line-height: 1.5em;
   letter-spacing: 0.5px;
-  background-color: var(--featured-shelf-background-color);
+  background-color: var(--hero-shelf-background-color);
 
   &:hover .chevron:not(:disabled) {
     opacity: 0.8;
@@ -96,7 +96,7 @@ $mobile-landscape-height: 100vh;
   width: 100%;
   height: 56.25vw;
   max-height: 700px;
-  background-color: var(--featured-shelf-background-color);
+  background-color: var(--hero-shelf-background-color);
 
   @include responsive.tablet-only() {
     height: $tablet-height;

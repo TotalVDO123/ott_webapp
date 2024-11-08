@@ -4,9 +4,9 @@ import React from 'react';
 
 import Image from '../Image/Image';
 
-import styles from './FeaturedShelf.module.scss';
+import styles from './HeroShelf.module.scss';
 
-const FeaturedBackground = ({
+const HeroShelfBackground = ({
   item,
   style,
   hidden,
@@ -33,4 +33,4 @@ const FeaturedBackground = ({
   );
 };
 
-export default React.memo(FeaturedBackground);
+export default React.memo(HeroShelfBackground);

@@ -51,6 +51,9 @@ export type Content = {
   contentId?: string;
   title?: string;
   type: AppShelfType;
+  /**
+   * @deprecated Use the custom shelf property `layoutType = 'hero' | 'featured' | undefined` instead
+   */
   featured?: boolean;
   backgroundColor?: string | null;
   custom?: Record<string, string>;

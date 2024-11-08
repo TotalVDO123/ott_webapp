@@ -13,9 +13,9 @@ import StartWatchingButton from '../../containers/StartWatchingButton/StartWatch
 import Button from '../Button/Button';
 import Icon from '../Icon/Icon';
 
-import styles from './FeaturedShelf.module.scss';
+import styles from './HeroShelf.module.scss';
 
-const FeaturedMetadata = ({
+const HeroShelfMetadata = ({
   item,
   loading,
   playlistId,
@@ -44,7 +44,7 @@ const FeaturedMetadata = ({
   return (
     <div
       className={styles.metadata}
-      data-testid={testId(`featured-metadata--${hidden ? 'hidden' : 'visible'}`)}
+      data-testid={testId(`shelf-hero-metadata--${hidden ? 'hidden' : 'visible'}`)}
       style={{ ...style, visibility: hidden ? 'hidden' : undefined }}
       aria-hidden={hidden ? 'true' : undefined}
     >
@@ -65,4 +65,4 @@ const FeaturedMetadata = ({
   );
 };
 
-export default FeaturedMetadata;
+export default HeroShelfMetadata;

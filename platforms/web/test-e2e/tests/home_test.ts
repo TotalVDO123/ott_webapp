@@ -39,9 +39,11 @@ Scenario('Header button navigates to playlist screen', async ({ I }) => {
   I.see('The Daily Dweebs');
 });
 
-Scenario('I can slide within the featured shelf', async ({ I }) => {
+// @todo: this test requires the testconfig to have `layoutType: 'hero'` on the first shelf
+// eslint-disable-next-line codeceptjs/no-skipped-tests
+Scenario.skip('I can slide within the hero shelf', async ({ I }) => {
   const isDesktop = await I.isDesktop();
-  const visibleTileLocator = locate({ css: `section[data-testid="shelf-${ShelfId.featured}"] div[data-testid="featured-metadata--visible"]` });
+  const visibleTileLocator = locate({ css: `section[data-testid="shelf-${ShelfId.hero}"] div[data-testid="shelf-hero-metadata--visible"]` });
 
   async function slide(swipeText: string, forward = true) {
     if (isDesktop) {
@@ -51,7 +53,7 @@ Scenario('I can slide within the featured shelf', async ({ I }) => {
     }
   }
 
-  await within(makeShelfXpath(ShelfId.featured), async () => {
+  await within(makeShelfXpath(ShelfId.hero), async () => {
     I.see('Blender Channel');
   });
 
@@ -60,7 +62,7 @@ Scenario('I can slide within the featured shelf', async ({ I }) => {
     I.dontSee('Spring is a 2019 animated');
   });
 
-  await within(makeShelfXpath(ShelfId.featured), async () => {
+  await within(makeShelfXpath(ShelfId.hero), async () => {
     await slide('Blender Channel');
   });
 
@@ -73,11 +75,55 @@ Scenario('I can slide within the featured shelf', async ({ I }) => {
   // expected elements are present, the slide doesn't work. I think there must be a debounce check on the carousel.
   I.wait(1);
 
-  await within(makeShelfXpath(ShelfId.featured), async () => {
+  await within(makeShelfXpath(ShelfId.hero), async () => {
     await slide('Spring', false);
   });
 
   await within(visibleTileLocator, function () {
+    I.waitForElement('text="Blender Channel"', 3);
+    I.dontSee('Spring');
+  });
+});
+
+Scenario('I can slide within the featured shelf', async ({ I }) => {
+  const isDesktop = await I.isDesktop();
+  const visibleTilesLocator = locate({ css: `section[data-testid="shelf-${ShelfId.featured}"] .TileSlider--visible` });
+
+  async function slide(swipeText: string) {
+    if (isDesktop) {
+      I.click({ css: 'button[aria-label="Next slide"]' });
+    } else {
+      await I.swipeLeft({ text: swipeText });
+    }
+  }
+
+  await within(makeShelfXpath(ShelfId.featured), async () => {
+    I.see('Blender Channel');
+  });
+
+  await within(visibleTilesLocator, function () {
+    I.dontSee('Spring');
+    I.dontSee('8 min');
+  });
+
+  await within(makeShelfXpath(ShelfId.featured), async () => {
+    await slide('Blender Channel');
+  });
+
+  await within(visibleTilesLocator, function () {
+    I.waitForElement('text=Spring', 3);
+    I.see('8 min');
+  });
+
+  // Without this extra wait, the second slide action happens too fast after the first and even though the
+  // expected elements are present, the slide doesn't work. I think there must be a debounce check on the carousel.
+  I.wait(1);
+
+  await within(makeShelfXpath(ShelfId.featured), async () => {
+    await slide('Spring');
+  });
+
+  await within(visibleTilesLocator, function () {
     I.waitForElement('text="Blender Channel"', 3);
     I.dontSee('Spring');
   });

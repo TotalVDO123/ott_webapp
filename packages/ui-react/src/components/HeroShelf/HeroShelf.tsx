@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState, type CSSProperties, type TransitionEventHandler } from 'react';
-import type { PosterAspectRatio } from '@jwp/ott-common/src/utils/collection';
-import type { AccessModel } from '@jwp/ott-common/types/config';
-import type { Playlist, PlaylistItem } from '@jwp/ott-common/types/playlist';
+import type { Playlist } from '@jwp/ott-common/types/playlist';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import ChevronLeft from '@jwp/ott-theme/assets/icons/chevron_left.svg?react';
@@ -11,30 +9,19 @@ import { useScrolledDown } from '../../hooks/useScrolledDown';
 import Icon from '../Icon/Icon';
 import useBreakpoint, { Breakpoint } from '../../hooks/useBreakpoint';
 
-import styles from './FeaturedShelf.module.scss';
-import FeaturedMetadata from './FeaturedMetadata';
-import FeaturedBackground from './FeaturedBackground';
-import FeaturedPagination from './FeaturedPagination';
-import FeaturedMetadataMobile from './FeaturedMetadataMobile';
+import styles from './HeroShelf.module.scss';
+import HeroShelfMetadata from './HeroShelfMetadata';
+import HeroShelfBackground from './HeroShelfBackground';
+import HeroShelfPagination from './HeroShelfPagination';
+import HeroShelfMetadataMobile from './HeroShelfMetadataMobile';
 
 type Props = {
   playlist: Playlist;
-  onCardHover?: (playlistItem: PlaylistItem) => void;
-  watchHistory?: { [key: string]: number };
-  enableTitle?: boolean;
-  enableCardTitles?: boolean;
-  featured?: boolean;
   loading?: boolean;
   error?: unknown;
-  title?: string;
-  accessModel: AccessModel;
-  isLoggedIn: boolean;
-  hasSubscription: boolean;
-  posterAspect?: PosterAspectRatio;
-  visibleTilesDelta?: number;
 };
 
-const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
+const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
   const [index, setIndex] = useState(0);
   const [nextIndex, setNextIndex] = useState(0);
   const { t } = useTranslation('common');
@@ -123,14 +110,14 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
     <div className={classNames(styles.shelf)}>
       <div className={classNames(styles.poster, styles.undimmed, { [styles.dimmed]: scrolledDown })}>
         <div className={styles.background} id="background">
-          <FeaturedBackground
+          <HeroShelfBackground
             item={leftItem}
             style={backgroundAltStyle}
             key={renderedItem?.mediaid === leftItem?.mediaid ? 'left-item' : leftItem?.mediaid}
             hidden={direction !== 'left'}
           />
-          <FeaturedBackground item={renderedItem} style={backgroundCurrentStyle} key={renderedItem?.mediaid} onTransitionEnd={handleBackgroundAnimationEnd} />
-          <FeaturedBackground
+          <HeroShelfBackground item={renderedItem} style={backgroundCurrentStyle} key={renderedItem?.mediaid} onTransitionEnd={handleBackgroundAnimationEnd} />
+          <HeroShelfBackground
             item={rightItem}
             style={backgroundAltStyle}
             key={renderedItem?.mediaid === rightItem?.mediaid ? 'right-item' : rightItem?.mediaid}
@@ -149,7 +136,7 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
         <Icon icon={ChevronLeft} />
       </button>
       {isMobile ? (
-        <FeaturedMetadataMobile
+        <HeroShelfMetadataMobile
           loading={loading}
           item={item}
           rightItem={rightItem}
@@ -161,8 +148,8 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
         />
       ) : (
         <>
-          <FeaturedMetadata item={renderedItem} loading={loading} playlistId={playlist.feedid} style={metadataCurrentStyle} />
-          <FeaturedMetadata item={altItem} loading={loading} playlistId={playlist.feedid} style={metadataAltStyle} hidden={!direction} />
+          <HeroShelfMetadata item={renderedItem} loading={loading} playlistId={playlist.feedid} style={metadataCurrentStyle} />
+          <HeroShelfMetadata item={altItem} loading={loading} playlistId={playlist.feedid} style={metadataAltStyle} hidden={!direction} />
         </>
       )}
       <button
@@ -173,7 +160,7 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
       >
         <Icon icon={ChevronRight} />
       </button>
-      <FeaturedPagination
+      <HeroShelfPagination
         className={scrolledDown ? styles.dimmed : undefined}
         playlist={playlist}
         index={index}
@@ -185,4 +172,4 @@ const FeaturedShelf = ({ playlist, loading = false, error = null }: Props) => {
   );
 };
 
-export default FeaturedShelf;
+export default HeroShelf;
