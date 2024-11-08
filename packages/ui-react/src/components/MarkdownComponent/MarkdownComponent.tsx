@@ -5,19 +5,21 @@ import classNames from 'classnames';
 
 import styles from './MarkdownComponent.module.scss';
 
-const renderer = {
-  link(href: string, title: string, text: string) {
-    const externalLink = /^(https?|www\.|\/\/)/.test(href || '');
-    const targetAttr = externalLink ? 'target="_blank"' : undefined;
-    const relAttr = externalLink ? 'rel="noopener"' : undefined;
-    const titleAttr = title ? `title="${title}"` : undefined;
-    const attributes = [targetAttr, relAttr, titleAttr].filter(Boolean);
+const renderer = new marked.Renderer();
+renderer.link = (href: string, title: string, text: string) => {
+  const externalLink = /^(https?|www\.|\/\/)/.test(href || '');
+  const targetAttr = externalLink ? 'target="_blank"' : undefined;
+  const relAttr = externalLink ? 'rel="noopener"' : undefined;
+  const titleAttr = title ? `title="${title}"` : undefined;
+  const attributes = [targetAttr, relAttr, titleAttr].filter(Boolean);
 
-    return `<a href="${href}" ${attributes.join(' ')}>${text}</a>`;
-  },
+  return `<a href="${href}" ${attributes.join(' ')}>${text}</a>`;
 };
 
-marked.use({ renderer });
+// remove images and GitHub flavoured markdown when rendering inline
+const inlineRenderer = new marked.Renderer({ gfm: false });
+inlineRenderer.image = () => '';
+inlineRenderer.link = renderer.link;
 
 type Props = {
   markdownString: string;
@@ -28,13 +30,15 @@ type Props = {
 
 const MarkdownComponent: React.FC<Props> = ({ markdownString, className, tag = 'div', inline = false }) => {
   const sanitizedHTMLString = useMemo(() => {
-    const parseDelegate = inline ? marked.parseInline : marked.parse;
-    const dirtyHTMLString = parseDelegate(markdownString);
+    const dirtyHTMLString = inline ? marked.parseInline(markdownString, { renderer: inlineRenderer }) : marked.parse(markdownString, { renderer });
 
     return DOMPurify.sanitize(dirtyHTMLString, { ADD_ATTR: ['target'] });
   }, [inline, markdownString]);
 
-  return React.createElement(tag, { dangerouslySetInnerHTML: { __html: sanitizedHTMLString }, className: classNames(styles.markdown, className) });
+  return React.createElement(tag, {
+    dangerouslySetInnerHTML: { __html: sanitizedHTMLString },
+    className: classNames(styles.markdown, inline && styles.inline, className),
+  });
 };
 
 export default MarkdownComponent;

@@ -12,10 +12,17 @@
   --body-font-weight-regular: #{theme.$body-font-weight-regular};
   --body-font-weight-bold: #{theme.$body-font-weight-bold};
   --body-color: #{theme.$body-color};
+  --body-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.14), 0 3px 4px rgba(0, 0, 0, 0.12), 0 1px 5px rgba(0, 0, 0, 0.2);
 
   --card-color: #{theme.$card-color};
   --card-border-hover-color: #{theme.$card-border-hover-color};
   --card-tag-bg: #{theme.$card-tag-bg};
+
+  // Safe area insets, can be overridden for specific platforms
+  --safe-area-top: 0;
+  --safe-area-right: 0;
+  --safe-area-bottom: 0;
+  --safe-area-left: 0;
 }
 
 @include accessibility.globalClassNames;

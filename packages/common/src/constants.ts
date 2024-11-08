@@ -52,6 +52,15 @@ export const PLAYLIST_CONTENT_TYPE = {
   live: 'live',
 } as const;
 
+// Some predefined shelf types of JW
+export const SHELF_LAYOUT_TYPE = {
+  // Fullwidth hero, only available as the first shelf (index === 0)
+  hero: 'hero',
+  // Larger cards
+  featured: 'featured',
+  // By default: standard size cards (default)
+} as const;
+
 // OTT shared player
 export const OTT_GLOBAL_PLAYER_ID = 'M4qoGvUk';
 
