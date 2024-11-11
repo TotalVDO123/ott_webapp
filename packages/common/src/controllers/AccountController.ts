@@ -190,9 +190,9 @@ export default class AccountController {
     await this.refreshEntitlements?.();
   };
 
-  register = async (email: string, password: string, referrer: string, consentsValues: CustomerConsent[]) => {
+  register = async (email: string, password: string, referrer: string, consentsValues: CustomerConsent[], captchaValue?: string) => {
     try {
-      const response = await this.accountService.register({ email, password, consents: consentsValues, referrer });
+      const response = await this.accountService.register({ email, password, consents: consentsValues, referrer, captchaValue });
 
       if (response) {
         const { user, customerConsents } = response;

@@ -25,6 +25,10 @@ import styles from './Layout.module.scss';
 
 const Layout = () => {
   const { t } = useTranslation('common');
+  const { i18n } = useTranslation();
+
+  // Determine currently selected language
+  const language = i18n.language;
 
   const { config } = useConfigStore(
     ({ config, accessModel, supportedLanguages }) => ({
@@ -48,8 +52,8 @@ const Layout = () => {
 
   const navItems = [
     { label: t('home'), to: '/' },
-    ...menu.map(({ label, contentId, type }) => ({
-      label,
+    ...menu.map(({ label, contentId, type, custom }) => ({
+      label: custom?.[`label-${language}`] || label,
       to: determinePath({ type, contentId, label }),
     })),
   ];

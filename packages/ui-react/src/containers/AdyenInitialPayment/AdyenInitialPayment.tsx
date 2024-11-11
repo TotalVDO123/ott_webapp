@@ -18,9 +18,10 @@ type Props = {
   type: AdyenPaymentMethodType;
   paymentSuccessUrl: string;
   orderId?: number;
+  getCaptchaValue: () => Promise<string | undefined>;
 };
 
-export default function AdyenInitialPayment({ setUpdatingOrder, type, paymentSuccessUrl, orderId }: Props) {
+export default function AdyenInitialPayment({ setUpdatingOrder, type, paymentSuccessUrl, orderId, getCaptchaValue }: Props) {
   const accountController = getModule(AccountController);
   const checkoutController = getModule(CheckoutController);
   const { t } = useTranslation(['account', 'error']);
@@ -65,11 +66,13 @@ export default function AdyenInitialPayment({ setUpdatingOrder, type, paymentSuc
           return;
         }
 
+        const captchaValue = await getCaptchaValue();
+
         const returnUrl = createURL(window.location.href, {
           u: 'finalize-payment',
           orderId: orderId,
         });
-        const result = await checkoutController.initialAdyenPayment(state.data.paymentMethod, returnUrl);
+        const result = await checkoutController.initialAdyenPayment(state.data.paymentMethod, returnUrl, captchaValue);
 
         if ('action' in result) {
           handleAction(result.action);
@@ -86,7 +89,7 @@ export default function AdyenInitialPayment({ setUpdatingOrder, type, paymentSuc
 
       setUpdatingOrder(false);
     },
-    [setUpdatingOrder, orderId, checkoutController, accountController, announce, t, navigate, paymentSuccessUrl],
+    [setUpdatingOrder, orderId, checkoutController, accountController, announce, t, navigate, paymentSuccessUrl, getCaptchaValue],
   );
 
   const adyenConfiguration: CoreOptions = useMemo(

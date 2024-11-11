@@ -51,8 +51,12 @@ export type Content = {
   contentId?: string;
   title?: string;
   type: AppShelfType;
+  /**
+   * @deprecated Use the custom shelf property `layoutType = 'hero' | 'featured' | undefined` instead
+   */
   featured?: boolean;
   backgroundColor?: string | null;
+  custom?: Record<string, string>;
 };
 
 export type Menu = {
@@ -60,6 +64,7 @@ export type Menu = {
   contentId: string;
   type?: AppMenuType;
   filterTags?: string;
+  custom?: Record<string, string>;
 };
 
 export type Styling = {
