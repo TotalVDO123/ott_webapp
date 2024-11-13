@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, type CSSProperties, type TransitionEventHandler } from 'react';
+import React, { useCallback, useEffect, useRef, useState, type CSSProperties, type TransitionEventHandler } from 'react';
 import type { Playlist } from '@jwp/ott-common/types/playlist';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -27,9 +27,13 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
   const { t } = useTranslation('common');
   const breakpoint = useBreakpoint();
   const isMobile = breakpoint <= Breakpoint.sm;
-  const scrolledDown = useScrolledDown(500, 200);
+  const posterRef = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
   const [animationPhase, setAnimationPhase] = useState<'init' | 'start' | 'end' | null>(null);
+
+  useScrolledDown(50, isMobile ? 200 : 700, (progress: number) => {
+    if (posterRef.current) posterRef.current.style.opacity = `${Math.max(1 - progress, isMobile ? 0 : 0.1)}`;
+  });
 
   const slideTo = (toIndex: number) => {
     if (animationPhase) return;
@@ -108,7 +112,7 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
 
   return (
     <div className={classNames(styles.shelf)}>
-      <div className={classNames(styles.poster, styles.undimmed, { [styles.dimmed]: scrolledDown })}>
+      <div className={styles.poster} ref={posterRef}>
         <div className={styles.background} id="background">
           <HeroShelfBackground
             item={leftItem}
@@ -128,7 +132,7 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
         <div className={styles.fade2} />
       </div>
       <button
-        className={classNames(styles.chevron, styles.chevronLeft, styles.undimmed, { [styles.dimmed]: scrolledDown })}
+        className={classNames(styles.chevron, styles.chevronLeft)}
         aria-label={t('slide_previous')}
         disabled={!leftItem}
         onClick={leftItem ? slideLeft : undefined}
@@ -153,21 +157,14 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
         </>
       )}
       <button
-        className={classNames(styles.chevron, styles.chevronRight, styles.undimmed, { [styles.dimmed]: scrolledDown })}
+        className={classNames(styles.chevron, styles.chevronRight)}
         aria-label={t('slide_next')}
         disabled={!rightItem}
         onClick={rightItem ? slideRight : undefined}
       >
         <Icon icon={ChevronRight} />
       </button>
-      <HeroShelfPagination
-        className={scrolledDown ? styles.dimmed : undefined}
-        playlist={playlist}
-        index={index}
-        setIndex={slideTo}
-        nextIndex={nextIndex}
-        direction={direction || false}
-      />
+      <HeroShelfPagination playlist={playlist} index={index} setIndex={slideTo} nextIndex={nextIndex} direction={direction || false} />
     </div>
   );
 };

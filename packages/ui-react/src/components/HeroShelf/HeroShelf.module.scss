@@ -49,6 +49,7 @@ $mobile-landscape-height: 100vh;
   @include responsive.mobile-only() {
     height: calc($mobile-height - variables.$header-height - var(--safe-area-top, 0));
     min-height: calc($mobile-min-height - variables.$header-height);
+    margin-top: var(--safe-area-top, 0);
   }
 
   @include responsive.mobile-only-landscape() {
@@ -97,6 +98,7 @@ $mobile-landscape-height: 100vh;
   height: 56.25vw;
   max-height: 700px;
   background-color: var(--hero-shelf-background-color);
+  transition: opacity ease-out 0.3s;
 
   @include responsive.tablet-only() {
     height: $tablet-height;
@@ -106,20 +108,12 @@ $mobile-landscape-height: 100vh;
   @include responsive.mobile-only() {
     height: $mobile-height;
     min-height: $mobile-min-height;
+    margin-top: var(--safe-area-top, 0);
   }
 
   @include responsive.mobile-only-landscape() {
     height: $mobile-landscape-height;
   }
-}
-
-.undimmed {
-  opacity: 1;
-  transition: opacity ease-out 0.3s;
-}
-
-.dimmed {
-  opacity: 0.01;
 }
 
 .background {
@@ -145,13 +139,13 @@ $mobile-landscape-height: 100vh;
   }
 
   @include responsive.tablet-small-only() {
-    -webkit-mask-image: linear-gradient(190deg, black, rgba(0, 0, 0, 0.8) 40%, transparent 90%);
-    mask-image: linear-gradient(190deg, black, rgba(0, 0, 0, 0.8) 40%, transparent 90%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0, 0, 0, 1) 30%, transparent 90%);
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0, 0, 0, 1) 30%, transparent 90%);
   }
 
   @include responsive.mobile-only() {
-    -webkit-mask-image: linear-gradient(190deg, black, rgba(0, 0, 0, 0.8) 40%, transparent 85%);
-    mask-image: linear-gradient(190deg, black, rgba(0, 0, 0, 0.8) 40%, transparent 85%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0, 0, 0, 1) 30%, transparent 75%);
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0, 0, 0, 1) 30%, transparent 75%);
   }
 }
 
