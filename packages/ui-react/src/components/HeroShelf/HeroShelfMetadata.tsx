@@ -28,12 +28,11 @@ const HeroShelfMetadata = ({
   playlistId: string | undefined;
   style: CSSProperties;
   hidden?: boolean;
-  isMobile?: boolean;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const breakpoint = useBreakpoint();
-  const isMobile = breakpoint <= Breakpoint.sm;
+  const isMobile = breakpoint < Breakpoint.sm;
 
   if (!item) return null;
 

@@ -32,7 +32,7 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
   const [animationPhase, setAnimationPhase] = useState<'init' | 'start' | 'end' | null>(null);
   const [isSwipeAnimation, setIsSwipeAnimation] = useState(false);
 
-  useScrolledDown(50, isMobile ? 200 : 700, (progress: number) => {
+  useScrolledDown(50, isMobile ? 200 : 600, (progress: number) => {
     if (posterRef.current) posterRef.current.style.opacity = `${Math.max(1 - progress, isMobile ? 0 : 0.1)}`;
   });
 
@@ -182,14 +182,7 @@ const HeroShelf = ({ playlist, loading = false, error = null }: Props) => {
           />
         )}
         renderItem={() => (
-          <HeroShelfMetadata
-            loading={loading}
-            item={renderedItem}
-            playlistId={playlist.feedid}
-            isMobile={isMobile}
-            key={renderedItem?.mediaid}
-            style={getMetadataStyle()}
-          />
+          <HeroShelfMetadata loading={loading} item={renderedItem} playlistId={playlist.feedid} key={renderedItem?.mediaid} style={getMetadataStyle()} />
         )}
         renderRightItem={(isSwiping: boolean) => (
           <HeroShelfMetadata

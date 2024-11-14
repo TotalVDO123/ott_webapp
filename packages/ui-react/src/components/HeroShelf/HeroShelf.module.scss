@@ -98,7 +98,6 @@ $mobile-landscape-height: 100vh;
   height: 56.25vw;
   max-height: 700px;
   background-color: var(--hero-shelf-background-color);
-  transition: opacity ease-out 0.3s;
 
   @include responsive.tablet-only() {
     height: $tablet-height;
@@ -196,8 +195,8 @@ $mobile-landscape-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 46%;
-  max-width: 46%;
+  min-width: 50%;
+  max-width: 50%;
   padding-left: calc(variables.$base-spacing * 4);
 
   > h2 {
@@ -233,13 +232,23 @@ $mobile-landscape-height: 100vh;
   }
 
   @include responsive.mobile-only-landscape() {
-    max-width: 70%;
     min-height: initial;
     padding: 0 calc(variables.$base-spacing * 3) calc(variables.$base-spacing * 3) calc(variables.$base-spacing * 3);
+
+    > h2 {
+      font-size: 24px;
+    }
+    > div {
+      font-size: 14px;
+    }
   }
 
   @include responsive.tablet-small-only() {
     padding: 0 calc(variables.$base-spacing * 3) calc(variables.$base-spacing * 3) calc(variables.$base-spacing * 3);
+
+    > div > button {
+      width: auto !important; // Override StartWatchingButton fullWidth prop
+    }
   }
 
   @include responsive.mobile-only() {
