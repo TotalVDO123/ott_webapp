@@ -151,6 +151,12 @@ export type GetOfferPayload = {
   offerId: string;
 };
 
+export type ChooseOfferPayload = {
+  offer: Offer;
+  successUrl: string;
+  cancelUrl: string;
+};
+
 export type GetOffersPayload = {
   offerIds: string[] | number[];
 };
@@ -368,6 +374,7 @@ export type FinalizeAdyenPaymentDetailsPayload = Omit<FinalizeAdyenPaymentPayloa
 export type FinalizeAdyenPaymentDetailsResponse = PaymentDetail;
 
 export type GetOffers = PromiseRequest<GetOffersPayload, Offer[]>;
+export type ChooseOffer = PromiseRequest<ChooseOfferPayload, string | void>;
 export type GetOffer = EnvironmentServiceRequest<GetOfferPayload, Offer>;
 export type CreateOrder = EnvironmentServiceRequest<CreateOrderArgs, CreateOrderResponse>;
 export type GetOrder = EnvironmentServiceRequest<GetOrderPayload, GetOrderResponse>;
@@ -388,4 +395,5 @@ export type DeletePaymentMethod = EnvironmentServiceRequest<DeletePaymentMethodP
 export type AddAdyenPaymentDetails = EnvironmentServiceRequest<AddAdyenPaymentDetailsPayload, AddAdyenPaymentDetailsResponse>;
 export type FinalizeAdyenPaymentDetails = EnvironmentServiceRequest<FinalizeAdyenPaymentDetailsPayload, FinalizeAdyenPaymentDetailsResponse>;
 export type GetDirectPostCardPayment = (cardPaymentPayload: CardPaymentData, order: Order, referrer: string, returnUrl: string) => Promise<boolean>;
+export type GenerateBillingPortalURL = (returnUrl: string) => Promise<string | null>;
 export type GetEntitledPlans = PromiseRequest<{ siteId: string }, PlansResponse>;

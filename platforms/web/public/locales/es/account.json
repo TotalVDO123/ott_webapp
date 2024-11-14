@@ -55,6 +55,8 @@
     "waiting_for_payment": "Esperando el pago",
     "welcome_description": "Gracias por suscribirte a {{siteName}}. Disfruta de todo nuestro contenido.",
     "welcome_title": "Bienvenido/a a {{siteName}}",
+    "payment_successful_title": "Pago exitoso",
+    "payment_successful_description": "Gracias por tu suscripción, disfruta de todo nuestro contenido.",
     "yearly": "Suscripción anual"
   },
   "choose_offer": {

@@ -282,35 +282,34 @@ export type JWPSubscription = {
   unsubscribe_url: string;
 };
 
+type CommonJWPListResponse<Property extends string, ItemType> = {
+  page: number;
+  page_length: number;
+  total: number;
+} & {
+  [key in Property]: ItemType[] | null;
+};
+
+export type JWPSubscriptionPlan = {
+  id: string;
+  metadata: {
+    name: string;
+    access_model: 'free' | 'freeauth' | 'authvod' | 'svod';
+  };
+  original_id: number;
+  access_plan: {
+    exp: number;
+  };
+};
+
+export type JWPSubscriptionPlanList = CommonJWPListResponse<'plans', JWPSubscriptionPlan>;
+
 export type GetSubscriptionsResponse = {
   total: number;
   page: number;
   offset: number;
   limit: number;
   collection: JWPSubscription[];
-};
-
-export type PaymentHistory = {
-  merchant_id: number;
-  consumer_id: number;
-  gateway_id: number;
-  transaction_token: string;
-  payment_tool_token: string;
-  trx_token: string;
-  payment_method_name: string;
-  action_type: string;
-  item_access_id: number;
-  item_id: number;
-  item_type: string;
-  item_title: string;
-  charged_amount: number;
-  currency_iso: string;
-  note: string;
-  created_at: number;
-};
-export type GetPaymentHistoryResponse = {
-  collection: PaymentHistory[];
-  total: number;
 };
 
 export type Card = {

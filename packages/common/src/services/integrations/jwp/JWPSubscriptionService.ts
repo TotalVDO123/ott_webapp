@@ -1,4 +1,3 @@
-import i18next from 'i18next';
 import { inject, injectable, named } from 'inversify';
 
 import type {
@@ -8,26 +7,20 @@ import type {
   GetAllTransactions,
   PaymentDetail,
   Subscription,
-  Transaction,
   UpdateCardDetails,
   UpdateSubscription,
 } from '../../../../types/subscription';
 import SubscriptionService from '../SubscriptionService';
-import AccountService from '../AccountService';
 
 import type {
-  GetItemAccessResponse,
   GetSubscriptionsResponse,
-  GetPaymentHistoryResponse,
   GetDefaultCardResponse,
   CancelSubscriptionResponse,
   ChangeSubscriptionPlanResponse,
   SetDefaultCardResponse,
   Card,
-  PaymentHistory,
   JWPSubscription,
 } from './types';
-import type JWPAccountService from './JWPAccountService';
 import JWPAPIService from './JWPAPIService';
 
 interface SubscriptionDetails extends JWPSubscription {
@@ -47,13 +40,11 @@ interface SubscriptionDetails extends JWPSubscription {
 
 @injectable()
 export default class JWPSubscriptionService extends SubscriptionService {
-  protected readonly accountService: JWPAccountService;
   protected readonly apiService: JWPAPIService;
 
-  constructor(@named('JWP') accountService: AccountService, @inject(JWPAPIService) apiService: JWPAPIService) {
+  constructor(@named('JWP') @inject(JWPAPIService) apiService: JWPAPIService) {
     super();
 
-    this.accountService = accountService as JWPAccountService;
     this.apiService = apiService;
   }
 
@@ -82,34 +73,6 @@ export default class JWPSubscriptionService extends SubscriptionService {
       active: true,
       currency,
     } as PaymentDetail;
-  };
-
-  private formatTransaction = (transaction: PaymentHistory): Transaction => {
-    const purchasedAmount = transaction?.charged_amount?.toString() || '0';
-
-    return {
-      transactionId: transaction.transaction_token || i18next.t('user:payment.access_granted'),
-      transactionDate: transaction.created_at,
-      trxToken: transaction.trx_token,
-      offerId: transaction.item_id?.toString() || i18next.t('user:payment.no_transaction'),
-      offerType: transaction.item_type || '',
-      offerTitle: transaction?.item_title || '',
-      offerPeriod: '',
-      transactionPriceExclTax: purchasedAmount,
-      transactionCurrency: transaction.currency_iso || 'EUR',
-      discountedOfferPrice: purchasedAmount,
-      offerCurrency: transaction.currency_iso || 'EUR',
-      offerPriceExclTax: purchasedAmount,
-      applicableTax: '0',
-      transactionPriceInclTax: purchasedAmount,
-      customerId: transaction.consumer_id?.toString(),
-      customerEmail: '',
-      customerLocale: '',
-      customerCountry: 'en',
-      customerIpCountry: '',
-      customerCurrency: '',
-      paymentMethod: transaction.payment_method_name || i18next.t('user:payment.access_granted'),
-    };
   };
 
   private formatActiveSubscription = (subscription: SubscriptionDetails, expiresAt: number) => {
@@ -150,77 +113,41 @@ export default class JWPSubscriptionService extends SubscriptionService {
     } as Subscription;
   };
 
-  private formatGrantedSubscription = (subscription: GetItemAccessResponse) => {
-    return {
-      subscriptionId: '',
-      offerId: subscription.item.id.toString(),
-      status: 'active',
-      expiresAt: subscription.expires_at,
-      nextPaymentAt: subscription.expires_at,
-      nextPaymentPrice: 0,
-      nextPaymentCurrency: 'EUR',
-      paymentGateway: 'none',
-      paymentMethod: i18next.t('user:payment.access_granted'),
-      offerTitle: subscription.item.title,
-      period: 'granted',
-      totalPrice: 0,
-      unsubscribeUrl: '',
-      pendingSwitchId: null,
-    } as Subscription;
-  };
-
-  getActiveSubscription: GetActiveSubscription = async () => {
-    const assetId = this.accountService.assetId;
-
-    if (assetId === null) throw new Error("Couldn't fetch active subscription, there is no assetId configured");
+  getActiveSubscription: GetActiveSubscription = async ({ entitledPlan }) => {
+    if (!entitledPlan) {
+      return null;
+    }
 
     try {
-      const hasAccess = await this.apiService.get<GetItemAccessResponse>(`/items/${assetId}/access`, {
-        withAuthentication: true,
-      });
+      const { collection: subscriptions } = await this.apiService.get<GetSubscriptionsResponse>(
+        '/subscriptions',
+        {
+          withAuthentication: true,
+          contentType: 'json',
+        },
+        {
+          limit: 15,
+          page: 0,
+        },
+      );
 
-      if (hasAccess) {
-        const data = await this.apiService.get<GetSubscriptionsResponse>(
-          '/subscriptions',
-          {
-            withAuthentication: true,
-            contentType: 'json',
-          },
-          {
-            limit: 15,
-            page: 0,
-          },
-        );
+      const activeSubscription = subscriptions.find((subscription: SubscriptionDetails) => subscription.item_id === entitledPlan.original_id);
 
-        const activeSubscription = data.collection.find((subscription: SubscriptionDetails) => subscription.item_id === assetId);
-
-        if (activeSubscription) {
-          return this.formatActiveSubscription(activeSubscription, hasAccess?.expires_at);
-        }
-
-        return this.formatGrantedSubscription(hasAccess);
+      if (activeSubscription) {
+        return this.formatActiveSubscription(activeSubscription, entitledPlan.exp);
       }
+
       return null;
-    } catch (error: unknown) {
+    } catch (error) {
       if (JWPAPIService.isCommonError(error) && error.response.data.code === 402) {
         return null;
       }
+
       throw new Error('Unable to fetch customer subscriptions.');
     }
   };
 
-  getAllTransactions: GetAllTransactions = async () => {
-    try {
-      const data = await this.apiService.get<GetPaymentHistoryResponse>('/v2/accounting/payment-history', {
-        withAuthentication: true,
-        contentType: 'json',
-      });
-
-      return data?.collection?.map((transaction) => this.formatTransaction(transaction));
-    } catch {
-      throw new Error('Failed to get transactions');
-    }
-  };
+  getAllTransactions: GetAllTransactions = async () => null;
 
   getActivePayment: GetActivePayment = async () => {
     try {

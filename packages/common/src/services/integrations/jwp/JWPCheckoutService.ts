@@ -3,8 +3,10 @@ import { inject, injectable } from 'inversify';
 import { isSVODOffer } from '../../../utils/offers';
 import type {
   CardPaymentData,
+  ChooseOffer,
   CreateOrder,
   CreateOrderArgs,
+  GenerateBillingPortalURL,
   GetEntitlements,
   GetEntitlementsResponse,
   GetOffers,
@@ -20,16 +22,11 @@ import type {
 } from '../../../../types/checkout';
 import CheckoutService from '../CheckoutService';
 import type { ServiceResponse } from '../../../../types/service';
+import type { Price } from '../../../../types/payment';
+import PaymentService from '../../PaymentService';
+import { useConfigStore } from '../../../../../common/src/stores/ConfigStore';
 
-import type {
-  CommonResponse,
-  GetAccessFeesResponse,
-  AccessFee,
-  MerchantPaymentMethod,
-  GeneratePayPalParameters,
-  VoucherDiscountPrice,
-  GetItemAccessResponse,
-} from './types';
+import type { CommonResponse, MerchantPaymentMethod, GeneratePayPalParameters, VoucherDiscountPrice, GetItemAccessResponse } from './types';
 import JWPAPIService from './JWPAPIService';
 
 @injectable()
@@ -37,11 +34,19 @@ export default class JWPCheckoutService extends CheckoutService {
   protected readonly cardPaymentProvider = 'stripe';
 
   protected readonly apiService;
+  protected readonly paymentService;
 
-  constructor(@inject(JWPAPIService) apiService: JWPAPIService) {
+  constructor(@inject(JWPAPIService) apiService: JWPAPIService, @inject(PaymentService) paymentService: PaymentService) {
     super();
     this.apiService = apiService;
+    this.paymentService = paymentService;
+    this.initializePaymentService();
   }
+
+  initializePaymentService = async () => {
+    const { siteId } = useConfigStore.getState().config;
+    this.paymentService.initialize(siteId);
+  };
 
   private formatPaymentMethod = (method: MerchantPaymentMethod, cardPaymentProvider: string): PaymentMethod => {
     return {
@@ -63,16 +68,6 @@ export default class JWPCheckoutService extends CheckoutService {
   };
 
   /**
-   * Format a (Cleeng like) offer id for the given access fee (pricing option). For JWP, we need the asset id and
-   * access fee id in some cases.
-   */
-  private formatOfferId(offer: AccessFee) {
-    const ppvOffers = ['ppv', 'ppv_custom'];
-
-    return ppvOffers.includes(offer.access_type.name) ? `C${offer.item_id}_${offer.id}` : `S${offer.item_id}_${offer.id}`;
-  }
-
-  /**
    * Parse the given offer id and extract the asset id.
    * The offer id might be the Cleeng format (`S<assetId>_<pricingOptionId>`) or the asset id as string.
    */
@@ -89,21 +84,6 @@ export default class JWPCheckoutService extends CheckoutService {
 
     return offerId;
   }
-
-  private formatOffer = (offer: AccessFee): Offer => {
-    return {
-      id: offer.id,
-      offerId: this.formatOfferId(offer),
-      offerCurrency: offer.currency,
-      customerPriceInclTax: offer.amount,
-      customerCurrency: offer.currency,
-      offerTitle: offer.description,
-      active: true,
-      period: offer.access_type.period === 'month' && offer.access_type.quantity === 12 ? 'year' : offer.access_type.period,
-      freePeriods: offer.trial_period ? 1 : 0,
-      planSwitchEnabled: offer.item.plan_switch_enabled ?? false,
-    } as Offer;
-  };
 
   private formatOrder = (payload: CreateOrderArgs): Order => {
     return {
@@ -136,20 +116,40 @@ export default class JWPCheckoutService extends CheckoutService {
     };
   };
 
-  getOffers: GetOffers = async (payload) => {
-    const offers = await Promise.all(
-      payload.offerIds.map(async (offerId) => {
-        try {
-          const data = await this.apiService.get<GetAccessFeesResponse>(`/v2/items/${this.parseOfferId(offerId)}/access-fees`);
+  chooseOffer: ChooseOffer = async ({ offer: { offerId }, successUrl, cancelUrl }) => {
+    try {
+      const { url } = await this.paymentService.generateCheckoutSessionUrl(offerId, successUrl, cancelUrl);
+      return url || undefined;
+    } catch (error) {
+      throw new Error('Failed to get checkout URL');
+    }
+  };
 
-          return data?.map((offer) => this.formatOffer(offer));
-        } catch {
-          throw new Error('Failed to get offers');
-        }
-      }),
-    );
+  private formatPriceToOffer = (price: Price & { name: string }, i: number): Offer =>
+    ({
+      id: i,
+      offerId: price.store_price_id,
+      offerCurrency: price.default_currency,
+      customerPriceInclTax: (price.currencies[price.default_currency].amount || 0) / 100,
+      customerCurrency: price.default_currency,
+      offerTitle: price.name,
+      active: true,
+      period: price.recurrence === 'one_time' ? 'one_time' : price.recurrence.interval,
+      freePeriods: price.recurrence === 'one_time' ? 0 : price.recurrence.trial_period_duration ?? 0,
+      planSwitchEnabled: false,
+    } as unknown as Offer);
 
-    return offers.flat();
+  getOffers: GetOffers = async () => {
+    try {
+      const products = await this.paymentService.getProducts();
+      const offers = products.flatMap((product, i) =>
+        product.prices.map((price, j) => this.formatPriceToOffer({ ...price, name: product.name }, parseInt(`${i + 1}${j}`))),
+      );
+
+      return offers;
+    } catch (error) {
+      throw new Error('Failed to get offers');
+    }
   };
 
   getPaymentMethods: GetPaymentMethods = async () => {
@@ -300,6 +300,15 @@ export default class JWPCheckoutService extends CheckoutService {
       return true;
     } catch {
       throw new Error('Failed to make payment');
+    }
+  };
+
+  generateBillingPortalUrl: GenerateBillingPortalURL = async (returnUrl) => {
+    try {
+      const { url } = await this.paymentService.generateBillingPortalUrl(returnUrl);
+      return url;
+    } catch (error) {
+      throw new Error('Failed to generate billing portal URL');
     }
   };
 

@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import type {
   AddAdyenPaymentDetails,
+  ChooseOffer,
   CreateOrder,
   CreateOrderPayload,
   DeletePaymentMethod,
@@ -41,6 +42,8 @@ export default class CleengCheckoutService extends CheckoutService {
     this.getCustomerIP = getCustomerIP;
   }
 
+  initializePaymentService = async () => {};
+
   getOffers: GetOffers = async (payload) => {
     return await Promise.all(
       payload.offerIds.map(async (offerId) => {
@@ -54,6 +57,8 @@ export default class CleengCheckoutService extends CheckoutService {
       }),
     );
   };
+
+  chooseOffer: ChooseOffer = async () => {};
 
   getOffer: GetOffer = async (payload) => {
     const customerIP = await this.getCustomerIP();
@@ -184,4 +189,6 @@ export default class CleengCheckoutService extends CheckoutService {
     this.cleengService.post('/connectors/adyen/payment-details/finalize', JSON.stringify(payload), { authenticate: true });
 
   directPostCardPayment = async () => false;
+
+  generateBillingPortalUrl: undefined;
 }

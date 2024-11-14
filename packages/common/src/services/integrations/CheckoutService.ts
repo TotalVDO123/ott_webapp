@@ -1,5 +1,6 @@
 import type {
   AddAdyenPaymentDetails,
+  ChooseOffer,
   CreateOrder,
   DeletePaymentMethod,
   FinalizeAdyenPaymentDetails,
@@ -19,9 +20,12 @@ import type {
   SwitchSubscription,
   UpdateOrder,
   UpdatePaymentWithPayPal,
+  GenerateBillingPortalURL,
 } from '../../../types/checkout';
 
 export default abstract class CheckoutService {
+  abstract initializePaymentService: () => void;
+
   abstract getOffers: GetOffers;
 
   abstract createOrder: CreateOrder;
@@ -37,6 +41,8 @@ export default abstract class CheckoutService {
   abstract getEntitlements: GetEntitlements;
 
   abstract directPostCardPayment: GetDirectPostCardPayment;
+
+  abstract chooseOffer: ChooseOffer;
 
   abstract getOffer?: GetOffer;
 
@@ -61,4 +67,6 @@ export default abstract class CheckoutService {
   abstract addAdyenPaymentDetails?: AddAdyenPaymentDetails;
 
   abstract finalizeAdyenPaymentDetails?: FinalizeAdyenPaymentDetails;
+
+  abstract generateBillingPortalUrl?: GenerateBillingPortalURL;
 }

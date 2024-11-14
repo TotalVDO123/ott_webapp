@@ -8,7 +8,8 @@ import AccountCircle from '@jwp/ott-theme/assets/icons/account_circle.svg?react'
 import Favorite from '@jwp/ott-theme/assets/icons/favorite.svg?react';
 import BalanceWallet from '@jwp/ott-theme/assets/icons/balance_wallet.svg?react';
 import Exit from '@jwp/ott-theme/assets/icons/exit.svg?react';
-import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS } from '@jwp/ott-common/src/paths';
+import { PATH_USER_ACCOUNT, PATH_USER_FAVORITES, PATH_USER_PAYMENTS, PATH_USER_SUBSCRIPTIONS } from '@jwp/ott-common/src/paths';
+import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 
 import styles from '../UserMenu/UserMenu.module.scss'; // TODO inherit styling
 import MenuButton from '../MenuButton/MenuButton';
@@ -28,6 +29,8 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
   const navigate = useNavigate();
   const accountController = getModule(AccountController);
   const tabIndex = focusable ? 0 : -1;
+
+  const isAccessBridgeEnabled = useConfigStore((state) => !!state.settings?.apiAccessBridgeUrl);
 
   const onLogout = useCallback(async () => {
     if (onButtonClick) {
@@ -66,13 +69,25 @@ const UserMenuNav = ({ showPaymentItems, small = false, onButtonClick, favorites
             />
           </li>
         )}
-        {showPaymentItems && (
+        {showPaymentItems && !isAccessBridgeEnabled && (
           <li>
             <MenuButton
               small={small}
               onClick={onButtonClick}
               to={PATH_USER_PAYMENTS}
               label={t('nav.payments')}
+              startIcon={<Icon icon={BalanceWallet} />}
+              tabIndex={tabIndex}
+            />
+          </li>
+        )}
+        {isAccessBridgeEnabled && (
+          <li>
+            <MenuButton
+              small={small}
+              onClick={onButtonClick}
+              to={PATH_USER_SUBSCRIPTIONS}
+              label={t('nav.subscription')}
               startIcon={<Icon icon={BalanceWallet} />}
               tabIndex={tabIndex}
             />

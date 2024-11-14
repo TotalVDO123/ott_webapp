@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import classNames from 'classnames';
 import { shallow } from '@jwp/ott-common/src/utils/compare';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
@@ -9,6 +10,7 @@ import useQueryParam from '@jwp/ott-ui-react/src/hooks/useQueryParam';
 
 import LoadingOverlay from '../../components/LoadingOverlay/LoadingOverlay';
 import Welcome from '../../components/Welcome/Welcome';
+import PaymentSuccessful from '../../components/PaymentSuccessful/PaymentSuccessful';
 import PaymentFailed from '../../components/PaymentFailed/PaymentFailed';
 import Dialog from '../../components/Dialog/Dialog';
 import DeleteAccountModal from '../../components/DeleteAccountModal/DeleteAccountModal';
@@ -47,6 +49,7 @@ export type AccountModals = {
   'payment-error': 'payment-error';
   'payment-cancelled': 'payment-cancelled';
   welcome: 'welcome';
+  'payment-successful': 'payment-successful';
   'reset-password': 'reset-password';
   'forgot-password': 'forgot-password';
   'add-password': 'add-password';
@@ -133,6 +136,8 @@ const AccountModal = () => {
         return <PaymentFailed type="cancelled" message={message} onCloseButtonClick={closeHandler} />;
       case 'welcome':
         return <Welcome onCloseButtonClick={closeHandler} onCountdownCompleted={closeHandler} siteName={siteName} />;
+      case 'payment-successful':
+        return <PaymentSuccessful onCloseButtonClick={closeHandler} siteName={siteName} />;
       case 'reset-password':
         return <ResetPassword type="reset" />;
       case 'forgot-password':
@@ -164,11 +169,12 @@ const AccountModal = () => {
 
   const shouldShowBanner = !['delete-account', 'delete-account-confirmation', 'edit-card', 'warning-account-deletion'].includes(view ?? '');
   const dialogSize = ['delete-account-confirmation'].includes(view ?? '') ? 'large' : 'small';
+  const bannerSize = ['payment-cancelled', 'welcome'].includes(view ?? '') ? classNames(styles.banner, styles.small) : styles.banner;
 
   return (
     <Dialog size={dialogSize} open={!!viewParam} onClose={closeHandler}>
       {shouldShowBanner && banner && (
-        <div className={styles.banner}>
+        <div className={bannerSize}>
           <img src={banner} alt="" />
         </div>
       )}

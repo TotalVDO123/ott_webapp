@@ -2,18 +2,45 @@
 
 exports[`<PaymentFailed> > renders and matches snapshot 1`] = `
 <div>
-  <div>
-    <h2
-      class="_title_957731"
+  <div
+    class="_topContainer_957731"
+  >
+    <div
+      class="_circleHug_957731"
     >
-      checkout.payment_error
-    </h2>
-    <p
-      class="_message_957731"
+      <svg
+        fill="none"
+        height="65"
+        viewBox="0 0 64 65"
+        width="64"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M32 51.3333V51.36M32 40.6667V14"
+          stroke="#e9a95b"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.6"
+        />
+      </svg>
+    </div>
+    <div
+      class="_innerContainer_957731"
     >
-      Error message
-    </p>
-    <div>
+      <h2
+        class="_title_957731"
+      >
+        checkout.payment_error
+      </h2>
+      <p
+        class="_message_957731"
+      >
+        Error message
+      </p>
+    </div>
+    <div
+      class="_buttonContainer_957731"
+    >
       <button
         class="_button_f8f296 _primary_f8f296 _fullWidth_f8f296 _large_f8f296"
         type="button"

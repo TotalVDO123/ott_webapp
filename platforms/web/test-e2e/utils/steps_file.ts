@@ -234,8 +234,12 @@ const stepsObj = {
       await locator.getByLabel(label).fill(value);
     });
   },
-  waitForLoaderDone: function (this: CodeceptJS.I) {
-    this.dontSeeElement(loaderElement);
+  waitForLoaderDone: function (this: CodeceptJS.I, waitTime?: number) {
+    if (waitTime) {
+      this.waitForInvisible(loaderElement, waitTime);
+    } else {
+      this.dontSeeElement(loaderElement);
+    }
   },
   openSignUpModal: async function (this: CodeceptJS.I) {
     const { isMobile } = await this.openSignInMenu();

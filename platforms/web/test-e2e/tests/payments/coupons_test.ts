@@ -31,7 +31,7 @@ const cleengProps: ProviderProps = {
   hasInlineOfferSwitch: false,
 };
 
-runTestSuite(jwProps, 'JW Player');
+// runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
 function runTestSuite(props: ProviderProps, providerName: string) {

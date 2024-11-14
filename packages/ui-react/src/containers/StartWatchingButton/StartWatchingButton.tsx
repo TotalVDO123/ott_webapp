@@ -8,6 +8,7 @@ import { useAccountStore } from '@jwp/ott-common/src/stores/AccountStore';
 import { modalURLFromLocation } from '@jwp/ott-ui-react/src/utils/location';
 import useBreakpoint, { Breakpoint } from '@jwp/ott-ui-react/src/hooks/useBreakpoint';
 import useEntitlement from '@jwp/ott-hooks-react/src/useEntitlement';
+import useOffers from '@jwp/ott-hooks-react/src/useOffers';
 import Play from '@jwp/ott-theme/assets/icons/play.svg?react';
 import { useConfigStore } from '@jwp/ott-common/src/stores/ConfigStore';
 import { ACCESS_MODEL } from '@jwp/ott-common/src/constants';
@@ -31,13 +32,19 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
   const breakpoint = useBreakpoint();
 
   // account
-  const accessModel = useConfigStore((state) => state.accessModel);
+  const { accessModel, isAccessBridgeEnabled } = useConfigStore(({ accessModel, settings }) => ({
+    accessModel,
+    isAccessBridgeEnabled: !!settings?.apiAccessBridgeUrl,
+  }));
+
   const user = useAccountStore((state) => state.user);
   const isLoggedIn = !!user;
 
   // watch history
   const watchHistoryItem = useWatchHistoryStore((state) => item && state.getItem(item));
   const videoProgress = watchHistoryItem?.progress;
+
+  const { isLoading: isOffersLoading } = useOffers();
 
   // entitlement
   const setRequestedMediaOffers = useCheckoutStore((s) => s.setRequestedMediaOffers);
@@ -63,8 +70,12 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
     if (!isLoggedIn) return navigate(modalURLFromLocation(location, 'create-account'));
     if (hasMediaOffers) return navigate(modalURLFromLocation(location, 'choose-offer'));
 
+    if (isAccessBridgeEnabled) {
+      return navigate('/u/subscription');
+    }
+
     return navigate('/u/payments');
-  }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, onClick]);
+  }, [isEntitled, playUrl, navigate, isLoggedIn, location, hasMediaOffers, isAccessBridgeEnabled, onClick]);
 
   useEffect(() => {
     // set the TVOD mediaOffers in the checkout store
@@ -87,7 +98,8 @@ const StartWatchingButton: React.VFC<Props> = ({ item, playUrl, disabled = false
       startIcon={isEntitled ? <Icon icon={Play} /> : undefined}
       onClick={handleStartWatchingClick}
       fullWidth={breakpoint < Breakpoint.md}
-      disabled={disabled}
+      disabled={disabled || isOffersLoading}
+      busy={isOffersLoading}
     >
       {videoProgress ? (
         <div className={styles.progressRail}>

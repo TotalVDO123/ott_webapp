@@ -76,6 +76,7 @@
     "favorites": "Favoritos",
     "logout": "Cerrar sesión",
     "payments": "Pagos",
+    "subscriptions": "",
     "settings": "Ajustes"
   },
   "payment": {
@@ -122,5 +123,11 @@
     "update_payment_details": "Actualizar detalles de pago",
     "upgrade_plan_success": "Haz cambiado exitosamente el plan de tu suscripción. Puedes comenzar a disfrutar de los beneficios adicionales de inmediato.",
     "weekly_subscription": "Suscripción semanal"
+  },
+  "subscription": {
+    "stripe": {
+      "explanation": "",
+      "goto_provider": ""
+    }
   }
 }

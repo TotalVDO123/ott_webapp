@@ -7,7 +7,7 @@ runTestSuite(testConfigs.jwpAuth, 'JW Player');
 runTestSuite(testConfigs.cleengAuthvod, 'Cleeng');
 
 function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
-  Feature(`register - ${providerName}'`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
+  Feature(`register - ${providerName}`).retry(Number(process.env.TEST_RETRY_COUNT) || 0);
 
   Before(async ({ I }) => {
     I.useConfig(config);
@@ -139,6 +139,8 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('Email', passwordUtils.createRandomEmail());
     I.fillField('Password', passwordUtils.createRandomPassword());
 
+    I.waitForLoaderDone(20);
+
     await I.fillCustomRegistrationFields();
     I.click('Continue');
     I.waitForElement('form[data-testid="personal_details-form"]', longTimeout);
@@ -149,7 +151,7 @@ function runTestSuite(config: typeof testConfigs.svod, providerName: string) {
     I.fillField('lastName', 'Doe');
 
     I.click('Continue');
-    I.waitForLoaderDone();
+    I.waitForLoaderDone(20);
 
     I.see('Welcome to JW OTT Web App (AuthVod)');
   });

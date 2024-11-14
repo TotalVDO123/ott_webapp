@@ -76,6 +76,7 @@
     "favorites": "Favorites",
     "logout": "Log out",
     "payments": "Payments",
+    "subscription": "Subscription",
     "settings": "Settings"
   },
   "payment": {
@@ -86,6 +87,7 @@
     "cancel_subscription": "Cancel subscription",
     "card_number": "Card number",
     "card_number_hidden": "Credit card number ending with {{number}}",
+    "view_plans": "View plans",
     "change_plan": "Change Plan",
     "change_plan_error": "There was a problem saving your subscription plan change.",
     "change_subscription": "Change subscription",
@@ -103,6 +105,7 @@
     "next_billing_date_on": "Next billing date is on {{date}}",
     "no_payment_methods": "No payment methods",
     "no_subscription": "You have no subscription. Complete your subscription to start watching all movies and series.",
+    "no_subscription_new_payment": "You don’t have any active subscriptions yet. Choose a plan to get started.",
     "no_transaction": "No transaction",
     "no_transactions": "No transactions",
     "other": "other",
@@ -121,5 +124,11 @@
     "update_payment_details": "Update payment details",
     "upgrade_plan_success": "You've successfully changed the subscription plan. You can enjoy your additional benefits immediately.",
     "weekly_subscription": "Weekly subscription"
+  },
+  "subscription": {
+    "stripe": {
+      "explanation": "This subscription is managed by Stripe. To update your subscription or billing details, click the button below to access Stripe's Customer Portal.",
+      "goto_provider": "Go to Stripe"
+    }
   }
 }

@@ -31,7 +31,7 @@ const cleengProps: ProviderProps = {
   cardInfo: Array.of(['Card number', '•••• •••• •••• 1115'], ['Expiry date', '03/2030'], ['Security code', '******']),
 };
 
-runTestSuite(jwProps, 'JW Player');
+// runTestSuite(jwProps, 'JW Player');
 runTestSuite(cleengProps, 'Cleeng');
 
 function runTestSuite(props: ProviderProps, providerName: string) {

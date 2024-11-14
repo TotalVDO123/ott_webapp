@@ -10,7 +10,6 @@ import { useConfigStore } from '../stores/ConfigStore';
 import { INTEGRATION_TYPE } from '../modules/types';
 import { getNamedModule } from '../modules/container';
 import { useAccountStore } from '../stores/AccountStore';
-import { ApiError } from '../utils/api';
 import { useAccessStore } from '../stores/AccessStore';
 
 const ACCESS_TOKENS = 'access_tokens';
@@ -53,7 +52,7 @@ export default class AccessController {
   /**
    * Retrieves media by its ID using a passport token.
    * If no access tokens exist, it attempts to generate them, if the passport token is expired, it attempts to refresh them.
-   * If an access token retrieval fails or the user is not entitled to the content, an error is thrown.
+   * If the passport is not accepted, tries to generate new access tokens to get the latest entitled plans.
    */
   getMediaById = async (mediaId: string) => {
     const { entitledPlan } = useAccountStore.getState();
@@ -62,23 +61,27 @@ export default class AccessController {
       return;
     }
 
-    try {
-      const accessTokens = await this.generateOrRefreshAccessTokens();
+    const getMediaWithPassport = async (forceGenerate: boolean = false) => {
+      const accessTokens = forceGenerate ? await this.generateAccessTokens() : await this.generateOrRefreshAccessTokens();
       if (!accessTokens?.passport) {
-        throw new Error('Failed to get / generate access tokens and retrieve media.');
+        throw new Error('Failed to generate / refresh access tokens.');
       }
-      return await this.apiService.getMediaByIdWithPassport({ id: mediaId, siteId: this.siteId, planId: entitledPlan.id, passport: accessTokens.passport });
-    } catch (error: unknown) {
-      if (error instanceof ApiError && error.code === 403) {
-        // If the passport is invalid or expired, refresh the access tokens and try to get the media again.
-        const accessTokens = await this.refreshAccessTokens();
-        if (accessTokens?.passport) {
-          return await this.apiService.getMediaByIdWithPassport({ id: mediaId, siteId: this.siteId, planId: entitledPlan.id, passport: accessTokens.passport });
-        }
 
-        throw new Error('Failed to refresh access tokens and retrieve media.');
-      }
-      throw error;
+      return await this.apiService.getMediaByIdWithPassport({
+        id: mediaId,
+        siteId: this.siteId,
+        planId: entitledPlan.id,
+        passport: accessTokens.passport,
+      });
+    };
+
+    try {
+      return await getMediaWithPassport();
+    } catch (error: unknown) {
+      // If the initial attempt fails, it may indicate the passport does not have the latest plans.
+      // Force new access tokens generation and retry fetching the media.
+      // TODO: Revisit this logic once we address the passport update possibility in Q4
+      return await getMediaWithPassport(true);
     }
   };
 

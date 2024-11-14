@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import StorageService from '../../StorageService';
 
+import { API_CONSTS } from './constants';
 import type { JWPError } from './types';
 
 const INPLAYER_TOKEN_KEY = 'inplayer_token';
@@ -24,17 +25,19 @@ type RequestOptions = {
 export default class JWPAPIService {
   protected readonly storageService: StorageService;
 
-  protected useSandboxEnv = true;
+  private useSandboxEnv = true;
+  private siteId = '';
 
   constructor(@inject(StorageService) storageService: StorageService) {
     this.storageService = storageService;
   }
 
-  setup = (useSandboxEnv: boolean) => {
+  setup = (useSandboxEnv: boolean, siteId: string) => {
     this.useSandboxEnv = useSandboxEnv;
+    this.siteId = siteId;
   };
 
-  private getBaseUrl = () => (this.useSandboxEnv ? 'https://staging-sims.jwplayer.com' : 'https://sims.jwplayer.com');
+  protected getBaseUrl = () => API_CONSTS[this.useSandboxEnv ? 'STAGING' : 'PROD'].API_BASE_URL;
 
   setToken = (token: string, refreshToken = '', expires: number) => {
     return this.storageService.setItem(INPLAYER_TOKEN_KEY, JSON.stringify({ token, refreshToken, expires }), false);
@@ -63,7 +66,7 @@ export default class JWPAPIService {
   private performRequest = async (
     path: string = '/',
     method = 'GET',
-    body?: Record<string, unknown>,
+    bodyObject?: Record<string, unknown>,
     { contentType = 'form', responseType = 'json', withAuthentication = false, keepalive, includeFullResponse = false }: RequestOptions = {},
     searchParams?: Record<string, string | number>,
   ) => {
@@ -79,10 +82,16 @@ export default class JWPAPIService {
       }
     }
 
-    const formData = new URLSearchParams();
+    const body = (() => {
+      if (!bodyObject) return;
 
-    if (body) {
-      Object.entries(body).forEach(([key, value]) => {
+      if (contentType === 'json') {
+        return JSON.stringify(bodyObject);
+      }
+
+      const formData = new URLSearchParams();
+
+      Object.entries(bodyObject).forEach(([key, value]) => {
         if (value || value === 0) {
           if (typeof value === 'object') {
             Object.entries(value as Record<string, string | number>).forEach(([innerKey, innerValue]) => {
@@ -93,17 +102,21 @@ export default class JWPAPIService {
           }
         }
       });
-    }
 
-    const endpoint = `${path.startsWith('http') ? path : `${this.getBaseUrl()}${path}`}${
-      searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : ''
-    }`;
+      return formData.toString();
+    })();
+
+    const parsedPath = path.replace(':siteId', this.siteId);
+    const fullPath = `${parsedPath.startsWith('http') ? parsedPath : `${this.getBaseUrl()}${parsedPath}`}`;
+    const searchString = searchParams ? `?${new URLSearchParams(searchParams as Record<string, string>).toString()}` : '';
+
+    const endpoint = `${fullPath}${searchString}`;
 
     const resp = await fetch(endpoint, {
       headers,
       keepalive,
       method,
-      body: body && formData.toString(),
+      body,
     });
 
     const resParsed = await resp[responseType]?.();

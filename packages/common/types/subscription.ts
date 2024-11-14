@@ -1,4 +1,5 @@
 import type { CleengRequest } from './cleeng';
+import type { Plan } from './plans';
 import type { EnvironmentServiceRequest, PromiseRequest } from './service';
 
 // Subscription types
@@ -163,6 +164,7 @@ type GetAllTransactionsPayload = {
 
 type GetActiveSubscriptionPayload = {
   customerId: string;
+  entitledPlan?: Plan | null;
 };
 
 type GetActivePaymentResponse = PaymentDetail | null;

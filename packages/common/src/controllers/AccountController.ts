@@ -9,15 +9,7 @@ import SubscriptionService from '../services/integrations/SubscriptionService';
 import JWPEntitlementService from '../services/JWPEntitlementService';
 import type { Offer } from '../../types/checkout';
 import type { Plan } from '../../types/plans';
-import type {
-  Capture,
-  Customer,
-  CustomerConsent,
-  EmailConfirmPasswordInput,
-  FirstLastNameInput,
-  GetCaptureStatusResponse,
-  SubscribeToNotificationsPayload,
-} from '../../types/account';
+import type { Capture, Customer, CustomerConsent, EmailConfirmPasswordInput, FirstLastNameInput, GetCaptureStatusResponse } from '../../types/account';
 import { assertFeature, assertModuleMethod, getModule, getNamedModule } from '../modules/container';
 import { INTEGRATION_TYPE } from '../modules/types';
 import type { ServiceResponse } from '../../types/service';
@@ -92,8 +84,8 @@ export default class AccountController {
     // set the accessModel before restoring the user session
     useConfigStore.setState({ accessModel: this.accountService.accessModel });
 
-    await this.loadUserData();
     await this.getEntitledPlans();
+    await this.loadUserData();
 
     useAccountStore.setState({ loading: false });
   };
@@ -173,6 +165,7 @@ export default class AccountController {
 
       if (response) {
         await this.accessController?.generateAccessTokens();
+        await this.getEntitledPlans();
         await this.afterLogin(response.user, response.customerConsents);
         return;
       }
@@ -203,6 +196,8 @@ export default class AccountController {
 
       if (response) {
         const { user, customerConsents } = response;
+        await this.accessController?.generateAccessTokens();
+        await this.getEntitledPlans();
         await this.afterLogin(user, customerConsents, true);
 
         return;
@@ -395,15 +390,14 @@ export default class AccountController {
   // TODO: Support for multiple plans should be added. Revisit this logic once the dependency on plan_id is changed.
   getEntitledPlans = async (): Promise<Plan | null> => {
     const { config, settings } = useConfigStore.getState();
-    const siteId = config.siteId;
     const isAccessBridgeEnabled = !!settings?.apiAccessBridgeUrl;
 
-    // This should be only used when access bridge is defined, regardless of the integration type.
+    // This should be only available when access bridge is defined, regardless of the integration type.
     if (!isAccessBridgeEnabled) {
       return null;
     }
 
-    const response = await this.entitlementService.getEntitledPlans({ siteId });
+    const response = await this.entitlementService.getEntitledPlans({ siteId: config.siteId });
     if (response?.plans?.length) {
       // Find the SVOD plan or fallback to the first available plan
       const entitledPlan = response.plans.find((plan) => plan.metadata.access_model === 'svod') || response.plans[0];
@@ -422,7 +416,7 @@ export default class AccountController {
   ): Promise<unknown> => {
     useAccountStore.setState({ loading: true });
 
-    const { getAccountInfo } = useAccountStore.getState();
+    const { getAccountInfo, entitledPlan } = useAccountStore.getState();
     const { customerId } = getAccountInfo();
     const { accessModel } = useConfigStore.getState();
 
@@ -444,7 +438,7 @@ export default class AccountController {
     }
 
     const [activeSubscription, transactions, activePayment] = await Promise.all([
-      this.subscriptionService.getActiveSubscription({ customerId }),
+      this.subscriptionService.getActiveSubscription({ customerId, entitledPlan }),
       this.subscriptionService.getAllTransactions({ customerId }),
       this.subscriptionService.getActivePayment({ customerId }),
     ]);
@@ -531,10 +525,6 @@ export default class AccountController {
 
   getAuthData = async () => {
     return this.accountService.getAuthData();
-  };
-
-  subscribeToNotifications = async ({ uuid, onMessage }: SubscribeToNotificationsPayload) => {
-    return this.accountService.subscribeToNotifications({ uuid, onMessage });
   };
 
   getFeatures() {

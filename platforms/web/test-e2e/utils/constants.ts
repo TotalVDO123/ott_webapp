@@ -27,6 +27,7 @@ export default {
   baseUrl: baseUrl,
   accountsUrl: `${baseUrl}u/my-account`,
   paymentsUrl: `${baseUrl}u/payments`,
+  subscriptionUrl: `${baseUrl}u/subscription`,
   offersUrl: `${baseUrl}u/payments?u=choose-offer`,
   primitiveAnimalsId: 'oXGyKQ97',
   primitiveAnimalsTitle: 'Primitive Animals',

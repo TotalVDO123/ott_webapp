@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<PaymentSuccessful> > renders and matches snapshot 1`] = `
+<div>
+  <div
+    class="_topContainer_4874d7"
+  >
+    <div
+      class="_circleHug_4874d7"
+    >
+      <svg
+        fill="none"
+        height="65"
+        viewBox="0 0 64 65"
+        width="64"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M13.3333 32.6663L26.6666 45.9997L53.3333 19.333"
+          stroke="#5aae4a"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.6"
+        />
+      </svg>
+    </div>
+    <div
+      class="_innerContainer_4874d7"
+    >
+      <h2
+        class="_title_4874d7"
+      >
+        checkout.payment_successful_title
+      </h2>
+      <p
+        class="_message_4874d7"
+      >
+        checkout.payment_successful_description
+      </p>
+    </div>
+    <div
+      class="_buttonContainer_4874d7"
+    >
+      <button
+        class="_button_f8f296 _primary_f8f296 _fullWidth_f8f296 _large_f8f296"
+        type="button"
+      >
+        <span>
+          checkout.start_watching
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
